@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("STL_DB__CONNECTION")
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  passwordHash String        @map("password_hash")
+  email        String        @unique
+  roles        String[]      @default([])
+  sessions     UserSession[]
+
+  @@map("user")
+}
+
+model UserSession {
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@map("user_session")
+}

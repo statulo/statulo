@@ -1,0 +1,15 @@
+{
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "module": "Preserve",
+    "target": "ESNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["./*"],
+    }
+  }
+}
