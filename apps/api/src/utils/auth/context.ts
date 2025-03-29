@@ -3,6 +3,9 @@ import { ApiError } from '../error';
 import { fetchSessionAndUpdateExpiry } from './session';
 import type { PopulatedSession } from './session';
 import { parseAuthorizationToken, parseAuthToken } from './tokens';
+import type { Permission } from '../permissions/permission-builder';
+import { getPermissions } from '../permissions/resolve-roles';
+import { checkPermission } from '../permissions/check';
 
 export type AuthType = 'session';
 
@@ -10,10 +13,12 @@ export interface AuthChecks {
   isAuthenticated: () => boolean;
   isAuthType: (type: AuthType) => boolean;
   isUser: (userId: string) => boolean;
+  can: (perm: Permission) => boolean;
 }
 
 export interface AuthContext {
   check: (cb: (checks: AuthChecks) => boolean) => void;
+  can: (perm: Permission) => void;
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
@@ -48,6 +53,9 @@ export async function fetchAuthContextData(
 
 function makeAuthCheckers(data: AuthContextData): AuthChecks {
   const userId = data.session?.userId;
+  const perms = getPermissions({
+    user: data.session?.user,
+  });
 
   return {
     isAuthenticated() {
@@ -58,6 +66,12 @@ function makeAuthCheckers(data: AuthContextData): AuthChecks {
     },
     isUser(checkedUserId) {
       return userId === checkedUserId;
+    },
+    can(perm) {
+      const hasPerm = perms.some(userPerm =>
+        checkPermission(perm, userPerm),
+      );
+      return hasPerm;
     },
   };
 }
@@ -71,6 +85,10 @@ export async function makeAuthContext(
   return {
     check(cb) {
       const result = cb(checkers);
+      if (!result) throw ApiError.forCode('authMissingPermissions', 403);
+    },
+    can(perm) {
+      const result = checkers.can(perm);
       if (!result) throw ApiError.forCode('authMissingPermissions', 403);
     },
     checkers,
