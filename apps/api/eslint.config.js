@@ -13,7 +13,7 @@ const stylisticConfig = stylisticPlugin.configs.customize({
 export default tseslint.config(
   {
     // https://eslint.org/docs/rules/
-    name: 'adolla/eslint-js',
+    name: 'statulo/eslint-js',
     extends: [eslint.configs.recommended],
     rules: {
       'require-atomic-updates': 'off',
@@ -31,7 +31,7 @@ export default tseslint.config(
   },
   {
     // https://typescript-eslint.io/rules/
-    name: 'adolla/typescript-eslint',
+    name: 'statulo/typescript-eslint',
     extends: [tseslint.configs.recommended],
     files: ['**/*.ts', '**/*.d.ts'],
     rules: {
@@ -49,7 +49,7 @@ export default tseslint.config(
   },
   {
     // https://eslint-community.github.io/eslint-plugin-eslint-comments/rules/
-    name: 'adolla/eslint-comments',
+    name: 'statulo/eslint-comments',
     extends: [eslintCommentPlugin.recommended],
     rules: {
       '@eslint-community/eslint-comments/disable-enable-pair': ['error', { allowWholeFile: true }],
@@ -58,7 +58,7 @@ export default tseslint.config(
   },
   {
     // https://eslint.style/rules
-    name: 'adolla/stylistic',
+    name: 'statulo/stylistic',
     extends: [stylisticConfig],
     rules: {
       '@stylistic/no-extra-semi': 'error',
@@ -76,7 +76,7 @@ export default tseslint.config(
     },
   },
   {
-    name: 'adolla/globals',
+    name: 'statulo/globals',
     languageOptions: {
       globals: {
         ...globals.builtin,
@@ -86,7 +86,7 @@ export default tseslint.config(
   },
   {
     // https://eslint.org/docs/latest/use/configure/ignore
-    name: 'adolla/global-ignores',
+    name: 'statulo/global-ignores',
     ignores: [
       '**/dist/',
     ],
