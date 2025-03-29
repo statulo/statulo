@@ -1,4 +1,4 @@
-import type { EnumType } from '../types';
+import type { EnumType, ExtractParams } from '../types';
 
 export const all = Symbol('any-resource');
 
@@ -10,10 +10,7 @@ export const permAction = {
 } as const;
 export type PermAction = EnumType<typeof permAction>;
 
-export type PermissionDescription<TParams extends string = never> = {
-  (params: Record<TParams, string | typeof all>): Permission;
-  with<const TArgs extends string[]>(...args: TArgs): PermissionDescription<TArgs[number]>;
-};
+export type PermissionDescription<TParams extends string> = (params: Record<TParams, string | typeof all>) => Permission;
 
 export type Permission = {
   action: PermAction;
@@ -22,18 +19,14 @@ export type Permission = {
 
 export function makePermissionBuilder() {
   return {
-    create(action: PermAction, path: string): PermissionDescription<string> {
-      const desc = (_params: Record<string, string | typeof all>) => {
+    create<T extends string>(action: PermAction, path: T): PermissionDescription<ExtractParams<T>> {
+      return (_params: Record<string, string | typeof all>) => {
         if (!path.startsWith('/')) throw new Error('Permission path must start with slash');
         return {
           action,
           path: path.split('/').slice(1), // remove first empty segment
         };
       };
-      desc.with = () => {
-        return desc;
-      };
-      return desc;
     },
   };
 }
