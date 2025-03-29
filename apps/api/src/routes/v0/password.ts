@@ -14,7 +14,7 @@ import { mapExpandedUser } from './mappings/user';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(
-    '/api/v1/auth/password-reset',
+    '/api/auth/password-reset',
     {
       schema: {
         description: 'Request password reset',
@@ -54,7 +54,7 @@ export const passwordAuthrouter = makeRouter((app) => {
   );
 
   app.post(
-    '/api/v1/auth/password-reset/submit',
+    '/api/auth/password-reset/submit',
     {
       schema: {
         description: 'Submit a password reset',

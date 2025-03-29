@@ -56,7 +56,7 @@ export const authRouter = makeRouter((app) => {
   );
 
   app.post(
-    '/api/v1/auth/logout',
+    '/api/auth/logout',
     {
       schema: {
         description: 'Logout user',
