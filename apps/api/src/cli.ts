@@ -5,7 +5,7 @@ import execSh from 'exec-sh';
 import { cancel, isCancel, log, text } from '@clack/prompts';
 
 const initCmd = new Command('init')
-  .description('Initialize Adolla')
+  .description('Initialize Statulo')
   .action(async () => {
     logIntro(true);
     logger.info('Initialising database...');
@@ -67,8 +67,8 @@ const migrateCmd = new Command('migrate')
 
 export function createProgram(run: () => Promise<void>) {
   return program
-    .name('adolla')
-    .description('CLI to run or manage the Adolla server')
+    .name('statulo')
+    .description('CLI to run or manage the Statulo server')
     .version(version)
     .action(run)
     .addCommand(initCmd)
