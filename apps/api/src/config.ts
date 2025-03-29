@@ -26,6 +26,22 @@ const schema = z.object({
     connection: z.string(),
     ssl: zodCoercedBoolean().default(false),
   }),
+  mailer: z
+    .discriminatedUnion('enabled', [
+      z.object({
+        enabled: z.literal('false'),
+      }),
+      z.object({
+        enabled: z.literal('true'),
+        smtpHost: z.string().min(1),
+        smtpPort: z.coerce.number().positive(),
+        secure: zodCoercedBoolean().default(false),
+        smtpUser: z.string().min(1).optional(),
+        smtpPassword: z.string().min(1).optional(),
+        from: z.string().min(1).optional(),
+      }),
+    ])
+    .default({ enabled: 'false' }),
 });
 
 export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
@@ -40,6 +56,12 @@ export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
     },
     crypto: {
       secret: '12345678901234567890123456789012',
+    },
+    mailer: {
+      enabled: 'true',
+      smtpHost: 'localhost',
+      smtpPort: 1025,
+      secure: false,
     },
   },
 };

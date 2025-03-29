@@ -1,7 +1,7 @@
 import type { EnumType } from '@/utils/types';
 
 export const tokenTypes = {
-  auth: 'auth',
+  session: 'session',
 } as const;
 export type TokenTypes = EnumType<typeof tokenTypes>;
 

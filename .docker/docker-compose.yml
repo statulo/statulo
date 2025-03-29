@@ -9,6 +9,10 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
      - 'postgres_data:/var/lib/postgresql/data'
-
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - 8025:8025
+      - 1025:1025
 volumes:
   postgres_data:

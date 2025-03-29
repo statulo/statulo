@@ -6,5 +6,9 @@
     {
       "pattern": "./apps/*/"
     }
-  ]
+  ],
+  "editor.formatOnSave": false,
+  "[prisma]": {
+    "editor.formatOnSave": true
+  }
 }
