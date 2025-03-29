@@ -7,7 +7,6 @@ WORKDIR /app
 COPY pnpm-*.yaml ./
 COPY package.json ./
 COPY apps/api/package.json ./apps/api/
-COPY apps/frontend/package.json ./apps/frontend/
 
 COPY . ./
 
