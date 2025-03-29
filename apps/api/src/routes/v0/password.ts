@@ -6,6 +6,11 @@ import { NotFoundError } from '@/utils/error';
 import { timeout } from '@/utils/timeout';
 import { mapSuccess } from './mappings/success';
 import { resetPasswordEmail } from '@/modules/emails/templates/reset-password';
+import { hashPassword } from '@/utils/auth/password';
+import { createSession, makeSessionToken } from '@/utils/auth/session';
+import { mapToken, tokenTypes } from './mappings/tokens';
+import { passwordSchema } from '@/utils/zod';
+import { mapExpandedUser } from './mappings/user';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(
@@ -89,7 +94,7 @@ export const passwordAuthrouter = makeRouter((app) => {
       const session = await createSession(newUser);
       return {
         user: mapExpandedUser(newUser),
-        token: makeSessionToken(session.id),
+        token: mapToken(tokenTypes.session, makeSessionToken(session.id)),
       };
     }),
   );

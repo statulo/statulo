@@ -13,6 +13,8 @@ import type {
 } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import type { ResolveFastifyReplyReturnType } from 'fastify/types/type-provider';
+import type { AuthContext } from './auth/context';
+import { makeAuthContext } from './auth/context';
 
 export const DONT_REPLY = Symbol('dont-reply');
 
@@ -72,6 +74,7 @@ export type RequestContext<
     ContextConfig,
     Logger
   >['query'];
+  auth: AuthContext;
 };
 
 export function handle<
@@ -117,6 +120,7 @@ export function handle<
       body: req.body,
       params: req.params,
       query: req.query,
+      auth: await makeAuthContext(req),
     });
     if (result instanceof Promise) result = await result;
     if (result === DONT_REPLY) return res;

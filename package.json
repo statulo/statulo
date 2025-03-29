@@ -18,6 +18,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@prisma/client",
+      "argon2",
       "esbuild",
       "sharp"
     ]

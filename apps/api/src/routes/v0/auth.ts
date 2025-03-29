@@ -6,6 +6,9 @@ import { makeRouter } from '@/utils/router';
 import { timeout } from '@/utils/timeout';
 import { mapToken, tokenTypes } from './mappings/tokens';
 import { mapSuccess } from './mappings/success';
+import { verifyPassword } from '@/utils/auth/password';
+import { createSession, makeSessionToken } from '@/utils/auth/session';
+import { mapExpandedUser } from './mappings/user';
 
 export const authRouter = makeRouter((app) => {
   app.post(
@@ -47,7 +50,7 @@ export const authRouter = makeRouter((app) => {
       const session = await createSession(user);
       return {
         user: mapExpandedUser(user),
-        token: mapToken(tokenTypes.session, session.id),
+        token: mapToken(tokenTypes.session, makeSessionToken(session.id)),
       };
     }),
   );
