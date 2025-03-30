@@ -6,6 +6,7 @@ import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { NotFoundError } from '@/utils/error';
 import { mapOrgMember } from './mappings/org-member';
+import { orgRolesSchema } from '@/utils/permissions/roles';
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(
@@ -21,6 +22,8 @@ export const orgMemberRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       auth.can(permissions.org.member.delete({ org: params.org, mbr: params.id }));
+
+      // TODO dont allow delete if only member with admin left
 
       const oldMembers = await prisma.orgMember.deleteMany({
         where: {
@@ -52,6 +55,39 @@ export const orgMemberRouter = makeRouter((app) => {
         where: {
           orgId: params.org,
           id: params.id,
+        },
+        include: {
+          user: true,
+        },
+      });
+      if (!member) throw new NotFoundError();
+      return mapOrgMember(member);
+    }),
+  );
+
+  app.patch(
+    '/api/v1/organisations/:org/members/:id',
+    {
+      schema: {
+        description: 'Update organisation member',
+        params: z.object({
+          org: z.string(),
+          id: z.string(),
+        }),
+        body: z.object({
+          roles: z.array(orgRolesSchema).optional(),
+        }),
+      },
+    },
+    handle(async ({ params, body, auth }) => {
+      auth.can(permissions.org.member.read({ org: params.org, mbr: params.id }));
+      const member = await prisma.orgMember.update({
+        where: {
+          orgId: params.org,
+          id: params.id,
+        },
+        data: {
+          roles: body.roles,
         },
         include: {
           user: true,
