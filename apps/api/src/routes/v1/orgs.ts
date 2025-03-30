@@ -41,6 +41,35 @@ export const orgRouter = makeRouter((app) => {
     }),
   );
 
+  app.patch(
+    '/api/v1/organisations/:id',
+    {
+      schema: {
+        description: 'Edit organisation',
+        params: z.object({
+          id: z.string(),
+        }),
+        body: z.object({
+          name: z.string().min(1).optional(),
+          description: z.string().min(1).nullable().optional(),
+        }),
+      },
+    },
+    handle(async ({ body, auth, params }) => {
+      auth.can(permissions.org.edit({ org: params.id }));
+      const newOrg = await prisma.organisation.update({
+        where: {
+          id: params.id,
+        },
+        data: {
+          name: body.name,
+          description: body.description,
+        },
+      });
+      return mapOrganisation(newOrg);
+    }),
+  );
+
   app.delete(
     '/api/v1/organisations/:id',
     {
