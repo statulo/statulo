@@ -12,6 +12,7 @@ import { mapToken, tokenTypes } from './mappings/tokens';
 import { passwordSchema } from '@/utils/zod';
 import { mapExpandedUser } from './mappings/user';
 import { makeAuthToken, parseAuthToken } from '@/utils/auth/tokens';
+import { makePasswordResetUrl } from '@/utils/urls';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(
@@ -48,7 +49,7 @@ export const passwordAuthrouter = makeRouter((app) => {
         await resetPasswordEmail.send({
           to: user.email,
           props: {
-            resetLink: 'https://google.com' + token, // TODO create valid link with a token
+            resetLink: makePasswordResetUrl(token),
           },
         });
       } catch {
