@@ -49,12 +49,12 @@ const promoteCmd = new Command('promote')
       },
     });
     if (!user) {
-      log.error('Could not find user with that username!');
+      log.error('Could not find user with that email!');
       process.exit(1);
     }
 
     const shouldContinue = await confirm({
-      message: `You are about to promote '${email}' to Super. Want to proceed?`,
+      message: `You are about to promote '${email}' to Admin. Want to proceed?`,
       initialValue: false,
     });
     if (isCancel(shouldContinue)) {
