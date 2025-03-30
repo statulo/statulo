@@ -80,7 +80,10 @@ export const orgMemberRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, body, auth }) => {
-      auth.can(permissions.org.member.read({ org: params.org, mbr: params.id }));
+      auth.can(permissions.org.member.edit({ org: params.org, mbr: params.id }));
+
+      // TODO dont allow demote if no members with admin left
+
       const member = await prisma.orgMember.update({
         where: {
           orgId: params.org,
