@@ -9,6 +9,10 @@ const alg = 'HS256';
 export type AuthToken = {
   t: 'session';
   id: string;
+} | {
+  t: 'passreset';
+  stamp: string;
+  uid: string;
 };
 
 export function parseAuthToken(input: string): null | AuthToken {

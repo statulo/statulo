@@ -11,11 +11,12 @@ model User {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
 
-  passwordHash String        @map("password_hash")
-  email        String        @unique
-  roles        String[]      @default([])
-  sessions     UserSession[]
-  orgMembers   OrgMember[]
+  passwordHash  String        @map("password_hash")
+  securityStamp String        @default("default-stamp")
+  email         String        @unique
+  roles         String[]      @default([])
+  sessions      UserSession[]
+  orgMembers    OrgMember[]
 
   @@map("user")
 }

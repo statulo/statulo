@@ -2,15 +2,16 @@ import { z } from 'zod';
 import { prisma } from '@/modules/db';
 import { handle } from '@/utils/handle';
 import { makeRouter } from '@/utils/router';
-import { NotFoundError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { timeout } from '@/utils/timeout';
 import { mapSuccess } from './mappings/success';
 import { resetPasswordEmail } from '@/modules/emails/templates/reset-password';
-import { hashPassword } from '@/utils/auth/password';
+import { generateSecureKey, hashPassword } from '@/utils/auth/password';
 import { createSession, makeSessionToken } from '@/utils/auth/session';
 import { mapToken, tokenTypes } from './mappings/tokens';
 import { passwordSchema } from '@/utils/zod';
 import { mapExpandedUser } from './mappings/user';
+import { makeAuthToken, parseAuthToken } from '@/utils/auth/tokens';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(
@@ -37,11 +38,17 @@ export const passwordAuthrouter = makeRouter((app) => {
         return { success: true }; // always return success, to prevent email enumeration
       }
 
+      const token = makeAuthToken({
+        t: 'passreset',
+        stamp: user.securityStamp,
+        uid: user.id,
+      });
+
       try {
         await resetPasswordEmail.send({
           to: user.email,
           props: {
-            resetLink: 'https://google.com', // TODO create valid link with a token
+            resetLink: 'https://google.com' + token, // TODO create valid link with a token
           },
         });
       } catch {
@@ -65,8 +72,9 @@ export const passwordAuthrouter = makeRouter((app) => {
       },
     },
     handle(async ({ body }) => {
-      // TODO check for valid token (security stamp has to match)
-      const userId = 'abc'; // TODO extract from token
+      const parsedToken = parseAuthToken(body.token);
+      if (!parsedToken || parsedToken.t !== 'passreset') throw ApiError.forCode('authInvalidToken');
+      const userId = parsedToken.uid;
 
       const user = await prisma.user.findUnique({
         where: {
@@ -74,6 +82,7 @@ export const passwordAuthrouter = makeRouter((app) => {
         },
       });
       if (!user) throw new NotFoundError();
+      if (user.securityStamp !== parsedToken.stamp) throw ApiError.forCode('authInvalidToken');
 
       const newUser = await prisma.user.update({
         where: {
@@ -81,7 +90,7 @@ export const passwordAuthrouter = makeRouter((app) => {
         },
         data: {
           passwordHash: await hashPassword(body.newPassword),
-          // TODO generate new security stamp
+          securityStamp: generateSecureKey(),
         },
         include: {
           orgMembers: {
