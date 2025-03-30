@@ -29,7 +29,9 @@ export const orgRolePerms: Record<OrgRoles, (org: string) => Permission[]> = {
     ...orgRolePerms['org:viewer'](org),
 
     permissions.org.delete({ org }),
+    permissions.org.edit({ org }),
     permissions.org.member.create({ org }),
+    permissions.org.member.edit({ org, mbr: all }),
     permissions.org.member.delete({ org, mbr: all }),
   ],
 };

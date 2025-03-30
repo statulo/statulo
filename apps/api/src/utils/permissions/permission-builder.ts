@@ -7,6 +7,7 @@ export const permAction = {
   create: 'create',
   delete: 'delete',
   list: 'list',
+  edit: 'edit',
 } as const;
 export type PermAction = EnumType<typeof permAction>;
 
