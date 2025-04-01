@@ -21,11 +21,23 @@ export type Permission = {
 export function makePermissionBuilder() {
   return {
     create<T extends string>(action: PermAction, path: T): PermissionDescription<ExtractParams<T>> {
-      return (_params: Record<string, string | typeof all>) => {
+      return (params: Record<string, string | typeof all>) => {
         if (!path.startsWith('/')) throw new Error('Permission path must start with slash');
+        let parts: (string | typeof all)[] = path.split('/').slice(1); // remove first empty segment
+
+        // add params into path parts
+        parts = parts.map((v) => {
+          if (typeof v !== 'string') return v;
+          if (!v.startsWith(':')) return v;
+          const paramName = v.slice(1);
+          const paramValue = params[paramName];
+          if (!paramValue) throw new Error('Invalid parameter in permission');
+          return paramValue;
+        });
+
         return {
           action,
-          path: path.split('/').slice(1), // remove first empty segment
+          path: parts,
         };
       };
     },

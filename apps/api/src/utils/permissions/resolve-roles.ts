@@ -16,8 +16,8 @@ function resolvePermissionsforUser(user: PopulatedUser): Permission[] {
   const appRolePerms = user.roles.flatMap(v => rolePerms[v as AppRoles] ?? []);
 
   return [
-    baseUserPerms,
-    ...appRolePerms,
+    baseUserPerms(user.id),
+    appRolePerms,
     ...user.orgMembers.map(member =>
       resolveOrgRolesForOrgMember(member),
     ),

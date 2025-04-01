@@ -6,8 +6,10 @@ export const basePerms: Permission[] = [
   permissions.user.create({}),
 ];
 
-export const baseUserPerms: Permission[] = [
+export const baseUserPerms = (user: string): Permission[] => [
   permissions.org.create({}),
+  permissions.user.read({ usr: user }),
+  permissions.user.delete({ usr: user }),
 ];
 
 export const rolePerms: Record<AppRoles, Permission[]> = {
