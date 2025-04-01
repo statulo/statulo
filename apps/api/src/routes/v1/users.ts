@@ -52,7 +52,7 @@ export const userRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.delete({ usr: id }));
+      auth.can(permissions.user.read({ usr: id }));
       const isSelf = auth.checkers.isUser(id);
       const user = await prisma.user.findUnique({
         where: {
