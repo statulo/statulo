@@ -5,6 +5,7 @@ import execSh from 'exec-sh';
 import { cancel, confirm, isCancel, log, spinner, text } from '@clack/prompts';
 import { prisma } from './modules/db';
 import { appRoles } from './utils/permissions/roles';
+import { seed } from './modules/db/seeding';
 
 async function migrate() {
   try {
@@ -88,6 +89,15 @@ const migrateCmd = new Command('migrate')
     logger.info('Migrations completed!');
   });
 
+const devSeedCmd = new Command('seed')
+  .description('Run database seeders')
+  .action(async () => {
+    logger.info('Running database seeders...');
+    await seed();
+    logDivide();
+    logger.info('Seeding completed!');
+  });
+
 export function createProgram(run: () => Promise<void>) {
   return program
     .name('statulo')
@@ -96,5 +106,10 @@ export function createProgram(run: () => Promise<void>) {
     .action(run)
     .addCommand(initCmd)
     .addCommand(promoteCmd)
-    .addCommand(migrateCmd);
+    .addCommand(migrateCmd)
+    .addCommand(
+      new Command('dev')
+        .description('Commands for development')
+        .addCommand(devSeedCmd),
+    );
 }

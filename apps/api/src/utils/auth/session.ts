@@ -8,7 +8,7 @@ import { prisma } from '@/modules/db';
 import { getId } from '../id';
 import { makeAuthToken } from './tokens';
 
-const expiryInMs = 7 * 24 * 60 * 60 * 1000; // 7 days
+export const sessionExpiryInMs = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export type PopulatedSession = UserSession & {
   user: User & {
@@ -28,7 +28,7 @@ export async function fetchSessionAndUpdateExpiry(
         },
       },
       data: {
-        expiresAt: new Date(Date.now() + expiryInMs), // new expiry date = NOW + expiry delay
+        expiresAt: new Date(Date.now() + sessionExpiryInMs), // new expiry date = NOW + expiry delay
       },
       include: {
         user: {
@@ -51,7 +51,7 @@ export async function fetchSessionAndUpdateExpiry(
 export async function createSession(user: User) {
   const session = await prisma.userSession.create({
     data: {
-      expiresAt: new Date(Date.now() + expiryInMs), // new expiry date = NOW + expiry delay
+      expiresAt: new Date(Date.now() + sessionExpiryInMs), // new expiry date = NOW + expiry delay
       userId: user.id,
       id: getId('ses'),
     },

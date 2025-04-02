@@ -8,11 +8,13 @@
     "node": ">=22.0.0"
   },
   "prisma": {
-    "schema": "./src/modules/db/schema.prisma"
+    "schema": "./src/modules/db/schema.prisma",
+    "seed": "pnpm run build:run -- dev seed"
   },
   "scripts": {
     "start": "node dist/main.js",
     "build": "pnpm prisma generate && tsup && tsc --noEmit",
+    "build:run": "pnpm build && pnpm start",
     "dev": "tsup --watch --onSuccess 'node dist/main.js'",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
