@@ -4,9 +4,9 @@ import { makeRouter } from '@/utils/router';
 import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
-import { NotFoundError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { mapOrgMember } from './mappings/org-member';
-import { orgRolesSchema } from '@/utils/permissions/roles';
+import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(
@@ -23,7 +23,20 @@ export const orgMemberRouter = makeRouter((app) => {
     handle(async ({ params, auth }) => {
       auth.can(permissions.org.member.delete({ org: params.org, mbr: params.id }));
 
-      // TODO dont allow delete if only member with admin left
+      const adminOrgMembers = await prisma.orgMember.findMany({
+        where: {
+          orgId: params.org,
+          roles: {
+            has: orgRoles.admin,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
+      if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
+        throw ApiError.forCode('removeLastAdmin', 400);
 
       const oldMembers = await prisma.orgMember.deleteMany({
         where: {
@@ -82,7 +95,20 @@ export const orgMemberRouter = makeRouter((app) => {
     handle(async ({ params, body, auth }) => {
       auth.can(permissions.org.member.edit({ org: params.org, mbr: params.id }));
 
-      // TODO dont allow demote if no members with admin left
+      const adminOrgMembers = await prisma.orgMember.findMany({
+        where: {
+          orgId: params.org,
+          roles: {
+            has: orgRoles.admin,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
+      if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
+        throw ApiError.forCode('removeLastAdmin', 400);
 
       const member = await prisma.orgMember.update({
         where: {
