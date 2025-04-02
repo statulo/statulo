@@ -95,20 +95,34 @@ export const orgMemberRouter = makeRouter((app) => {
     handle(async ({ params, body, auth }) => {
       auth.can(permissions.org.member.edit({ org: params.org, mbr: params.id }));
 
-      const adminOrgMembers = await prisma.orgMember.findMany({
+      const oldMember = await prisma.orgMember.findFirst({
         where: {
           orgId: params.org,
-          roles: {
-            has: orgRoles.admin,
-          },
+          id: params.id,
         },
-        select: {
-          id: true,
+        include: {
+          user: true,
         },
       });
-      const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
-      if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
-        throw ApiError.forCode('removeLastAdmin', 400);
+      if (!oldMember) throw new NotFoundError();
+
+      const isRemovingAdmin = body.roles && oldMember.roles.includes(orgRoles.admin) && !body.roles.includes(orgRoles.admin);
+      if (isRemovingAdmin) {
+        const adminOrgMembers = await prisma.orgMember.findMany({
+          where: {
+            orgId: params.org,
+            roles: {
+              has: orgRoles.admin,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+        const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
+        if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
+          throw ApiError.forCode('removeLastAdmin', 400);
+      }
 
       const member = await prisma.orgMember.update({
         where: {
