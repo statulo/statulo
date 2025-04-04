@@ -6,6 +6,7 @@ const _types = [
   'ses', // user session
   'org', // organisation
   'orgmbr', // organisation member
+  'orginv', // org invite
 ] as const;
 
 export function getId(prefix: ArrayValues<typeof _types>): string {
