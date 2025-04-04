@@ -1,11 +1,4 @@
 import type { FastifyRequest } from 'fastify';
-import { ApiError } from '../error';
-import { fetchSessionAndUpdateExpiry } from './session';
-import type { PopulatedSession } from './session';
-import { parseAuthorizationToken, parseAuthToken } from './tokens';
-import type { Permission } from '../permissions/permission-builder';
-import { getPermissions } from '../permissions/resolve-roles';
-import { checkPermission } from '../permissions/check';
 
 export type AuthType = 'session';
 

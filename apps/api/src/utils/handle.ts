@@ -13,8 +13,6 @@ import type {
 } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import type { ResolveFastifyReplyReturnType } from 'fastify/types/type-provider';
-import type { AuthContext } from './auth/context';
-import { makeAuthContext } from './auth/context';
 
 export const DONT_REPLY = Symbol('dont-reply');
 

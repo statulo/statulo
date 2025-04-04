@@ -5,7 +5,6 @@ import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { ApiError, NotFoundError } from '@/utils/error';
-import { mapOrgMember } from './mappings/org-member';
 import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
 
 export const orgMemberRouter = makeRouter((app) => {

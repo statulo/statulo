@@ -1,6 +1,3 @@
-import type { ApiErrorCodes } from './codes';
-import { apiErrorCodes } from './codes';
-
 const errorSymbol = Symbol('ApiError');
 
 export class ApiError extends Error {

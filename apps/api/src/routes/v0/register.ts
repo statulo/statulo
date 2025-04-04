@@ -7,8 +7,6 @@ import { permissions } from '@/utils/permissions/permissions';
 import { makeRouter } from '@/utils/router';
 import { passwordSchema } from '@/utils/zod';
 import { z } from 'zod';
-import { mapToken, tokenTypes } from './mappings/tokens';
-import { mapExpandedUser } from './mappings/user';
 
 export const registerRouter = makeRouter((app) => {
   app.post(

@@ -5,7 +5,6 @@ import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { NotFoundError } from '@/utils/error';
-import { mapExpandedUser, mapUser } from '../v0/mappings/user';
 import { mapPage, pagerSchema } from '@/utils/pages';
 
 function getAtMe(auth: AuthContext, id: string) {

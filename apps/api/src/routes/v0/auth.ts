@@ -4,11 +4,8 @@ import { handle } from '@/utils/handle';
 import { ApiError, NotFoundError } from '@/utils/error';
 import { makeRouter } from '@/utils/router';
 import { timeout } from '@/utils/timeout';
-import { mapToken, tokenTypes } from './mappings/tokens';
-import { mapSuccess } from './mappings/success';
 import { verifyPassword } from '@/utils/auth/password';
 import { createSession, makeSessionToken } from '@/utils/auth/session';
-import { mapExpandedUser } from './mappings/user';
 
 export const authRouter = makeRouter((app) => {
   app.post(
