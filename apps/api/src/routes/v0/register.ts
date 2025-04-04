@@ -17,7 +17,7 @@ export const registerRouter = makeRouter((app) => {
       schema: {
         description: 'Create user',
         body: z.object({
-          email: z.string().min(1),
+          email: z.string().email(),
           password: passwordSchema(),
         }),
       },
