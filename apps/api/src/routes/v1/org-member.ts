@@ -88,7 +88,7 @@ export const orgMemberRouter = makeRouter((app) => {
           id: z.string(),
         }),
         body: z.object({
-          roles: z.array(orgRolesSchema).optional(),
+          roles: z.array(orgRolesSchema).min(1).optional(),
         }),
       },
     },
