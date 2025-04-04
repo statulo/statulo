@@ -1,4 +1,4 @@
-import type { EnumType, ExtractParams } from '../types';
+import type { EnumType, ExtractParams } from '@/utils/types';
 
 export const all = Symbol('any-resource');
 

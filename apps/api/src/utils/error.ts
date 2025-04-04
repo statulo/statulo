@@ -1,5 +1,4 @@
-import type { ApiErrorCodes } from './codes';
-import { apiErrorCodes } from './codes';
+import { apiErrorCodes, type ApiErrorCodes } from '@/utils/codes';
 
 const errorSymbol = Symbol('ApiError');
 

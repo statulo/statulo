@@ -1,9 +1,8 @@
 import type { OrgMember, Organisation, User } from '@prisma/client';
-import type { OrganisationDto } from './organisation';
-import { mapOrganisation } from './organisation';
 import type { UserDto } from '@/routes/v0/mappings/user';
 import { mapUser } from '@/routes/v0/mappings/user';
 import type { OrgRoles } from '@/utils/permissions/roles';
+import { mapOrganisation, type OrganisationDto } from '@/routes/v1/mappings/organisation';
 
 export interface UserSideOrgMemberDto {
   id: string;

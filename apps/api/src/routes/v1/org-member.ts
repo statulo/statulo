@@ -5,8 +5,8 @@ import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { ApiError, NotFoundError } from '@/utils/error';
-import { mapOrgMember } from './mappings/org-member';
 import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
+import { mapOrgMember } from '@/routes/v1/mappings/org-member';
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(
@@ -88,7 +88,7 @@ export const orgMemberRouter = makeRouter((app) => {
           id: z.string(),
         }),
         body: z.object({
-          roles: z.array(orgRolesSchema).optional(),
+          roles: z.array(orgRolesSchema).min(1).optional(),
         }),
       },
     },

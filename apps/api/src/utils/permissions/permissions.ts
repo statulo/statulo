@@ -1,4 +1,4 @@
-import { makePermissionBuilder } from './permission-builder';
+import { makePermissionBuilder } from '@/utils/permissions/permission-builder';
 
 const p = makePermissionBuilder();
 

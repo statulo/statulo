@@ -1,3 +1,5 @@
+import type { AuthContext } from '@/utils/auth/context';
+import { makeAuthContext } from '@/utils/auth/context';
 import type {
   ContextConfigDefault,
   FastifyBaseLogger,
@@ -13,8 +15,6 @@ import type {
 } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import type { ResolveFastifyReplyReturnType } from 'fastify/types/type-provider';
-import type { AuthContext } from './auth/context';
-import { makeAuthContext } from './auth/context';
 
 export const DONT_REPLY = Symbol('dont-reply');
 

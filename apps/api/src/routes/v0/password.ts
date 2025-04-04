@@ -4,15 +4,15 @@ import { handle } from '@/utils/handle';
 import { makeRouter } from '@/utils/router';
 import { ApiError, NotFoundError } from '@/utils/error';
 import { timeout } from '@/utils/timeout';
-import { mapSuccess } from './mappings/success';
 import { resetPasswordEmail } from '@/modules/emails/templates/reset-password';
 import { generateSecureKey, hashPassword } from '@/utils/auth/password';
 import { createSession, makeSessionToken } from '@/utils/auth/session';
-import { mapToken, tokenTypes } from './mappings/tokens';
 import { passwordSchema } from '@/utils/zod';
-import { mapExpandedUser } from './mappings/user';
 import { makeAuthToken, parseAuthToken } from '@/utils/auth/tokens';
 import { makePasswordResetUrl } from '@/utils/urls';
+import { mapSuccess } from '@/routes/v0/mappings/success';
+import { mapExpandedUser } from '@/routes/v0/mappings/user';
+import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(

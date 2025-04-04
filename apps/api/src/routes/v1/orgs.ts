@@ -5,9 +5,10 @@ import { permissions } from '@/utils/permissions/permissions';
 import { orgRoles } from '@/utils/permissions/roles';
 import { makeRouter } from '@/utils/router';
 import { z } from 'zod';
-import { mapOrganisation } from './mappings/organisation';
 import { NotFoundError } from '@/utils/error';
 import { mapPage, pagerSchema } from '@/utils/pages';
+import { mapOrganisation } from '@/routes/v1/mappings/organisation';
+import { mapSuccess } from '@/routes/v0/mappings/success';
 
 export const orgRouter = makeRouter((app) => {
   app.post(
@@ -137,6 +138,31 @@ export const orgRouter = makeRouter((app) => {
         },
       });
       return mapPage(query, orgs.map(mapOrganisation), totalOrgs);
+    }),
+  );
+
+  app.delete(
+    '/api/v1/organisations/:id/leave',
+    {
+      schema: {
+        description: 'Leave organisation',
+        params: z.object({
+          id: z.string(),
+        }),
+      },
+    },
+    handle(async ({ params, auth }) => {
+      const userId = auth.data.getUserId();
+
+      const oldMembers = await prisma.orgMember.deleteMany({
+        where: {
+          orgId: params.id,
+          userId: userId,
+        },
+      });
+      if (oldMembers.count === 0) throw new NotFoundError();
+
+      return mapSuccess();
     }),
   );
 });

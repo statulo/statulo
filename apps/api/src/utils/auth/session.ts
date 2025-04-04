@@ -5,8 +5,8 @@ import type {
   UserSession,
 } from '@prisma/client';
 import { prisma } from '@/modules/db';
-import { getId } from '../id';
-import { makeAuthToken } from './tokens';
+import { getId } from '@/utils/id';
+import { makeAuthToken } from '@/utils/auth/tokens';
 
 export const sessionExpiryInMs = 7 * 24 * 60 * 60 * 1000; // 7 days
 

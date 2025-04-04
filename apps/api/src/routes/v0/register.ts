@@ -1,4 +1,6 @@
 import { prisma } from '@/modules/db';
+import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
+import { mapExpandedUser } from '@/routes/v0/mappings/user';
 import { hashPassword } from '@/utils/auth/password';
 import { createSession, makeSessionToken } from '@/utils/auth/session';
 import { handle } from '@/utils/handle';
@@ -7,8 +9,6 @@ import { permissions } from '@/utils/permissions/permissions';
 import { makeRouter } from '@/utils/router';
 import { passwordSchema } from '@/utils/zod';
 import { z } from 'zod';
-import { mapToken, tokenTypes } from './mappings/tokens';
-import { mapExpandedUser } from './mappings/user';
 
 export const registerRouter = makeRouter((app) => {
   app.post(
@@ -17,7 +17,7 @@ export const registerRouter = makeRouter((app) => {
       schema: {
         description: 'Create user',
         body: z.object({
-          email: z.string().min(1),
+          email: z.string().email(),
           password: passwordSchema(),
         }),
       },

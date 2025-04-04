@@ -1,5 +1,5 @@
-import type { Permission } from './permission-builder';
-import { all } from './permission-builder';
+import type { Permission } from '@/utils/permissions/permission-builder';
+import { all } from '@/utils/permissions/permission-builder';
 
 export function checkPermission(
   resourcePerm: Permission,
