@@ -5,6 +5,7 @@ export const apiErrorCodes = {
   authInvalidInput: 'Invalid credentials have been supplied',
   notFound: 'Resource could not be found',
   invalid: 'The request was invalid',
+  removeLastAdmin: 'You cannot remove last admin member of an organisation',
 } as const;
 
 export type ApiErrorCodes = keyof typeof apiErrorCodes;

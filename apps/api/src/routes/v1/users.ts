@@ -5,8 +5,8 @@ import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { NotFoundError } from '@/utils/error';
-import { mapExpandedUser, mapUser } from '../v0/mappings/user';
 import { mapPage, pagerSchema } from '@/utils/pages';
+import { mapExpandedUser, mapUser } from '@/routes/v0/mappings/user';
 
 function getAtMe(auth: AuthContext, id: string) {
   if (id === '@me') return auth.data.getUserIdOrDefault() ?? id;
@@ -52,7 +52,7 @@ export const userRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.delete({ usr: id }));
+      auth.can(permissions.user.read({ usr: id }));
       const isSelf = auth.checkers.isUser(id);
       const user = await prisma.user.findUnique({
         where: {

@@ -98,6 +98,9 @@ importers:
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
+      prisma:
+        specifier: ^6.5.0
+        version: 6.5.0(typescript@5.8.2)
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -129,9 +132,6 @@ importers:
       '@types/react':
         specifier: ^19.0.12
         version: 19.0.12
-      prisma:
-        specifier: ^6.5.0
-        version: 6.5.0(typescript@5.8.2)
       type-fest:
         specifier: ^4.34.1
         version: 4.38.0

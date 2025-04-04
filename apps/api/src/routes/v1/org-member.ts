@@ -4,8 +4,9 @@ import { makeRouter } from '@/utils/router';
 import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
-import { NotFoundError } from '@/utils/error';
-import { mapOrgMember } from './mappings/org-member';
+import { ApiError, NotFoundError } from '@/utils/error';
+import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
+import { mapOrgMember } from '@/routes/v1/mappings/org-member';
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(
@@ -21,6 +22,21 @@ export const orgMemberRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       auth.can(permissions.org.member.delete({ org: params.org, mbr: params.id }));
+
+      const adminOrgMembers = await prisma.orgMember.findMany({
+        where: {
+          orgId: params.org,
+          roles: {
+            has: orgRoles.admin,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
+      if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
+        throw ApiError.forCode('removeLastAdmin', 400);
 
       const oldMembers = await prisma.orgMember.deleteMany({
         where: {
@@ -52,6 +68,69 @@ export const orgMemberRouter = makeRouter((app) => {
         where: {
           orgId: params.org,
           id: params.id,
+        },
+        include: {
+          user: true,
+        },
+      });
+      if (!member) throw new NotFoundError();
+      return mapOrgMember(member);
+    }),
+  );
+
+  app.patch(
+    '/api/v1/organisations/:org/members/:id',
+    {
+      schema: {
+        description: 'Update organisation member',
+        params: z.object({
+          org: z.string(),
+          id: z.string(),
+        }),
+        body: z.object({
+          roles: z.array(orgRolesSchema).min(1).optional(),
+        }),
+      },
+    },
+    handle(async ({ params, body, auth }) => {
+      auth.can(permissions.org.member.edit({ org: params.org, mbr: params.id }));
+
+      const oldMember = await prisma.orgMember.findFirst({
+        where: {
+          orgId: params.org,
+          id: params.id,
+        },
+        include: {
+          user: true,
+        },
+      });
+      if (!oldMember) throw new NotFoundError();
+
+      const isRemovingAdmin = body.roles && oldMember.roles.includes(orgRoles.admin) && !body.roles.includes(orgRoles.admin);
+      if (isRemovingAdmin) {
+        const adminOrgMembers = await prisma.orgMember.findMany({
+          where: {
+            orgId: params.org,
+            roles: {
+              has: orgRoles.admin,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+        const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
+        if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
+          throw ApiError.forCode('removeLastAdmin', 400);
+      }
+
+      const member = await prisma.orgMember.update({
+        where: {
+          orgId: params.org,
+          id: params.id,
+        },
+        data: {
+          roles: body.roles,
         },
         include: {
           user: true,

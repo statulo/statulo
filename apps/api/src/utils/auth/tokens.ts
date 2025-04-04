@@ -2,13 +2,17 @@ import jwtLib, { type SignOptions } from 'jsonwebtoken';
 import type { FastifyRequest } from 'fastify';
 import { conf } from '@/config';
 import { logger } from '@/modules/log';
-import { ApiError } from '../error';
+import { ApiError } from '@/utils/error';
 
 const alg = 'HS256';
 
 export type AuthToken = {
   t: 'session';
   id: string;
+} | {
+  t: 'passreset';
+  stamp: string;
+  uid: string;
 };
 
 export function parseAuthToken(input: string): null | AuthToken {
