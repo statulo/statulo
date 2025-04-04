@@ -1,3 +1,5 @@
+import type { EnumType, ExtractParams } from '@/utils/types';
+
 export const all = Symbol('any-resource');
 
 export const permAction = {

@@ -6,6 +6,7 @@ import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { ApiError, NotFoundError } from '@/utils/error';
 import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
+import { mapOrgMember } from '@/routes/v1/mappings/org-member';
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(

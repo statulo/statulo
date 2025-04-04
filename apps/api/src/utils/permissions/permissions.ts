@@ -1,3 +1,5 @@
+import { makePermissionBuilder } from '@/utils/permissions/permission-builder';
+
 const p = makePermissionBuilder();
 
 export const permissions = {

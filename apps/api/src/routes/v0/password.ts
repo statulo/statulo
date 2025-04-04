@@ -10,6 +10,9 @@ import { createSession, makeSessionToken } from '@/utils/auth/session';
 import { passwordSchema } from '@/utils/zod';
 import { makeAuthToken, parseAuthToken } from '@/utils/auth/tokens';
 import { makePasswordResetUrl } from '@/utils/urls';
+import { mapSuccess } from '@/routes/v0/mappings/success';
+import { mapExpandedUser } from '@/routes/v0/mappings/user';
+import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(

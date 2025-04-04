@@ -1,3 +1,7 @@
+import { all, type Permission } from '@/utils/permissions/permission-builder';
+import { permissions } from '@/utils/permissions/permissions';
+import type { AppRoles, OrgRoles } from '@/utils/permissions/roles';
+
 export const basePerms: Permission[] = [
   permissions.user.create({}),
 ];

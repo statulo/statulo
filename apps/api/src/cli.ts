@@ -1,6 +1,11 @@
 import { Command, program } from 'commander';
 import execSh from 'exec-sh';
 import { cancel, confirm, isCancel, log, spinner, text } from '@clack/prompts';
+import { conf, version } from '@/config';
+import { prisma } from '@/modules/db';
+import { appRoles } from '@/utils/permissions/roles';
+import { logDivide, logger, logIntro } from '@/modules/log';
+import { seed } from '@/modules/db/seeding';
 
 async function migrate() {
   try {

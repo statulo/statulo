@@ -1,3 +1,5 @@
+import type { AuthContext } from '@/utils/auth/context';
+import { makeAuthContext } from '@/utils/auth/context';
 import type {
   ContextConfigDefault,
   FastifyBaseLogger,

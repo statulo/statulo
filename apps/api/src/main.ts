@@ -1,8 +1,11 @@
+import { createProgram } from '@/cli';
+import { setupMailer } from '@/modules/emails';
 import {
   setupFastify,
   setupFastifyRoutes,
   startFastify,
 } from '@/modules/fastify';
+import { logDivide, logger, logIntro } from '@/modules/log';
 
 async function run() {
   const log = logger.child({ svc: 'statulo' });

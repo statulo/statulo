@@ -6,6 +6,7 @@ import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
 import { NotFoundError } from '@/utils/error';
 import { mapPage, pagerSchema } from '@/utils/pages';
+import { mapExpandedUser, mapUser } from '@/routes/v0/mappings/user';
 
 function getAtMe(auth: AuthContext, id: string) {
   if (id === '@me') return auth.data.getUserIdOrDefault() ?? id;

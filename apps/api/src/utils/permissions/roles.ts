@@ -1,3 +1,4 @@
+import type { EnumType } from '@/utils/types';
 import { z } from 'zod';
 
 export const appRoles = {

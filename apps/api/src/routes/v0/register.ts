@@ -1,4 +1,6 @@
 import { prisma } from '@/modules/db';
+import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
+import { mapExpandedUser } from '@/routes/v0/mappings/user';
 import { hashPassword } from '@/utils/auth/password';
 import { createSession, makeSessionToken } from '@/utils/auth/session';
 import { handle } from '@/utils/handle';

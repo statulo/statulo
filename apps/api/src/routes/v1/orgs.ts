@@ -7,6 +7,8 @@ import { makeRouter } from '@/utils/router';
 import { z } from 'zod';
 import { NotFoundError } from '@/utils/error';
 import { mapPage, pagerSchema } from '@/utils/pages';
+import { mapOrganisation } from '@/routes/v1/mappings/organisation';
+import { mapSuccess } from '@/routes/v0/mappings/success';
 
 export const orgRouter = makeRouter((app) => {
   app.post(
