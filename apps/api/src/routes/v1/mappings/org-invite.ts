@@ -13,6 +13,16 @@ export interface OrgInviteDto {
   roles: OrgRoles[];
 }
 
+export interface OrgInviteInfoDto {
+  id: string;
+  createdAt: string;
+  org: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+}
+
 export function mapOrgInvite(invite: OrgInvite & { user: User | null; org: Organisation }): OrgInviteDto {
   return {
     id: invite.id,
@@ -20,5 +30,17 @@ export function mapOrgInvite(invite: OrgInvite & { user: User | null; org: Organ
     user: invite.user ? mapUser(invite.user) : null,
     org: mapOrganisation(invite.org),
     roles: invite.roles as OrgRoles[],
+  };
+}
+
+export function mapOrgInviteInfo(invite: OrgInvite & { org: Organisation }): OrgInviteInfoDto {
+  return {
+    id: invite.id,
+    createdAt: invite.createdAt.toISOString(),
+    org: {
+      id: invite.org.id,
+      name: invite.org.name,
+      description: invite.org.description,
+    },
   };
 }

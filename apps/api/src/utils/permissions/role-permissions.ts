@@ -10,12 +10,14 @@ export const baseUserPerms = (userId: string): Permission[] => [
   permissions.org.create({}),
   permissions.user.read({ usr: userId }),
   permissions.user.delete({ usr: userId }),
+  permissions.user.orgInvites.list({ usr: userId }),
 ];
 
 export const rolePerms: Record<AppRoles, Permission[]> = {
   'app:admin': [
     permissions.user.list({}),
     permissions.user.read({ usr: all }),
+    permissions.user.orgInvites.list({ usr: all }),
     permissions.org.list({}),
     permissions.org.delete({ org: all }),
   ],

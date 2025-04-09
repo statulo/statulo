@@ -4,13 +4,93 @@ import { makeRouter } from '@/utils/router';
 import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
-import { NotFoundError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { orgRolesSchema } from '@/utils/permissions/roles';
 import { getId } from '@/utils/id';
 import { generateSecureKey } from '@/utils/auth/password';
-import { mapOrgInvite } from './mappings/org-invite';
+import { mapOrgInvite, mapOrgInviteInfo } from './mappings/org-invite';
+import { parseAuthToken } from '@/utils/auth/tokens';
+import { mapOrgMember } from '@/routes/v1/mappings/org-member';
 
 export const orgInviteRouter = makeRouter((app) => {
+  app.post(
+    '/api/v1/org-invites/accept',
+    {
+      schema: {
+        description: 'Accept invitation',
+        body: z.object({
+          token: z.string(),
+        }),
+      },
+    },
+    handle(async ({ body, auth }) => {
+      auth.check(c => c.isAuthType('session'));
+      const session = auth.data.getSession();
+      const user = session.user;
+
+      const tokenData = parseAuthToken(body.token);
+      if (tokenData?.t !== 'invite') throw ApiError.forCode('authInvalidToken');
+
+      const invite = await prisma.orgInvite.findFirst({
+        where: {
+          code: tokenData.code,
+        },
+      });
+      if (!invite) throw new NotFoundError();
+      if (invite.userId !== user.id && invite.email !== user.email) throw new NotFoundError();
+
+      const [newOrgMember] = await prisma.$transaction([
+        prisma.orgMember.create({
+          data: {
+            id: getId('orgmbr'),
+            orgId: invite.orgId,
+            userId: user.id,
+            roles: invite.roles,
+          },
+          include: {
+            org: true,
+            user: true,
+          },
+        }),
+        prisma.orgInvite.delete({
+          where: {
+            id: invite.id,
+          },
+        }),
+      ]);
+
+      return mapOrgMember(newOrgMember);
+    }),
+  );
+
+  app.get(
+    '/api/v1/org-invites/accept',
+    {
+      schema: {
+        description: 'Get invitation data',
+        querystring: z.object({
+          token: z.string(),
+        }),
+      },
+    },
+    handle(async ({ query }) => {
+      const tokenData = parseAuthToken(query.token);
+      if (tokenData?.t !== 'invite') throw ApiError.forCode('authInvalidToken');
+
+      const invite = await prisma.orgInvite.findFirst({
+        where: {
+          code: tokenData.code,
+        },
+        include: {
+          org: true,
+        },
+      });
+      if (!invite) throw new NotFoundError();
+
+      return mapOrgInviteInfo(invite);
+    }),
+  );
+
   app.post(
     '/api/v1/organisations/:org/org-invites',
     {

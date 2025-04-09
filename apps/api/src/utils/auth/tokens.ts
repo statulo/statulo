@@ -13,6 +13,9 @@ export type AuthToken = {
   t: 'passreset';
   stamp: string;
   uid: string;
+} | {
+  t: 'invite';
+  code: string;
 };
 
 export function parseAuthToken(input: string): null | AuthToken {

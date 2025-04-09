@@ -7,6 +7,7 @@ import { prisma } from '@/modules/db';
 import { NotFoundError } from '@/utils/error';
 import { mapPage, pagerSchema } from '@/utils/pages';
 import { mapExpandedUser, mapUser } from '@/routes/v0/mappings/user';
+import { mapOrgInviteInfo } from '@/routes/v1/mappings/org-invite';
 
 function getAtMe(auth: AuthContext, id: string) {
   if (id === '@me') return auth.data.getUserIdOrDefault() ?? id;
@@ -68,6 +69,43 @@ export const userRouter = makeRouter((app) => {
       });
       if (!user) throw new NotFoundError();
       return isSelf ? mapExpandedUser(user) : mapUser(user);
+    }),
+  );
+
+  app.get(
+    '/api/v1/users/:id/org-invites',
+    {
+      schema: {
+        description: 'List org invites',
+        params: z.object({
+          id: z.string(),
+        }),
+      },
+    },
+    handle(async ({ params, auth }) => {
+      const id = getAtMe(auth, params.id);
+      auth.can(permissions.user.orgInvites.list({ usr: id }));
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!user) throw new NotFoundError();
+
+      const invites = await prisma.orgInvite.findMany({
+        where: {
+          OR: [{
+            email: user.email,
+          }, {
+            userId: user.id,
+          }],
+        },
+        include: {
+          org: true,
+        },
+      });
+      return invites.map(v => mapOrgInviteInfo(v));
     }),
   );
 

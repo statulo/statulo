@@ -9,6 +9,9 @@ export const permissions = {
     read: p.create('read', '/user/:usr'),
     delete: p.create('delete', '/user/:usr'),
     edit: p.create('edit', '/user/:usr'),
+    orgInvites: {
+      list: p.create('list', '/user/:usr/org-invite'),
+    },
   },
   org: {
     list: p.create('list', '/organisation'),
