@@ -9,10 +9,9 @@ interface ResetPasswordEmailProps {
 export default function ResetPasswordEmail(props: ResetPasswordEmailProps) {
   return (
     <EmailContainer preview="Reset password for Statulo">
-      <Txt.Heading>Password reset requested for Sstatulo</Txt.Heading>
+      <Txt.Heading>Password reset requested for Statulo</Txt.Heading>
       <Txt.Paragraph>
-        This link and code will only be valid for the next 5 minutes. If the
-        link does not work, you can use the login verification code directly:
+        Reset your password with the link below:
       </Txt.Paragraph>
       <Txt.Paragraph>{props.resetLink}</Txt.Paragraph>
     </EmailContainer>

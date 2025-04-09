@@ -11,6 +11,8 @@ import { generateSecureKey } from '@/utils/auth/password';
 import { mapOrgInvite, mapOrgInviteInfo } from './mappings/org-invite';
 import { parseAuthToken } from '@/utils/auth/tokens';
 import { mapOrgMember } from '@/routes/v1/mappings/org-member';
+import { orgInviteEmail } from '@/modules/emails/templates/org-invite';
+import { makeInvitationUrl } from '@/utils/urls';
 
 export const orgInviteRouter = makeRouter((app) => {
   app.post(
@@ -127,6 +129,16 @@ export const orgInviteRouter = makeRouter((app) => {
           org: true,
           user: true,
         },
+      });
+
+      await orgInviteEmail.send({
+        props: {
+          org: {
+            name: newInvite.org.name,
+          },
+          inviteLink: makeInvitationUrl(newInvite),
+        },
+        to: newInvite.email,
       });
 
       return mapOrgInvite(newInvite);
