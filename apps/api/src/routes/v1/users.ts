@@ -151,7 +151,7 @@ export const userRouter = makeRouter((app) => {
           password: z.object({
             oldPassword: z.string(),
             newPassword: passwordSchema(),
-          }),
+          }).optional(),
         }),
       },
     },

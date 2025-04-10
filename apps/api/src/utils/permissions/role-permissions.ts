@@ -9,6 +9,7 @@ export const basePerms: Permission[] = [
 export const baseUserPerms = (userId: string): Permission[] => [
   permissions.org.create({}),
   permissions.user.read({ usr: userId }),
+  permissions.user.edit({ usr: userId }),
   permissions.user.delete({ usr: userId }),
   permissions.user.orgInvites.list({ usr: userId }),
 ];
