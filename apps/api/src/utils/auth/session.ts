@@ -42,6 +42,9 @@ export async function fetchSessionAndUpdateExpiry(
         },
       },
     });
+
+    if (session.securityStamp !== session.user.securityStamp) return null;
+
     return session;
   } catch {
     return null;
@@ -53,6 +56,7 @@ export async function createSession(user: User) {
     data: {
       expiresAt: new Date(Date.now() + sessionExpiryInMs), // new expiry date = NOW + expiry delay
       userId: user.id,
+      securityStamp: user.securityStamp,
       id: getId('ses'),
     },
   });

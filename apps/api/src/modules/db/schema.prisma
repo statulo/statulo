@@ -23,8 +23,9 @@ model User {
 }
 
 model UserSession {
-  id        String   @id
-  expiresAt DateTime @map("expires_at")
+  id            String   @id
+  expiresAt     DateTime @map("expires_at")
+  securityStamp String
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
