@@ -17,6 +17,7 @@ model User {
   roles         String[]      @default([])
   sessions      UserSession[]
   orgMembers    OrgMember[]
+  orgInvites    OrgInvite[]
 
   @@map("user")
 }
@@ -38,7 +39,8 @@ model Organisation {
   name        String
   description String?
 
-  members OrgMember[]
+  members    OrgMember[]
+  orgInvites OrgInvite[]
 
   @@map("organisation")
 }
@@ -55,4 +57,21 @@ model OrgMember {
   roles String[] @default([])
 
   @@map("org_member")
+}
+
+model OrgInvite {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+  code      String   @unique
+
+  email  String
+  user   User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?      @map("user_id")
+  org    Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId  String       @map("org_id")
+
+  roles String[] @default([])
+
+  @@unique([email, orgId])
+  @@map("org_invite")
 }

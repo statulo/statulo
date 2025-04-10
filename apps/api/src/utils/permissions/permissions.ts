@@ -9,6 +9,9 @@ export const permissions = {
     read: p.create('read', '/user/:usr'),
     delete: p.create('delete', '/user/:usr'),
     edit: p.create('edit', '/user/:usr'),
+    orgInvites: {
+      list: p.create('list', '/user/:usr/org-invite'),
+    },
   },
   org: {
     list: p.create('list', '/organisation'),
@@ -22,6 +25,11 @@ export const permissions = {
       read: p.create('read', '/organisation/:org/member/:mbr'),
       delete: p.create('delete', '/organisation/:org/member/:mbr'),
       edit: p.create('edit', '/organisation/:org/member/:mbr'),
+    },
+    invite: {
+      list: p.create('list', '/organisation/:org/invite'),
+      create: p.create('create', '/organisation/:org/invite'),
+      delete: p.create('delete', '/organisation/:org/invite/:inv'),
     },
   },
 };
