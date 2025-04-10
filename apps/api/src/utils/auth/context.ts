@@ -13,6 +13,7 @@ export interface AuthChecks {
   isAuthenticated: () => boolean;
   isAuthType: (type: AuthType) => boolean;
   isUser: (userId: string) => boolean;
+  isEmailVerified: () => boolean;
   can: (perm: Permission) => boolean;
 }
 
@@ -25,6 +26,7 @@ export interface AuthContext {
   */
   can404: (perm: Permission) => void;
   checkAuthentication: () => void;
+  checkEmailVerified: () => void;
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
@@ -58,7 +60,7 @@ export async function fetchAuthContextData(
 }
 
 function makeAuthCheckers(data: AuthContextData): AuthChecks {
-  const userId = data.session?.userId;
+  const user = data.session?.user;
   const perms = getPermissions({
     user: data.session?.user,
   });
@@ -71,7 +73,12 @@ function makeAuthCheckers(data: AuthContextData): AuthChecks {
       return data.type === type;
     },
     isUser(checkedUserId) {
-      return userId === checkedUserId;
+      if (user == null) return false;
+      return user.id === checkedUserId;
+    },
+    isEmailVerified() {
+      if (user == null) return false;
+      return user.emailVerified;
     },
     can(perm) {
       const hasPerm = perms.some(userPerm =>
@@ -104,6 +111,9 @@ export async function makeAuthContext(
     checkAuthentication() {
       const result = checkers.isAuthenticated();
       if (!result) throw ApiError.forCode('requiresAuth', 401);
+    },
+    checkEmailVerified() {
+      if (!checkers.isEmailVerified()) throw ApiError.forCode('authEmailNotVerified', 403);
     },
     checkers,
     data: {
