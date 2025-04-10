@@ -183,41 +183,32 @@ export const userRouter = makeRouter((app) => {
         updateData.securityStamp = generateSecureKey();
       }
 
-      await prisma.$transaction([
-        prisma.user.update({
+      const newUser = await prisma.$transaction(async (tx) => {
+        const newUser = await tx.user.update({
           where: {
             id,
           },
-
-          data: updateData,
-        }),
-        session && updateData.securityStamp
-          ? (
-              prisma.userSession.update({
-                where: {
-                  id: session.id,
-                },
-                data: {
-                  securityStamp: updateData.securityStamp,
-                },
-              })
-            )
-          : undefined,
-      ].filter(v => !!v));
-
-      const newUser = await prisma.user.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          orgMembers: {
-            include: {
-              org: true,
+          include: {
+            orgMembers: {
+              include: {
+                org: true,
+              },
             },
           },
-        },
+          data: updateData,
+        });
+        if (session && updateData.securityStamp) {
+          await tx.userSession.update({
+            where: {
+              id: session.id,
+            },
+            data: {
+              securityStamp: updateData.securityStamp,
+            },
+          });
+        }
+        return newUser;
       });
-      if (!newUser) throw new Error('Not found after updating');
 
       return mapExpandedUser(newUser);
     }),
