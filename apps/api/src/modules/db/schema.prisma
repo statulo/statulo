@@ -15,6 +15,7 @@ model User {
   securityStamp String        @default("default-stamp")
   email         String        @unique
   roles         String[]      @default([])
+  emailVerified Boolean       @default(false) @map("email_verified")
   sessions      UserSession[]
   orgMembers    OrgMember[]
   orgInvites    OrgInvite[]
