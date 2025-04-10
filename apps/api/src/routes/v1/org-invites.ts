@@ -39,7 +39,9 @@ export const orgInviteRouter = makeRouter((app) => {
         },
       });
       if (!invite) throw new NotFoundError();
-      if (invite.userId !== user.id && invite.email !== user.email) throw new NotFoundError();
+      const wrongUserId = invite.userId !== null && invite.userId !== user.id;
+      const wrongEmail = invite.email !== user.email;
+      if (wrongUserId && wrongEmail) throw new NotFoundError();
 
       const [newOrgMember] = await prisma.$transaction([
         prisma.orgMember.create({
@@ -103,7 +105,7 @@ export const orgInviteRouter = makeRouter((app) => {
         }),
         body: z.object({
           email: z.string().email(),
-          roles: z.array(orgRolesSchema),
+          roles: z.array(orgRolesSchema).min(1),
         }),
       },
     },

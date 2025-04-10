@@ -10,6 +10,7 @@ export interface OrgInviteDto {
   createdAt: string;
   org: OrganisationDto;
   user: UserDto | null;
+  email: string;
   roles: OrgRoles[];
 }
 
@@ -28,6 +29,7 @@ export function mapOrgInvite(invite: OrgInvite & { user: User | null; org: Organ
     id: invite.id,
     createdAt: invite.createdAt.toISOString(),
     user: invite.user ? mapUser(invite.user) : null,
+    email: invite.email,
     org: mapOrganisation(invite.org),
     roles: invite.roles as OrgRoles[],
   };

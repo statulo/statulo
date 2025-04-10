@@ -28,6 +28,7 @@ export const orgRolePerms: Record<OrgRoles, (orgId: string) => Permission[]> = {
     permissions.org.read({ org: orgId }),
     permissions.org.member.read({ org: orgId, mbr: all }),
     permissions.org.member.list({ org: orgId }),
+    permissions.org.invite.list({ org: orgId }),
   ],
   'org:admin': orgId => [
     ...orgRolePerms['org:viewer'](orgId),
@@ -37,5 +38,7 @@ export const orgRolePerms: Record<OrgRoles, (orgId: string) => Permission[]> = {
     permissions.org.member.create({ org: orgId }),
     permissions.org.member.edit({ org: orgId, mbr: all }),
     permissions.org.member.delete({ org: orgId, mbr: all }),
+    permissions.org.invite.create({ org: orgId }),
+    permissions.org.invite.delete({ org: orgId, inv: all }),
   ],
 };
