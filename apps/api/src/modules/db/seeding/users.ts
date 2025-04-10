@@ -41,10 +41,12 @@ export async function seedUsers() {
       id: adminUser.sessionId,
       expiresAt: new Date(Date.now() + sessionExpiryInMs),
       userId: adminUser.id,
+      securityStamp: 'hello',
     }, {
       id: testUser.sessionId,
       expiresAt: new Date(Date.now() + sessionExpiryInMs),
       userId: testUser.id,
+      securityStamp: 'hello',
     }],
   });
 }

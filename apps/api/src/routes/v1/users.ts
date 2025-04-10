@@ -4,10 +4,13 @@ import { makeRouter } from '@/utils/router';
 import { handle } from '@/utils/handle';
 import { permissions } from '@/utils/permissions/permissions';
 import { prisma } from '@/modules/db';
-import { NotFoundError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { mapPage, pagerSchema } from '@/utils/pages';
 import { mapExpandedUser, mapUser } from '@/routes/v0/mappings/user';
 import { mapOrgInviteInfo } from '@/routes/v1/mappings/org-invite';
+import { passwordSchema } from '@/utils/zod';
+import type { Prisma } from '@prisma/client';
+import { generateSecureKey, hashPassword, verifyPassword } from '@/utils/auth/password';
 
 function getAtMe(auth: AuthContext, id: string) {
   if (id === '@me') return auth.data.getUserIdOrDefault() ?? id;
@@ -129,6 +132,94 @@ export const userRouter = makeRouter((app) => {
         },
       });
       return mapPage(query, users.map(mapUser), totalUsers);
+    }),
+  );
+
+  app.patch(
+    '/api/v1/users/:id/security',
+    {
+      schema: {
+        description: 'Edit user security settings',
+        params: z.object({
+          id: z.string(),
+        }),
+        body: z.object({
+          email: z.object({
+            newEmail: z.string().email(),
+            code: z.string(),
+          }).optional(),
+          password: z.object({
+            oldPassword: z.string(),
+            newPassword: passwordSchema(),
+          }),
+        }),
+      },
+    },
+    handle(async ({ body, auth, params }) => {
+      const id = getAtMe(auth, params.id);
+      auth.can(permissions.user.edit({ usr: id }));
+      const session = auth.checkers.isAuthType('session') ? auth.data.getSession() : null;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!user) throw new NotFoundError();
+
+      const updateData: Prisma.UserUpdateInput = {};
+
+      if (body.email) {
+        // TODO check verification code
+        updateData.email = body.email.newEmail;
+        updateData.securityStamp = generateSecureKey();
+      }
+
+      if (body.password) {
+        const isCorrectOldPassword = await verifyPassword(user.passwordHash, body.password.oldPassword);
+        if (!isCorrectOldPassword)
+          throw ApiError.forCode('authInvalidInput', 400);
+        updateData.passwordHash = await hashPassword(body.password.newPassword);
+        updateData.securityStamp = generateSecureKey();
+      }
+
+      await prisma.$transaction([
+        prisma.user.update({
+          where: {
+            id,
+          },
+
+          data: updateData,
+        }),
+        session && updateData.securityStamp
+          ? (
+              prisma.userSession.update({
+                where: {
+                  id: session.id,
+                },
+                data: {
+                  securityStamp: updateData.securityStamp,
+                },
+              })
+            )
+          : undefined,
+      ].filter(v => !!v));
+
+      const newUser = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          orgMembers: {
+            include: {
+              org: true,
+            },
+          },
+        },
+      });
+      if (!newUser) throw new Error('Not found after updating');
+
+      return mapExpandedUser(newUser);
     }),
   );
 });
