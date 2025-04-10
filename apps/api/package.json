@@ -9,7 +9,7 @@
   },
   "prisma": {
     "schema": "./src/modules/db/schema.prisma",
-    "seed": "pnpm run build:run -- dev seed"
+    "seed": "pnpm run build:run dev seed"
   },
   "scripts": {
     "start": "node dist/main.js",
@@ -18,7 +18,8 @@
     "dev": "tsup --watch --onSuccess 'node dist/main.js'",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "prisma:studio": "prisma studio"
   },
   "devDependencies": {
     "@types/figlet": "^1.7.0",
