@@ -75,6 +75,7 @@ export const passwordAuthrouter = makeRouter((app) => {
     handle(async ({ body }) => {
       const parsedToken = parseAuthToken(body.token);
       if (!parsedToken || parsedToken.t !== 'passreset') throw ApiError.forCode('authInvalidToken');
+
       const userId = parsedToken.uid;
 
       const user = await prisma.user.findUnique({
@@ -92,6 +93,8 @@ export const passwordAuthrouter = makeRouter((app) => {
         data: {
           passwordHash: await hashPassword(body.newPassword),
           securityStamp: generateSecureKey(),
+          // We can mark the email as verified, as they accessed the link. The security stamp check ensures that the right email is being verified.
+          emailVerified: true,
         },
         include: {
           orgMembers: {
