@@ -3,7 +3,7 @@ import { EmailContainer } from '../components/container';
 import { Txt } from '../components/text';
 
 interface EmailVerificationUrlEmailProps {
-  inviteLink: string;
+  verificationLink: string;
 }
 
 export default function EmailVerificationUrlEmail(props: EmailVerificationUrlEmailProps) {
@@ -13,13 +13,13 @@ export default function EmailVerificationUrlEmail(props: EmailVerificationUrlEma
       <Txt.Paragraph>
         Click the link below to verify your email address:
       </Txt.Paragraph>
-      <Txt.Paragraph>{props.inviteLink}</Txt.Paragraph>
+      <Txt.Paragraph>{props.verificationLink}</Txt.Paragraph>
     </EmailContainer>
   );
 }
 
 EmailVerificationUrlEmail.PreviewProps = {
-  inviteLink: 'https://example.com',
+  verificationLink: 'https://example.com',
 } satisfies EmailVerificationUrlEmailProps;
 
 export const emailVerificationUrlEmail = makeEmailRenderer({
