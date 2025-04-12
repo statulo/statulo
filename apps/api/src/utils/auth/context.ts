@@ -19,6 +19,10 @@ export interface AuthChecks {
 export interface AuthContext {
   check: (cb: (checks: AuthChecks) => boolean) => void;
   can: (perm: Permission) => void;
+  /**
+   * For endpoints that reference a specific resource (DELETE, PATCH, GET on id, etc).
+   * We want to throw a 404 with missing permission instead of a 403. Use this method for that.
+  */
   can404: (perm: Permission) => void;
   checkAuthentication: () => void;
   checkers: AuthChecks;
