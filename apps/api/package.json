@@ -15,7 +15,7 @@
     "start": "node dist/main.js",
     "build": "pnpm prisma generate && tsup && tsc --noEmit",
     "build:run": "pnpm build && pnpm start",
-    "dev": "tsup --watch --onSuccess 'node dist/main.js'",
+    "dev": "tsup --watch --onSuccess \"node dist/main.js\"",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prisma": "prisma",
