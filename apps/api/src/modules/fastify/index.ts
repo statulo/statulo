@@ -64,6 +64,7 @@ export async function setupFastify(): Promise<FastifyInstance> {
         void reply.status(err.errorStatusCode).send({
           errorType: 'code',
           code: err.errorCode,
+          message: err.message,
         });
       } else {
         void reply.status(err.errorStatusCode).send({
