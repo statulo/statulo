@@ -11,14 +11,15 @@ model User {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
 
-  passwordHash  String        @map("password_hash")
-  securityStamp String        @default("default-stamp")
-  email         String        @unique
-  roles         String[]      @default([])
-  emailVerified Boolean       @default(false) @map("email_verified")
-  sessions      UserSession[]
-  orgMembers    OrgMember[]
-  orgInvites    OrgInvite[]
+  passwordHash              String                     @map("password_hash")
+  securityStamp             String                     @default("default-stamp")
+  email                     String                     @unique
+  roles                     String[]                   @default([])
+  emailVerified             Boolean                    @default(false) @map("email_verified")
+  sessions                  UserSession[]
+  orgMembers                OrgMember[]
+  orgInvites                OrgInvite[]
+  pendingEmailVerifications PendingEmailVerification[]
 
   @@map("user")
 }
@@ -106,4 +107,16 @@ model HttpMonitor {
   allowedStatusCodes String[] @map("allowed_status_codes")
 
   @@map("http_monitor")
+}
+
+model PendingEmailVerification {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  code   String @unique
+  email  String
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@map("pending_email_verification")
 }
