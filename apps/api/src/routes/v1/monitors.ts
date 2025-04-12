@@ -42,6 +42,7 @@ export const monitorRouter = makeRouter((app) => {
       },
     },
     handle(async ({ body, auth, params }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.monitor.create({ org: params.id }));
 
       const createPayload: Prisma.MonitorUncheckedCreateInput = {
@@ -97,6 +98,7 @@ export const monitorRouter = makeRouter((app) => {
       },
     },
     handle(async ({ body, auth, params }) => {
+      auth.checkAuthentication();
       const monitor = await prisma.monitor.findUnique({
         where: {
           id: params.id,
@@ -106,7 +108,7 @@ export const monitorRouter = makeRouter((app) => {
         },
       });
       if (!monitor) throw new NotFoundError();
-      auth.can(permissions.org.monitor.edit({ org: monitor.orgId, mtr: monitor.id }));
+      auth.can404(permissions.org.monitor.edit({ org: monitor.orgId, mtr: monitor.id }));
 
       if (monitor.type !== body.type)
         throw ApiError.forCode('cantChangeType', 400);
@@ -153,6 +155,7 @@ export const monitorRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
+      auth.checkAuthentication();
       const monitor = await prisma.monitor.findUnique({
         where: {
           id: params.id,
@@ -162,7 +165,7 @@ export const monitorRouter = makeRouter((app) => {
         },
       });
       if (!monitor) throw new NotFoundError();
-      auth.can(permissions.org.monitor.delete({ org: monitor.orgId, mtr: monitor.id }));
+      auth.can404(permissions.org.monitor.delete({ org: monitor.orgId, mtr: monitor.id }));
 
       const oldMonitors = await prisma.monitor.deleteMany({
         where: {
@@ -196,7 +199,7 @@ export const monitorRouter = makeRouter((app) => {
         },
       });
       if (!monitor) throw new NotFoundError();
-      auth.can(permissions.org.monitor.read({ org: monitor.orgId, mtr: monitor.id }));
+      auth.can404(permissions.org.monitor.read({ org: monitor.orgId, mtr: monitor.id }));
       return mapMonitor(monitor);
     }),
   );
@@ -213,6 +216,7 @@ export const monitorRouter = makeRouter((app) => {
       },
     },
     handle(async ({ query, params, auth }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.monitor.list({ org: params.id }));
 
       const totalMonitors = await prisma.monitor.count({

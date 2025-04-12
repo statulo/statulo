@@ -1,7 +1,7 @@
 import type { PopulatedSession } from '@/utils/auth/session';
 import { fetchSessionAndUpdateExpiry } from '@/utils/auth/session';
 import { parseAuthorizationToken, parseAuthToken } from '@/utils/auth/tokens';
-import { ApiError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { checkPermission } from '@/utils/permissions/check';
 import type { Permission } from '@/utils/permissions/permission-builder';
 import { getPermissions } from '@/utils/permissions/resolve-roles';
@@ -95,7 +95,7 @@ export async function makeAuthContext(
     },
     can404(perm) {
       const result = checkers.can(perm);
-      if (!result) throw ApiError.forCode('notFound', 404);
+      if (!result) throw new NotFoundError();
     },
     checkAuthentication() {
       const result = checkers.isAuthenticated();

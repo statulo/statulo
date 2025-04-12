@@ -29,8 +29,9 @@ export const userRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
+      auth.checkAuthentication();
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.delete({ usr: id }));
+      auth.can404(permissions.user.delete({ usr: id }));
 
       const oldUsers = await prisma.user.deleteMany({
         where: {
@@ -55,8 +56,9 @@ export const userRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
+      auth.checkAuthentication();
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.read({ usr: id }));
+      auth.can404(permissions.user.read({ usr: id }));
       const isSelf = auth.checkers.isUser(id);
       const user = await prisma.user.findUnique({
         where: {
@@ -86,8 +88,9 @@ export const userRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
+      auth.checkAuthentication();
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.orgInvites.list({ usr: id }));
+      auth.can404(permissions.user.orgInvites.list({ usr: id }));
 
       const user = await prisma.user.findUnique({
         where: {
@@ -121,6 +124,7 @@ export const userRouter = makeRouter((app) => {
       },
     },
     handle(async ({ query, auth }) => {
+      auth.checkAuthentication();
       auth.can(permissions.user.list({ }));
 
       const totalUsers = await prisma.user.count();
@@ -156,8 +160,9 @@ export const userRouter = makeRouter((app) => {
       },
     },
     handle(async ({ body, auth, params }) => {
+      auth.checkAuthentication();
       const id = getAtMe(auth, params.id);
-      auth.can(permissions.user.edit({ usr: id }));
+      auth.can404(permissions.user.edit({ usr: id }));
       const session = auth.checkers.isAuthType('session') ? auth.data.getSession() : null;
 
       const user = await prisma.user.findUnique({

@@ -23,6 +23,7 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ body, auth }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.create({}));
       const newOrg = await prisma.organisation.create({
         data: {
@@ -57,7 +58,8 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ body, auth, params }) => {
-      auth.can(permissions.org.edit({ org: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.edit({ org: params.id }));
       const newOrg = await prisma.organisation.update({
         where: {
           id: params.id,
@@ -82,7 +84,8 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
-      auth.can(permissions.org.delete({ org: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.delete({ org: params.id }));
 
       const oldOrgs = await prisma.organisation.deleteMany({
         where: {
@@ -107,7 +110,8 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
-      auth.can(permissions.org.read({ org: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.read({ org: params.id }));
       const org = await prisma.organisation.findUnique({
         where: {
           id: params.id,
@@ -127,6 +131,7 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ query, auth }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.list({}));
 
       const totalOrgs = await prisma.organisation.count();
@@ -152,6 +157,7 @@ export const orgRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
+      auth.checkAuthentication();
       const userId = auth.data.getUserId();
 
       const oldMembers = await prisma.orgMember.deleteMany({
