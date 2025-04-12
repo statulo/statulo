@@ -20,6 +20,7 @@ export async function executeHttpMonitor(monitor: HttpMonitor & { monitor: Monit
     await fetch(monitor.url);
     // TODO check keywords
     // TODO check allowed port ranges
+    logger.info(`http/${monitor.id} is UP`);
   } catch (err) {
     logger.warn(`Failed to execute http/${monitor.id}`, err);
     return;
