@@ -6,6 +6,7 @@ import {
   startFastify,
 } from '@/modules/fastify';
 import { logDivide, logger, logIntro } from '@/modules/log';
+import { setupScheduler } from '@/modules/scheduled';
 
 async function run() {
   const log = logger.child({ svc: 'statulo' });
@@ -16,6 +17,7 @@ async function run() {
   const app = await setupFastify();
   await setupFastifyRoutes(app);
   await setupMailer();
+  setupScheduler();
   await startFastify(app);
 
   log.info(`App setup, ready to accept connections`);

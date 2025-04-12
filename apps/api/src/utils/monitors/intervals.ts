@@ -9,6 +9,13 @@ export const intervalUnits = {
 } as const;
 export type IntervalUnit = EnumType<typeof intervalUnits>;
 
+const intervalMsMap: Record<IntervalUnit, number> = {
+  d: 24 * 60 * 60 * 1000,
+  h: 60 * 60 * 1000,
+  m: 60 * 1000,
+  s: 1000,
+};
+
 export const intervalSchema = () => z.object({
   unit: z.nativeEnum(intervalUnits),
   amount: z.number().positive().safe().finite().int(),
@@ -36,4 +43,8 @@ export function validateInterval({ unit, amount }: { unit: IntervalUnit; amount:
     return true;
   }
   return false;
+}
+
+export function intervalToMs(interval: Interval): number {
+  return intervalMsMap[interval.unit] * interval.amount;
 }
