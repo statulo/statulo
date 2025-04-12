@@ -20,8 +20,8 @@ export interface AuthContext {
   check: (cb: (checks: AuthChecks) => boolean) => void;
   can: (perm: Permission) => void;
   /**
-   * For endpoints that reference a specific resource (DELETE, PATCH, GET on id, etc).
-   * We want to throw a 404 with missing permission instead of a 403. Use this method for that.
+   * For endpoints that reference a specific resource (DELETE, PATCH, GET on id, etc) we can to return 404 instead of 403.
+   * Returning 404 for both non-existent and unauthorized resources prevents probing (i.e., attempts to infer valid entities by comparing 403 vs 404 responses).
   */
   can404: (perm: Permission) => void;
   checkAuthentication: () => void;
