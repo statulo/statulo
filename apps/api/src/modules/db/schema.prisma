@@ -82,11 +82,12 @@ model Monitor {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
   type      String
+  name      String?
 
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId String       @map("org_id")
 
-  HttpMonitor HttpMonitor?
+  http HttpMonitor?
 
   @@map("monitor")
 }
@@ -98,6 +99,7 @@ model HttpMonitor {
   monitor   Monitor? @relation(fields: [monitorId], references: [id], onDelete: Cascade)
   monitorId String?  @unique @map("monitor_id")
 
+  url                String
   expectedKeywords   String[] @map("expected_keywords")
   allowedStatusCodes String[] @map("allowed_status_codes")
 

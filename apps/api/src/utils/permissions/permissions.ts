@@ -31,5 +31,12 @@ export const permissions = {
       create: p.create('create', '/organisation/:org/invite'),
       delete: p.create('delete', '/organisation/:org/invite/:inv'),
     },
+    monitor: {
+      list: p.create('list', '/organisation/:org/monitor'),
+      create: p.create('create', '/organisation/:org/monitor'),
+      read: p.create('read', '/organisation/:org/monitor/:mtr'),
+      delete: p.create('delete', '/organisation/:org/monitor/:mtr'),
+      edit: p.create('edit', '/organisation/:org/monitor/:mtr'),
+    },
   },
 };

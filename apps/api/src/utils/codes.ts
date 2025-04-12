@@ -6,6 +6,7 @@ export const apiErrorCodes = {
   notFound: 'Resource could not be found',
   invalid: 'The request was invalid',
   removeLastAdmin: 'You cannot remove last admin member of an organisation',
+  cantChangeType: 'Type of resource cannot be changed after creation',
 } as const;
 
 export type ApiErrorCodes = keyof typeof apiErrorCodes;
