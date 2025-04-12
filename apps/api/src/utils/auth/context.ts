@@ -30,6 +30,7 @@ export interface AuthContext {
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
+    getUser: () => PopulatedSession['user'];
     getUserId: () => string;
     getUserIdOrDefault: () => string | null;
   };
@@ -120,6 +121,9 @@ export async function makeAuthContext(
       getSession() {
         if (!data.session) throw new Error('Session not set but is requested');
         return data.session;
+      },
+      getUser() {
+        return this.getSession().user;
       },
       getUserId() {
         return this.getSession().userId;
