@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const rangeSchema = () => z.object({
-  from: z.number().positive(),
-  to: z.number().positive(),
+  from: z.number().nonnegative(),
+  to: z.number().nonnegative(),
 });
 export type Range = z.infer<ReturnType<typeof rangeSchema>>;
 

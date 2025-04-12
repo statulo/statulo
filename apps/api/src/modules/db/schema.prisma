@@ -99,6 +99,7 @@ model HttpMonitor {
   monitor   Monitor? @relation(fields: [monitorId], references: [id], onDelete: Cascade)
   monitorId String?  @unique @map("monitor_id")
 
+  interval           Json
   url                String
   expectedKeywords   String[] @map("expected_keywords")
   allowedStatusCodes String[] @map("allowed_status_codes")

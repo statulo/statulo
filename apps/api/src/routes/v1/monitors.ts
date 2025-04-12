@@ -10,6 +10,7 @@ import type { Prisma } from '@prisma/client';
 import type { EnumType } from '@/utils/types';
 import { rangeSchema, rangeToString } from '@/utils/monitors/ranges';
 import { mapMonitor, mapShallowMonitor } from '@/routes/v1/mappings/monitor';
+import { intervalSchema } from '@/utils/monitors/intervals';
 
 export const monitorTypes = {
   http: 'http',
@@ -30,6 +31,7 @@ export const monitorRouter = makeRouter((app) => {
             type: z.literal(monitorTypes.http),
             data: z.object({
               url: z.string().url(),
+              interval: intervalSchema(),
               allowedStatusCodes: z.array(rangeSchema()).min(1),
               expectedKeywords: z.array(z.string().min(1)),
             }),
@@ -54,6 +56,7 @@ export const monitorRouter = makeRouter((app) => {
           create: {
             id: getUntypedId(),
             url: body.data.url,
+            interval: body.data.interval,
             allowedStatusCodes: body.data.allowedStatusCodes.map(v => rangeToString(v)),
             expectedKeywords: body.data.expectedKeywords,
           },
@@ -83,6 +86,7 @@ export const monitorRouter = makeRouter((app) => {
             type: z.literal(monitorTypes.http),
             data: z.object({
               url: z.string().url().optional(),
+              interval: intervalSchema().optional(),
               allowedStatusCodes: z.array(rangeSchema()).min(1).optional(),
               expectedKeywords: z.array(z.string().min(1)).optional(),
             }),
@@ -117,6 +121,7 @@ export const monitorRouter = makeRouter((app) => {
           : undefined;
         updatePayload.http = {
           update: {
+            interval: body.data.interval,
             url: body.data.url,
             expectedKeywords: body.data.expectedKeywords,
             allowedStatusCodes: newStatusCodeRange,
@@ -229,6 +234,7 @@ export const monitorRouter = makeRouter((app) => {
             select: {
               id: true,
               url: true,
+              interval: true,
             },
           },
         },
