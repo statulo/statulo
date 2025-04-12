@@ -1,5 +1,6 @@
 export const apiErrorCodes = {
-  authInvalidToken: 'Invalid or expired auth token',
+  authInvalidToken: 'Invalid auth token',
+  requiresAuth: 'This resource requires authentication',
   authMissingPermissions:
     'The user does not have access to this resource or action',
   authInvalidInput: 'Invalid credentials have been supplied',

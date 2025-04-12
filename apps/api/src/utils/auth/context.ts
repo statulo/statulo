@@ -19,6 +19,8 @@ export interface AuthChecks {
 export interface AuthContext {
   check: (cb: (checks: AuthChecks) => boolean) => void;
   can: (perm: Permission) => void;
+  can404: (perm: Permission) => void;
+  checkAuthentication: () => void;
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
@@ -90,6 +92,14 @@ export async function makeAuthContext(
     can(perm) {
       const result = checkers.can(perm);
       if (!result) throw ApiError.forCode('authMissingPermissions', 403);
+    },
+    can404(perm) {
+      const result = checkers.can(perm);
+      if (!result) throw ApiError.forCode('notFound', 404);
+    },
+    checkAuthentication() {
+      const result = checkers.isAuthenticated();
+      if (!result) throw ApiError.forCode('requiresAuth', 401);
     },
     checkers,
     data: {
