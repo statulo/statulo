@@ -1,7 +1,7 @@
 import type { PopulatedSession } from '@/utils/auth/session';
 import { fetchSessionAndUpdateExpiry } from '@/utils/auth/session';
 import { parseAuthorizationToken, parseAuthToken } from '@/utils/auth/tokens';
-import { ApiError } from '@/utils/error';
+import { ApiError, NotFoundError } from '@/utils/error';
 import { checkPermission } from '@/utils/permissions/check';
 import type { Permission } from '@/utils/permissions/permission-builder';
 import { getPermissions } from '@/utils/permissions/resolve-roles';
@@ -19,6 +19,12 @@ export interface AuthChecks {
 export interface AuthContext {
   check: (cb: (checks: AuthChecks) => boolean) => void;
   can: (perm: Permission) => void;
+  /**
+   * For endpoints that reference a specific resource (DELETE, PATCH, GET on id, etc) we can to return 404 instead of 403.
+   * Returning 404 for both non-existent and unauthorized resources prevents probing (i.e., attempts to infer valid entities by comparing 403 vs 404 responses).
+  */
+  can404: (perm: Permission) => void;
+  checkAuthentication: () => void;
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
@@ -90,6 +96,14 @@ export async function makeAuthContext(
     can(perm) {
       const result = checkers.can(perm);
       if (!result) throw ApiError.forCode('authMissingPermissions', 403);
+    },
+    can404(perm) {
+      const result = checkers.can(perm);
+      if (!result) throw new NotFoundError();
+    },
+    checkAuthentication() {
+      const result = checkers.isAuthenticated();
+      if (!result) throw ApiError.forCode('requiresAuth', 401);
     },
     checkers,
     data: {

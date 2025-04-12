@@ -21,7 +21,8 @@ export const orgMemberRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
-      auth.can(permissions.org.member.delete({ org: params.org, mbr: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.member.delete({ org: params.org, mbr: params.id }));
 
       const adminOrgMembers = await prisma.orgMember.findMany({
         where: {
@@ -63,7 +64,8 @@ export const orgMemberRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
-      auth.can(permissions.org.member.read({ org: params.org, mbr: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.member.read({ org: params.org, mbr: params.id }));
       const member = await prisma.orgMember.findUnique({
         where: {
           orgId: params.org,
@@ -93,7 +95,8 @@ export const orgMemberRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, body, auth }) => {
-      auth.can(permissions.org.member.edit({ org: params.org, mbr: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.member.edit({ org: params.org, mbr: params.id }));
 
       const oldMember = await prisma.orgMember.findFirst({
         where: {
@@ -153,6 +156,7 @@ export const orgMemberRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth, query }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.member.list({ org: params.org }));
 
       const totalMembers = await prisma.orgMember.count();

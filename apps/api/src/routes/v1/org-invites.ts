@@ -110,6 +110,7 @@ export const orgInviteRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, body, auth }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.invite.create({ org: params.org }));
 
       const user = await prisma.user.findFirst({
@@ -159,7 +160,8 @@ export const orgInviteRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth }) => {
-      auth.can(permissions.org.invite.delete({ org: params.org, inv: params.id }));
+      auth.checkAuthentication();
+      auth.can404(permissions.org.invite.delete({ org: params.org, inv: params.id }));
 
       const oldInvites = await prisma.orgInvite.deleteMany({
         where: {
@@ -186,6 +188,7 @@ export const orgInviteRouter = makeRouter((app) => {
       },
     },
     handle(async ({ params, auth, query }) => {
+      auth.checkAuthentication();
       auth.can(permissions.org.invite.list({ org: params.org }));
 
       const totalInvites = await prisma.orgInvite.count();

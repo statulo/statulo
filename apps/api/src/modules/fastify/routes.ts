@@ -7,6 +7,7 @@ import { userRouter } from '@/routes/v1/users';
 import { orgRouter } from '@/routes/v1/orgs';
 import { orgMemberRouter } from '@/routes/v1/org-member';
 import { orgInviteRouter } from '@/routes/v1/org-invites';
+import { monitorRouter } from '@/routes/v1/monitors';
 
 export async function setupRoutes(app: FastifyInstance) {
   await app.register(indexRouter.register);
@@ -17,4 +18,5 @@ export async function setupRoutes(app: FastifyInstance) {
   await app.register(orgRouter.register);
   await app.register(orgMemberRouter.register);
   await app.register(orgInviteRouter.register);
+  await app.register(monitorRouter.register);
 }
