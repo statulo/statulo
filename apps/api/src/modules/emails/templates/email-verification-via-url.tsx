@@ -14,6 +14,9 @@ export default function EmailVerificationUrlEmail(props: EmailVerificationUrlEma
         Click the link below to verify your email address:
       </Txt.Paragraph>
       <Txt.Paragraph>{props.verificationLink}</Txt.Paragraph>
+      <Txt.Paragraph>
+        If you didn't request this verification link, please ignore this email.
+      </Txt.Paragraph>
     </EmailContainer>
   );
 }

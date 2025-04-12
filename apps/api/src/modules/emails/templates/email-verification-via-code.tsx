@@ -14,6 +14,9 @@ export default function EmailVerificationCodeEmail(props: EmailVerificationCodeE
         Use the code below to verify your email address:
       </Txt.Paragraph>
       <Txt.Paragraph>{props.verificationCode}</Txt.Paragraph>
+      <Txt.Paragraph>
+        If you didn't request this verification code, please ignore this email.
+      </Txt.Paragraph>
     </EmailContainer>
   );
 }
