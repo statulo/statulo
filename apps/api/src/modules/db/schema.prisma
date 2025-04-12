@@ -42,6 +42,7 @@ model Organisation {
 
   members    OrgMember[]
   orgInvites OrgInvite[]
+  monitors   Monitor[]
 
   @@map("organisation")
 }
@@ -75,4 +76,30 @@ model OrgInvite {
 
   @@unique([email, orgId])
   @@map("org_invite")
+}
+
+model Monitor {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+  type      String
+
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId String       @map("org_id")
+
+  HttpMonitor HttpMonitor?
+
+  @@map("monitor")
+}
+
+model HttpMonitor {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  monitor   Monitor? @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  monitorId String?  @unique @map("monitor_id")
+
+  expectedKeywords   String[] @map("expected_keywords")
+  allowedStatusCodes String[] @map("allowed_status_codes")
+
+  @@map("http_monitor")
 }
