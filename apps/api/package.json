@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prisma": "prisma",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "email:dev": "email dev --dir=src/modules/emails/templates"
   },
   "devDependencies": {
     "@types/figlet": "^1.7.0",
