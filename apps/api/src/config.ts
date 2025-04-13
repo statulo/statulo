@@ -62,7 +62,7 @@ export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
       smtpHost: 'localhost',
       smtpPort: 1025,
       secure: false,
-      from: 'Statulo no-reply@statulo.com',
+      from: 'Statulo <no-reply@example.com>',
     },
   },
 };
