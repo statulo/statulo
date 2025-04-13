@@ -175,7 +175,20 @@ export const userRouter = makeRouter((app) => {
       const updateData: Prisma.UserUpdateInput = {};
 
       if (body.email) {
-        // TODO check verification code
+        const verificationCode = await prisma.pendingEmailVerification.findUnique({
+          where: {
+            userId: auth.data.getUserId(),
+            email: body.email.newEmail,
+            code: body.email.code,
+          },
+        });
+        if (!verificationCode) throw ApiError.forCode('authInvalidInput', 400);
+        await prisma.pendingEmailVerification.delete({
+          where: {
+            id: verificationCode.id,
+          },
+        });
+
         updateData.email = body.email.newEmail;
         updateData.securityStamp = generateSecureKey();
       }
