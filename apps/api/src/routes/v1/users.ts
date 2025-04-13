@@ -177,7 +177,7 @@ export const userRouter = makeRouter((app) => {
       if (body.email) {
         const verificationCode = await prisma.pendingEmailVerification.findUnique({
           where: {
-            userId: auth.data.getUserId(),
+            userId: id,
             email: body.email.newEmail,
             code: body.email.code,
           },
