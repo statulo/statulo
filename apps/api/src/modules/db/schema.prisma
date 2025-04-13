@@ -112,6 +112,7 @@ model HttpMonitor {
 model PendingEmailVerification {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
 
   code   String @unique
   email  String

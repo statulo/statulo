@@ -15,6 +15,9 @@ export default function EmailVerificationCodeEmail(props: EmailVerificationCodeE
       </Txt.Paragraph>
       <Txt.Paragraph>{props.verificationCode}</Txt.Paragraph>
       <Txt.Paragraph>
+        This code will expire in 5 minutes.
+      </Txt.Paragraph>
+      <Txt.Paragraph>
         If you didn't request this verification code, please ignore this email.
       </Txt.Paragraph>
     </EmailContainer>

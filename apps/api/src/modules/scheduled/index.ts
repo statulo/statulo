@@ -20,6 +20,6 @@ function registerSchedule(schedule: string, name: string, fn: () => void | Promi
 export async function setupScheduler(): Promise<void> {
   log.info(`setting up scheduler...`);
   registerSchedule('* * * * *', 'execute-http-monitors', executeHttpMonitors);
-  registerSchedule('* * * * *', 'cleanup-pending-email-verifications', executeCleanupPendingEmailVerifications);
+  registerSchedule('0 2 * * *', 'cleanup-pending-email-verifications', executeCleanupPendingEmailVerifications);
   log.info(`setting up scheduler...`);
 }

@@ -103,6 +103,7 @@ export const verifyRouter = makeRouter((app) => {
           email: body.email,
           code: emailVerifyCode,
           userId: user.id,
+          expiresAt: new Date(Date.now() + (5 * 60 * 1000)), // 5 minutes
         },
       });
 

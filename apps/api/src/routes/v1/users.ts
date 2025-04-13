@@ -183,6 +183,7 @@ export const userRouter = makeRouter((app) => {
           },
         });
         if (!verificationCode) throw ApiError.forCode('authInvalidInput', 400);
+        if (verificationCode.expiresAt < new Date()) throw ApiError.forCode('authInvalidInput', 400);
         await prisma.pendingEmailVerification.delete({
           where: {
             id: verificationCode.id,
