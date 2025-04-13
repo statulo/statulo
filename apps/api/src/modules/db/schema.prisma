@@ -115,7 +115,7 @@ model PendingEmailVerification {
 
   code   String @unique
   email  String
-  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
   @@map("pending_email_verification")
