@@ -9,8 +9,8 @@ import { ZodError } from 'zod';
 import { fastifySwagger } from '@fastify/swagger';
 import { conf, version } from '@/config';
 import { isApiError } from '@/utils/error';
-import { logger } from '../log';
-import { setupRoutes } from './routes';
+import { logger } from '@/modules/log';
+import { setupRoutes } from '@/routes/routes';
 
 const log = logger.child({ svc: 'fastify' });
 
