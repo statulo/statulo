@@ -2,7 +2,7 @@ import { prisma } from '@/modules/db';
 import { logger } from '@/modules/log';
 
 export const lockIds = {
-  cleanupEmailVerifications: 10,
+  cleanupPendingEmailVerifications: 10,
 } as const;
 
 type LockId = keyof typeof lockIds;
