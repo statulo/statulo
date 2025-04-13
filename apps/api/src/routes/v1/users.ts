@@ -89,6 +89,7 @@ export const userRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       auth.checkAuthentication();
+      auth.checkEmailVerified();
       const id = getAtMe(auth, params.id);
       auth.can404(permissions.user.orgInvites.list({ usr: id }));
 

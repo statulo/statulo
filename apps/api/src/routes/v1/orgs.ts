@@ -24,6 +24,7 @@ export const orgRouter = makeRouter((app) => {
     },
     handle(async ({ body, auth }) => {
       auth.checkAuthentication();
+      auth.checkEmailVerified();
       auth.can(permissions.org.create({}));
       const newOrg = await prisma.organisation.create({
         data: {

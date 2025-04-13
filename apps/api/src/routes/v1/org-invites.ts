@@ -119,6 +119,7 @@ export const orgInviteRouter = makeRouter((app) => {
     },
     handle(async ({ params, body, auth }) => {
       auth.checkAuthentication();
+      auth.checkEmailVerified();
       auth.can(permissions.org.invite.create({ org: params.org }));
 
       const user = await prisma.user.findFirst({
