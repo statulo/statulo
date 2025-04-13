@@ -40,9 +40,10 @@ model Organisation {
   name        String
   description String?
 
-  members    OrgMember[]
-  orgInvites OrgInvite[]
-  monitors   Monitor[]
+  members      OrgMember[]
+  orgInvites   OrgInvite[]
+  monitors     Monitor[]
+  ContactPoint ContactPoint[]
 
   @@map("organisation")
 }
@@ -56,7 +57,8 @@ model OrgMember {
   user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String       @map("user_id")
 
-  roles String[] @default([])
+  roles              String[]            @default([])
+  MemberContactPoint MemberContactPoint?
 
   @@map("org_member")
 }
@@ -105,4 +107,41 @@ model HttpMonitor {
   allowedStatusCodes String[] @map("allowed_status_codes")
 
   @@map("http_monitor")
+}
+
+model ContactPoint {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+  type      String
+
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId String       @map("org_id")
+
+  member  MemberContactPoint?
+  discord DiscordContactPoint?
+
+  @@map("contact_point")
+}
+
+model MemberContactPoint {
+  id String @id
+
+  contactPoint   ContactPoint @relation(fields: [contactPointId], references: [id], onDelete: Cascade)
+  contactPointId String       @unique @map("contact_point_id")
+
+  orgMember   OrgMember @relation(fields: [orgMemberId], references: [id], onDelete: Cascade)
+  orgMemberId String    @unique @map("org_member_id")
+
+  @@map("member_contact_point")
+}
+
+model DiscordContactPoint {
+  id String @id
+
+  contactPoint   ContactPoint @relation(fields: [contactPointId], references: [id], onDelete: Cascade)
+  contactPointId String       @unique @map("contact_point_id")
+
+  webhookUrl String @map("webhook_url")
+
+  @@map("discord_contact_point")
 }

@@ -8,6 +8,7 @@ const _types = [
   'orgmbr', // organisation member
   'orginv', // org invite
   'mtr', // monitor
+  'con', // contact point
 ] as const;
 
 export function getId(prefix: ArrayValues<typeof _types>): string {
