@@ -11,10 +11,10 @@ type LockId = keyof typeof lockIds;
  * Run a method using a PostgreSQL advisory lock ensuring only one instance of the function
  * runs across all instances of the app.
  */
-export async function runOnceWithLock(
+export async function runOnceWithLock<T>(
   lockId: LockId,
-  fn: () => Promise<any>,
-): Promise<any> {
+  fn: () => Promise<T>,
+): Promise<T | undefined> {
   const lock = lockIds[lockId];
 
   // Acquire the lock
