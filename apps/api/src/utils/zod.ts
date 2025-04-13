@@ -9,3 +9,10 @@ export function passwordSchema() {
     .regex(/\d/g, 'Password must have a number')
     .regex(/[^a-zA-Z\d]/g, 'Password must have a special character');
 }
+
+export function listModifySchema(addSchema: z.ZodTypeAny) {
+  return z.object({
+    add: z.array(addSchema).optional(),
+    remove: z.array(z.string()).optional(),
+  });
+}

@@ -16,6 +16,21 @@ export const contactPointTypes = {
 } as const;
 export type ContactPointTypes = EnumType<typeof contactPointTypes>;
 
+export function createContactPointJoins() {
+  return {
+    member: {
+      include: {
+        orgMember: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    },
+    discord: true,
+  } as const satisfies Prisma.ContactPointInclude;
+}
+
 export const contactPointRouter = makeRouter((app) => {
   app.post(
     '/api/v1/organisations/:id/contact-points',
@@ -71,18 +86,7 @@ export const contactPointRouter = makeRouter((app) => {
 
       const newContactPoint = await prisma.contactPoint.create({
         data: createPayload,
-        include: {
-          member: {
-            include: {
-              orgMember: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-          discord: true,
-        },
+        include: createContactPointJoins(),
       });
       return mapContactPoint(newContactPoint);
     }),
@@ -112,9 +116,7 @@ export const contactPointRouter = makeRouter((app) => {
         where: {
           id: params.id,
         },
-        include: {
-          discord: true,
-        },
+        include: createContactPointJoins(),
       });
       if (!contactPoint) throw new NotFoundError();
       auth.can404(permissions.org.contactPoint.edit({ org: contactPoint.orgId, con: contactPoint.id }));
@@ -137,18 +139,7 @@ export const contactPointRouter = makeRouter((app) => {
           id: contactPoint.id,
         },
         data: updatePayload,
-        include: {
-          member: {
-            include: {
-              orgMember: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-          discord: true,
-        },
+        include: createContactPointJoins(),
       });
       return mapContactPoint(newContactPoint);
     }),
@@ -202,18 +193,7 @@ export const contactPointRouter = makeRouter((app) => {
         where: {
           id: params.id,
         },
-        include: {
-          member: {
-            include: {
-              orgMember: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-          discord: true,
-        },
+        include: createContactPointJoins(),
       });
       if (!contactPoint) throw new NotFoundError();
       auth.can404(permissions.org.contactPoint.read({ org: contactPoint.orgId, con: contactPoint.id }));
@@ -251,18 +231,7 @@ export const contactPointRouter = makeRouter((app) => {
         orderBy: {
           createdAt: 'desc',
         },
-        include: {
-          member: {
-            include: {
-              orgMember: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-          },
-          discord: true,
-        },
+        include: createContactPointJoins(),
       });
       return mapPage(query, contactPoints.map(mapContactPoint), totalContactPoints);
     }),

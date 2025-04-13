@@ -86,8 +86,9 @@ model Monitor {
   type      String
   name      String?
 
-  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  orgId String       @map("org_id")
+  contactPoints MonitorContactPointAssignment[]
+  org           Organisation                    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId         String                          @map("org_id")
 
   http HttpMonitor?
 
@@ -109,13 +110,27 @@ model HttpMonitor {
   @@map("http_monitor")
 }
 
+model MonitorContactPointAssignment {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  monitorId String  @map("monitor_id")
+
+  contactPoint   ContactPoint @relation(fields: [contactPointId], references: [id], onDelete: Cascade)
+  contactPointId String       @map("contact_point_id")
+
+  @@map("monitor_contact_point_assignment")
+}
+
 model ContactPoint {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
   type      String
 
-  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  orgId String       @map("org_id")
+  monitors MonitorContactPointAssignment[]
+  org      Organisation                    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId    String                          @map("org_id")
 
   member  MemberContactPoint?
   discord DiscordContactPoint?

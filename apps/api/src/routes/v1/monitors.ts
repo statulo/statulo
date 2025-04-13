@@ -11,6 +11,8 @@ import type { EnumType } from '@/utils/types';
 import { rangeSchema, rangeToString } from '@/utils/monitors/ranges';
 import { mapMonitor, mapShallowMonitor } from '@/routes/v1/mappings/monitor';
 import { intervalSchema } from '@/utils/monitors/intervals';
+import { listModifySchema } from '@/utils/zod';
+import { createContactPointJoins } from '@/routes/v1/contact-points';
 
 export const monitorTypes = {
   http: 'http',
@@ -38,6 +40,7 @@ export const monitorRouter = makeRouter((app) => {
           }),
         ]).and(z.object({
           name: z.string().min(1).nullable(),
+          contactPointIds: z.array(z.string()).default([]),
         })),
       },
     },
@@ -68,6 +71,13 @@ export const monitorRouter = makeRouter((app) => {
         data: createPayload,
         include: {
           http: true,
+          contactPoints: {
+            include: {
+              contactPoint: {
+                include: createContactPointJoins(),
+              },
+            },
+          },
         },
       });
       return mapMonitor(newMonitor);
@@ -94,6 +104,7 @@ export const monitorRouter = makeRouter((app) => {
           }),
         ]).and(z.object({
           name: z.string().min(1).nullable().optional(),
+          contactPointIds: listModifySchema(z.string()).optional(),
         })),
       },
     },
@@ -115,6 +126,18 @@ export const monitorRouter = makeRouter((app) => {
 
       const updatePayload: Prisma.MonitorUncheckedUpdateInput = {
         name: body.name,
+        contactPoints: {
+          create: (body.contactPointIds?.add ?? []).map(id => ({
+            id: getUntypedId(),
+            contactPointId: id,
+            monitorId: monitor.id,
+          })),
+          deleteMany: {
+            contactPointId: {
+              in: body.contactPointIds?.remove ?? [],
+            },
+          },
+        },
       };
 
       if (monitor.type === monitorTypes.http) {
@@ -138,6 +161,13 @@ export const monitorRouter = makeRouter((app) => {
         data: updatePayload,
         include: {
           http: true,
+          contactPoints: {
+            include: {
+              contactPoint: {
+                include: createContactPointJoins(),
+              },
+            },
+          },
         },
       });
       return mapMonitor(newMonitor);
@@ -196,6 +226,13 @@ export const monitorRouter = makeRouter((app) => {
         },
         include: {
           http: true,
+          contactPoints: {
+            include: {
+              contactPoint: {
+                include: createContactPointJoins(),
+              },
+            },
+          },
         },
       });
       if (!monitor) throw new NotFoundError();
