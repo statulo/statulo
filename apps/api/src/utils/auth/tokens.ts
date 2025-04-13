@@ -16,6 +16,10 @@ export type AuthToken = {
 } | {
   t: 'invite';
   code: string;
+} | {
+  t: 'emailverify';
+  uid: string;
+  stamp: string;
 };
 
 export function parseAuthToken(input: string): null | AuthToken {

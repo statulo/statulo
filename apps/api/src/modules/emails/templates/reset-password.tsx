@@ -14,6 +14,9 @@ export default function ResetPasswordEmail(props: ResetPasswordEmailProps) {
         Reset your password with the link below:
       </Txt.Paragraph>
       <Txt.Paragraph>{props.resetLink}</Txt.Paragraph>
+      <Txt.Paragraph>
+        If you didn't request a password reset for your account, please ignore this email.
+      </Txt.Paragraph>
     </EmailContainer>
   );
 }

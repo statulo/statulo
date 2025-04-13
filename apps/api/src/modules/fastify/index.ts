@@ -9,8 +9,8 @@ import { ZodError } from 'zod';
 import { fastifySwagger } from '@fastify/swagger';
 import { conf, version } from '@/config';
 import { isApiError } from '@/utils/error';
-import { logger } from '../log';
-import { setupRoutes } from './routes';
+import { logger } from '@/modules/log';
+import { setupRoutes } from '@/routes/routes';
 
 const log = logger.child({ svc: 'fastify' });
 
@@ -64,6 +64,7 @@ export async function setupFastify(): Promise<FastifyInstance> {
         void reply.status(err.errorStatusCode).send({
           errorType: 'code',
           code: err.errorCode,
+          message: err.message,
         });
       } else {
         void reply.status(err.errorStatusCode).send({

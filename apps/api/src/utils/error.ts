@@ -19,7 +19,7 @@ export class ApiError extends Error {
   }
 
   static forCode(errorCode: ApiErrorCodes, statusCode?: number) {
-    return new ApiError(errorCode, errorCode, statusCode ?? 400);
+    return new ApiError(apiErrorCodes[errorCode], errorCode, statusCode ?? 400);
   }
 
   static forMessage(message: string, statusCode?: number) {
