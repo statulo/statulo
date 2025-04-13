@@ -22,7 +22,7 @@ export default function EmailVerificationCodeEmail(props: EmailVerificationCodeE
 }
 
 EmailVerificationCodeEmail.PreviewProps = {
-  verificationCode: '42069',
+  verificationCode: '042069',
 } satisfies EmailVerificationCodeEmailProps;
 
 export const emailVerificationCodeEmail = makeEmailRenderer({
