@@ -25,6 +25,7 @@ export const orgRouter = makeRouter((app) => {
     handle(async ({ body, auth }) => {
       auth.checkAuthentication();
       auth.can(permissions.org.create({}));
+
       const newOrg = await prisma.organisation.create({
         data: {
           id: getId('org'),
@@ -39,6 +40,7 @@ export const orgRouter = makeRouter((app) => {
           },
         },
       });
+
       return mapOrganisation(newOrg);
     }),
   );

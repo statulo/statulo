@@ -89,6 +89,7 @@ export const userRouter = makeRouter((app) => {
     },
     handle(async ({ params, auth }) => {
       auth.checkAuthentication();
+      auth.checkEmailVerified();
       const id = getAtMe(auth, params.id);
       auth.can404(permissions.user.orgInvites.list({ usr: id }));
 
@@ -175,7 +176,21 @@ export const userRouter = makeRouter((app) => {
       const updateData: Prisma.UserUpdateInput = {};
 
       if (body.email) {
-        // TODO check verification code
+        const verificationCode = await prisma.pendingEmailVerification.findUnique({
+          where: {
+            userId: id,
+            email: body.email.newEmail,
+            code: body.email.code,
+          },
+        });
+        if (!verificationCode) throw ApiError.forCode('authInvalidInput', 400);
+        if (verificationCode.expiresAt < new Date()) throw ApiError.forCode('authInvalidInput', 400);
+        await prisma.pendingEmailVerification.delete({
+          where: {
+            id: verificationCode.id,
+          },
+        });
+
         updateData.email = body.email.newEmail;
         updateData.securityStamp = generateSecureKey();
       }

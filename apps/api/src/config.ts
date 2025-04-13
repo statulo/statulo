@@ -62,6 +62,7 @@ export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
       smtpHost: 'localhost',
       smtpPort: 1025,
       secure: false,
+      from: 'Statulo <no-reply@example.com>',
     },
   },
 };
@@ -70,8 +71,8 @@ export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
 export const version = process.env.npm_package_version ?? 'unknown';
 
 export const conf = createConfigLoader()
-  .addFromEnvironment('CONF_')
-  .addFromFile('.env', { prefix: 'CONF_' })
+  .addFromEnvironment('STL_')
+  .addFromFile('.env', { prefix: 'STL_' })
   .addZodSchema(schema)
   .addConfigFragments(fragments)
   .setFragmentKey('USE_PRESETS')

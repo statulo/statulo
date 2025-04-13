@@ -13,6 +13,7 @@ export interface AuthChecks {
   isAuthenticated: () => boolean;
   isAuthType: (type: AuthType) => boolean;
   isUser: (userId: string) => boolean;
+  isEmailVerified: () => boolean;
   can: (perm: Permission) => boolean;
 }
 
@@ -25,9 +26,11 @@ export interface AuthContext {
   */
   can404: (perm: Permission) => void;
   checkAuthentication: () => void;
+  checkEmailVerified: () => void;
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
+    getUser: () => PopulatedSession['user'];
     getUserId: () => string;
     getUserIdOrDefault: () => string | null;
   };
@@ -58,20 +61,25 @@ export async function fetchAuthContextData(
 }
 
 function makeAuthCheckers(data: AuthContextData): AuthChecks {
-  const userId = data.session?.userId;
+  const user = data.session?.user;
   const perms = getPermissions({
     user: data.session?.user,
   });
 
   return {
     isAuthenticated() {
-      return data.type !== null;
+      return data.type != null;
     },
     isAuthType(type) {
       return data.type === type;
     },
     isUser(checkedUserId) {
-      return userId === checkedUserId;
+      if (user == null) return false;
+      return user.id === checkedUserId;
+    },
+    isEmailVerified() {
+      if (user == null) return false;
+      return user.emailVerified;
     },
     can(perm) {
       const hasPerm = perms.some(userPerm =>
@@ -105,11 +113,17 @@ export async function makeAuthContext(
       const result = checkers.isAuthenticated();
       if (!result) throw ApiError.forCode('requiresAuth', 401);
     },
+    checkEmailVerified() {
+      if (!checkers.isEmailVerified()) throw ApiError.forCode('authEmailNotVerified', 403);
+    },
     checkers,
     data: {
       getSession() {
         if (!data.session) throw new Error('Session not set but is requested');
         return data.session;
+      },
+      getUser() {
+        return this.getSession().user;
       },
       getUserId() {
         return this.getSession().userId;

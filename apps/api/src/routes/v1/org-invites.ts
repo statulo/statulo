@@ -56,6 +56,14 @@ export const orgInviteRouter = makeRouter((app) => {
             user: true,
           },
         }),
+        prisma.user.update({
+          where: {
+            id: auth.data.getUserId(),
+          },
+          data: {
+            emailVerified: true,
+          },
+        }),
         prisma.orgInvite.delete({
           where: {
             id: invite.id,
@@ -111,6 +119,7 @@ export const orgInviteRouter = makeRouter((app) => {
     },
     handle(async ({ params, body, auth }) => {
       auth.checkAuthentication();
+      auth.checkEmailVerified();
       auth.can(permissions.org.invite.create({ org: params.org }));
 
       const user = await prisma.user.findFirst({
