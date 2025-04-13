@@ -10,6 +10,7 @@ import { z } from 'zod';
 import crypto from 'node:crypto';
 import { getUntypedId } from '@/utils/id';
 import { emailVerificationCodeEmail } from '@/modules/emails/templates/email-verification-via-code';
+import { mapSuccess } from '@/routes/v0/mappings/success';
 
 export const verifyRouter = makeRouter((app) => {
   app.post('/api/auth/verify',
@@ -56,7 +57,7 @@ export const verifyRouter = makeRouter((app) => {
   );
 
   app.post('/api/auth/verify/resend',
-    handle(async ({ auth, res }) => {
+    handle(async ({ auth }) => {
       auth.checkAuthentication();
 
       const user = auth.data.getUser();
@@ -72,8 +73,7 @@ export const verifyRouter = makeRouter((app) => {
         to: user.email,
       });
 
-      res.status(204);
-      return undefined;
+      return mapSuccess();
     }),
   );
 
@@ -86,7 +86,7 @@ export const verifyRouter = makeRouter((app) => {
         }),
       },
     },
-    handle(async ({ body, auth, res }) => {
+    handle(async ({ body, auth }) => {
       auth.checkAuthentication();
 
       const user = auth.data.getUser();
@@ -113,8 +113,7 @@ export const verifyRouter = makeRouter((app) => {
         to: user.email,
       });
 
-      res.status(204);
-      return undefined;
+      return mapSuccess();
     }),
   );
 });
