@@ -16,13 +16,14 @@ export function setupMailer() {
     host: conf.mailer.smtpHost,
     port: conf.mailer.smtpPort,
     secure: conf.mailer.secure,
-    from: conf.mailer.from,
     auth: conf.mailer.smtpUser
       ? {
           user: conf.mailer.smtpUser,
           pass: conf.mailer.smtpPassword ?? undefined,
         }
       : undefined,
+  }, {
+    from: conf.mailer.from,
   });
   log.info('Mailer enabled');
 }
