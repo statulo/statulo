@@ -7,10 +7,10 @@ import { handle } from '@/utils/handle';
 import { makeRouter } from '@/utils/router';
 import { makeEmailVerificationUrl } from '@/utils/urls';
 import { z } from 'zod';
-import crypto from 'node:crypto';
 import { getUntypedId } from '@/utils/id';
 import { emailVerificationCodeEmail } from '@/modules/emails/templates/email-verification-via-code';
 import { mapSuccess } from '@/routes/v0/mappings/success';
+import { generateRandomCode } from '@/utils/auth/password';
 
 export const verifyRouter = makeRouter((app) => {
   app.post('/api/auth/verify',
@@ -95,7 +95,7 @@ export const verifyRouter = makeRouter((app) => {
         throw ApiError.forCode('authEmailAlreadyVerified');
       }
 
-      const emailVerifyCode = crypto.randomInt(0, 999999).toString().padStart(6, '0');
+      const emailVerifyCode = generateRandomCode();
 
       await prisma.pendingEmailVerification.create({
         data: {
