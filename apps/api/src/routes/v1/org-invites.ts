@@ -56,6 +56,14 @@ export const orgInviteRouter = makeRouter((app) => {
             user: true,
           },
         }),
+        prisma.user.update({
+          where: {
+            id: auth.data.getUserId(),
+          },
+          data: {
+            emailVerified: true,
+          },
+        }),
         prisma.orgInvite.delete({
           where: {
             id: invite.id,
@@ -77,7 +85,7 @@ export const orgInviteRouter = makeRouter((app) => {
         }),
       },
     },
-    handle(async ({ query, auth }) => {
+    handle(async ({ query }) => {
       const tokenData = parseAuthToken(query.token);
       if (tokenData?.t !== 'invite') throw ApiError.forCode('authInvalidToken');
 
@@ -90,19 +98,6 @@ export const orgInviteRouter = makeRouter((app) => {
         },
       });
       if (!invite) throw new NotFoundError();
-
-      if (auth.data.getUser().email !== invite.email) {
-        throw ApiError.forCode('authInvalidToken');
-      }
-
-      await prisma.user.update({
-        where: {
-          id: auth.data.getUserId(),
-        },
-        data: {
-          emailVerified: true,
-        },
-      });
 
       return mapOrgInviteInfo(invite);
     }),
