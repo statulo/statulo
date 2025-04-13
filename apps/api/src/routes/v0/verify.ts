@@ -86,7 +86,7 @@ export const verifyRouter = makeRouter((app) => {
         }),
       },
     },
-    handle(async ({ body, auth }) => {
+    handle(async ({ body, auth, res }) => {
       auth.checkAuthentication();
 
       const user = auth.data.getUser();
@@ -113,7 +113,8 @@ export const verifyRouter = makeRouter((app) => {
         to: user.email,
       });
 
-      return mapUser(user);
+      res.status(204);
+      return undefined;
     }),
   );
 });
