@@ -68,7 +68,7 @@ function makeAuthCheckers(data: AuthContextData): AuthChecks {
 
   return {
     isAuthenticated() {
-      return data.type !== null;
+      return data.type != null;
     },
     isAuthType(type) {
       return data.type === type;
