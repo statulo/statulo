@@ -1,7 +1,7 @@
 import type { ArrayValues } from 'type-fest';
 import { typeidUnboxed } from 'typeid-js';
 
-const _types = [
+export const idTypes = [
   'usr', // user
   'ses', // user session
   'org', // organisation
@@ -10,7 +10,7 @@ const _types = [
   'mtr', // monitor
 ] as const;
 
-export function getId(prefix: ArrayValues<typeof _types>): string {
+export function getId(prefix: ArrayValues<typeof idTypes>): string {
   return typeidUnboxed(prefix);
 }
 
