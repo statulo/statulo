@@ -117,9 +117,7 @@ export default defineConfig([
     name: 'statulo/global-ignores',
     ignores: [
       '**/dist/',
-      '**/out/',
       '**/.nuxt/',
-      '**/*.min.js',
     ],
   },
 ]);
