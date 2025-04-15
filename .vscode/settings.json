@@ -5,6 +5,9 @@
   "eslint.workingDirectories": [
     {
       "pattern": "./apps/*/"
+    },
+    {
+      "pattern": "./packages/*/"
     }
   ],
   "editor.formatOnSave": false,
@@ -13,4 +16,5 @@
   },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifier": "non-relative",
+  "eslint.format.enable": true,
 }
