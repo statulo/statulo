@@ -12,6 +12,9 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
   },
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifier": "non-relative",
 }
