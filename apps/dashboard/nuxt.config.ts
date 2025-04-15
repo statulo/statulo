@@ -8,6 +8,24 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
+  components: [
+    {
+      path: "~/components/",
+      pathPrefix: false,
+    },
+  ],
+
+  typescript: {
+    typeCheck: true,
+    strict: true,
+    tsConfig: {
+      compilerOptions: {
+        noUncheckedIndexedAccess: true,
+        allowUnreachableCode: false,
+      },
+    },
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',
