@@ -1,19 +1,19 @@
-import { z } from 'zod';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import { makeRouter } from '@/utils/router';
-import { handle } from '@/utils/handle';
-import { permissions } from '@/utils/permissions/permissions';
-import { prisma } from '@/modules/db';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { orgRoles, orgRolesSchema } from '@/utils/permissions/roles';
-import { mapOrgMember } from '@/routes/v1/mappings/org-member';
+import { z } from "zod";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import { makeRouter } from "@/utils/router";
+import { handle } from "@/utils/handle";
+import { permissions } from "@/utils/permissions/permissions";
+import { prisma } from "@/modules/db";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { orgRoles, orgRolesSchema } from "@/utils/permissions/roles";
+import { mapOrgMember } from "@/routes/v1/mappings/org-member";
 
 export const orgMemberRouter = makeRouter((app) => {
   app.delete(
-    '/api/v1/organisations/:org/members/:id',
+    "/api/v1/organisations/:org/members/:id",
     {
       schema: {
-        description: 'Delete organisation member',
+        description: "Delete organisation member",
         params: z.object({
           org: z.string(),
           id: z.string(),
@@ -37,7 +37,7 @@ export const orgMemberRouter = makeRouter((app) => {
       });
       const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
       if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
-        throw ApiError.forCode('removeLastAdmin', 400);
+        throw ApiError.forCode("removeLastAdmin", 400);
 
       const oldMembers = await prisma.orgMember.deleteMany({
         where: {
@@ -53,10 +53,10 @@ export const orgMemberRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:org/members/:id',
+    "/api/v1/organisations/:org/members/:id",
     {
       schema: {
-        description: 'Get organisation member',
+        description: "Get organisation member",
         params: z.object({
           org: z.string(),
           id: z.string(),
@@ -81,10 +81,10 @@ export const orgMemberRouter = makeRouter((app) => {
   );
 
   app.patch(
-    '/api/v1/organisations/:org/members/:id',
+    "/api/v1/organisations/:org/members/:id",
     {
       schema: {
-        description: 'Update organisation member',
+        description: "Update organisation member",
         params: z.object({
           org: z.string(),
           id: z.string(),
@@ -124,7 +124,7 @@ export const orgMemberRouter = makeRouter((app) => {
         });
         const adminOrgMemberIds = adminOrgMembers.map(v => v.id);
         if (adminOrgMemberIds.length <= 1 && adminOrgMemberIds.includes(params.id))
-          throw ApiError.forCode('removeLastAdmin', 400);
+          throw ApiError.forCode("removeLastAdmin", 400);
       }
 
       const member = await prisma.orgMember.update({
@@ -145,10 +145,10 @@ export const orgMemberRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:org/members',
+    "/api/v1/organisations/:org/members",
     {
       schema: {
-        description: 'List organisation members',
+        description: "List organisation members",
         params: z.object({
           org: z.string(),
         }),
@@ -167,7 +167,7 @@ export const orgMemberRouter = makeRouter((app) => {
           orgId: params.org,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         include: {
           user: true,

@@ -30,7 +30,8 @@
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.11.11",
     "@types/react": "^19.0.12",
-    "type-fest": "^4.34.1"
+    "type-fest": "^4.34.1",
+    "@repo/eslint-config": "workspace:*"
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",

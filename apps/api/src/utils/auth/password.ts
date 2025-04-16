@@ -1,5 +1,5 @@
-import { randomBytes, randomInt } from 'node:crypto';
-import { hash, verify } from 'argon2';
+import { randomBytes, randomInt } from "node:crypto";
+import { hash, verify } from "argon2";
 
 export async function hashPassword(pass: string): Promise<string> {
   return hash(pass);
@@ -13,11 +13,11 @@ export async function verifyPassword(
 }
 
 export function generateSecureKey(): string {
-  return randomBytes(32).toString('hex');
+  return randomBytes(32).toString("hex");
 }
 
 export function generateRandomCode(length: number = 6): string {
   const biggestCode = Math.pow(10, length) - 1;
 
-  return randomInt(0, biggestCode).toString().padStart(length, '0');
+  return randomInt(0, biggestCode).toString().padStart(length, "0");
 }

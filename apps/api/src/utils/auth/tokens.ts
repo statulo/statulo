@@ -1,23 +1,23 @@
-import jwtLib, { type SignOptions } from 'jsonwebtoken';
-import type { FastifyRequest } from 'fastify';
-import { conf } from '@/config';
-import { logger } from '@/modules/log';
-import { ApiError } from '@/utils/error';
+import jwtLib, { type SignOptions } from "jsonwebtoken";
+import type { FastifyRequest } from "fastify";
+import { conf } from "@/config";
+import { logger } from "@/modules/log";
+import { ApiError } from "@/utils/error";
 
-const alg = 'HS256';
+const alg = "HS256";
 
 export type AuthToken = {
-  t: 'session';
+  t: "session";
   id: string;
 } | {
-  t: 'passreset';
+  t: "passreset";
   stamp: string;
   uid: string;
 } | {
-  t: 'invite';
+  t: "invite";
   code: string;
 } | {
-  t: 'emailverify';
+  t: "emailverify";
   uid: string;
   stamp: string;
 };
@@ -28,7 +28,7 @@ export function parseAuthToken(input: string): null | AuthToken {
       algorithms: [alg],
       complete: true,
     });
-    if (typeof jwt.payload === 'string') return null;
+    if (typeof jwt.payload === "string") return null;
     return jwt.payload as AuthToken;
   } catch (err) {
     logger.error(err);
@@ -46,14 +46,14 @@ export function makeAuthToken(payload: AuthToken): string {
 export function parseAuthorizationToken(request: FastifyRequest) {
   const { authorization } = request.headers;
   if (!authorization) return null;
-  const headerParts: string[] = authorization.split(' ', 2);
-  if (headerParts.length === 0 || headerParts[0] !== 'Bearer')
-    throw ApiError.forMessage('Wrong auth header type', 401);
+  const headerParts: string[] = authorization.split(" ", 2);
+  if (headerParts.length === 0 || headerParts[0] !== "Bearer")
+    throw ApiError.forMessage("Wrong auth header type", 401);
   return headerParts[1];
 }
 
 export function getAuthorizationToken(request: FastifyRequest) {
   const token = parseAuthorizationToken(request);
-  if (!token) throw ApiError.forMessage('Auth header missing', 401);
+  if (!token) throw ApiError.forMessage("Auth header missing", 401);
   return token;
 }

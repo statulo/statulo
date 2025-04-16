@@ -7,11 +7,11 @@
 // - It does not do checks parralel
 // So basically: please replace ASAP with a real system
 
-import { prisma } from '@/modules/db';
-import { logger } from '@/modules/log';
-import type { Interval } from '@/utils/monitors/intervals';
-import { intervalToMs } from '@/utils/monitors/intervals';
-import type { HttpMonitor, Monitor } from '@prisma/client';
+import { prisma } from "@/modules/db";
+import { logger } from "@/modules/log";
+import type { Interval } from "@/utils/monitors/intervals";
+import { intervalToMs } from "@/utils/monitors/intervals";
+import type { HttpMonitor, Monitor } from "@prisma/client";
 
 const lastExecuted = new Map<string, number>();
 

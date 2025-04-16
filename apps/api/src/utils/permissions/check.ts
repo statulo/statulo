@@ -1,5 +1,5 @@
-import type { Permission } from '@/utils/permissions/permission-builder';
-import { all } from '@/utils/permissions/permission-builder';
+import type { Permission } from "@/utils/permissions/permission-builder";
+import { all } from "@/utils/permissions/permission-builder";
 
 export function checkPermission(
   resourcePerm: Permission,
@@ -10,7 +10,7 @@ export function checkPermission(
   if (resourcePerm.action !== userPerm.action) return false;
 
   if (resourcePerm.path.includes(all))
-    throw new Error('Wildcards are not allowed in a permission that being checked');
+    throw new Error("Wildcards are not allowed in a permission that being checked");
 
   for (let i = 0; i < resourcePerm.path.length; i++) {
     const resourcePermPart = resourcePerm.path[i];
