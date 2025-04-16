@@ -1,5 +1,5 @@
-import type { AuthContext } from '@/utils/auth/context';
-import { makeAuthContext } from '@/utils/auth/context';
+import type { AuthContext } from "@/utils/auth/context";
+import { makeAuthContext } from "@/utils/auth/context";
 import type {
   ContextConfigDefault,
   FastifyBaseLogger,
@@ -12,11 +12,11 @@ import type {
   RawServerDefault,
   RouteGenericInterface,
   RouteHandlerMethod,
-} from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
-import type { ResolveFastifyReplyReturnType } from 'fastify/types/type-provider';
+} from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { ResolveFastifyReplyReturnType } from "fastify/types/type-provider";
 
-export const DONT_REPLY = Symbol('dont-reply');
+export const DONT_REPLY = Symbol("dont-reply");
 
 export type RequestContext<
   RawServer extends RawServerBase = RawServerDefault,
@@ -55,7 +55,7 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['body'];
+  >["body"];
   params: FastifyRequest<
     RouteGeneric,
     RawServer,
@@ -64,7 +64,7 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['params'];
+  >["params"];
   query: FastifyRequest<
     RouteGeneric,
     RawServer,
@@ -73,7 +73,7 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['query'];
+  >["query"];
   auth: AuthContext;
 };
 

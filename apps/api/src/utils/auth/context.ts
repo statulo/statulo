@@ -1,13 +1,13 @@
-import type { PopulatedSession } from '@/utils/auth/session';
-import { fetchSessionAndUpdateExpiry } from '@/utils/auth/session';
-import { parseAuthorizationToken, parseAuthToken } from '@/utils/auth/tokens';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { checkPermission } from '@/utils/permissions/check';
-import type { Permission } from '@/utils/permissions/permission-builder';
-import { getPermissions } from '@/utils/permissions/resolve-roles';
-import type { FastifyRequest } from 'fastify';
+import type { PopulatedSession } from "@/utils/auth/session";
+import { fetchSessionAndUpdateExpiry } from "@/utils/auth/session";
+import { parseAuthorizationToken, parseAuthToken } from "@/utils/auth/tokens";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { checkPermission } from "@/utils/permissions/check";
+import type { Permission } from "@/utils/permissions/permission-builder";
+import { getPermissions } from "@/utils/permissions/resolve-roles";
+import type { FastifyRequest } from "fastify";
 
-export type AuthType = 'session';
+export type AuthType = "session";
 
 export interface AuthChecks {
   isAuthenticated: () => boolean;
@@ -30,7 +30,7 @@ export interface AuthContext {
   checkers: AuthChecks;
   data: {
     getSession: () => PopulatedSession;
-    getUser: () => PopulatedSession['user'];
+    getUser: () => PopulatedSession["user"];
     getUserId: () => string;
     getUserIdOrDefault: () => string | null;
   };
@@ -47,13 +47,13 @@ export async function fetchAuthContextData(
   const jwt = parseAuthorizationToken(req);
   if (!jwt) return {};
   const payload = parseAuthToken(jwt);
-  if (!payload) throw ApiError.forCode('authInvalidToken', 401);
-  if (payload?.t === 'session') {
+  if (!payload) throw ApiError.forCode("authInvalidToken", 401);
+  if (payload?.t === "session") {
     const session = await fetchSessionAndUpdateExpiry(payload.id);
     if (session) {
       return {
         session,
-        type: 'session',
+        type: "session",
       };
     }
   }
@@ -99,11 +99,11 @@ export async function makeAuthContext(
   return {
     check(cb) {
       const result = cb(checkers);
-      if (!result) throw ApiError.forCode('authMissingPermissions', 403);
+      if (!result) throw ApiError.forCode("authMissingPermissions", 403);
     },
     can(perm) {
       const result = checkers.can(perm);
-      if (!result) throw ApiError.forCode('authMissingPermissions', 403);
+      if (!result) throw ApiError.forCode("authMissingPermissions", 403);
     },
     can404(perm) {
       const result = checkers.can(perm);
@@ -111,15 +111,15 @@ export async function makeAuthContext(
     },
     checkAuthentication() {
       const result = checkers.isAuthenticated();
-      if (!result) throw ApiError.forCode('requiresAuth', 401);
+      if (!result) throw ApiError.forCode("requiresAuth", 401);
     },
     checkEmailVerified() {
-      if (!checkers.isEmailVerified()) throw ApiError.forCode('authEmailNotVerified', 403);
+      if (!checkers.isEmailVerified()) throw ApiError.forCode("authEmailNotVerified", 403);
     },
     checkers,
     data: {
       getSession() {
-        if (!data.session) throw new Error('Session not set but is requested');
+        if (!data.session) throw new Error("Session not set but is requested");
         return data.session;
       },
       getUser() {
