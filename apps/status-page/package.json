@@ -6,11 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "start": "node ./dist/server/entry.mjs",
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
+    "@astrojs/node": "^9.2.0",
     "@astrojs/tailwind": "^6.0.2",
     "@repo/eslint-config": "workspace:*",
     "astro": "^5.7.4",
