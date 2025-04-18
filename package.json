@@ -17,10 +17,12 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
       "@prisma/client",
       "argon2",
       "esbuild",
-      "sharp"
+      "sharp",
+      "vue-demi"
     ]
   }
 }
