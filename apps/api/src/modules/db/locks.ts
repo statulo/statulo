@@ -1,7 +1,7 @@
-import { prisma } from "@/modules/db";
-import { logger } from "@/modules/log";
 import type { PrismaClient } from "@prisma/client";
 import type { ITXClientDenyList } from "@prisma/client/runtime/client";
+import { prisma } from "@/modules/db";
+import { logger } from "@/modules/log";
 
 export const lockIds = {
   cleanupPendingEmailVerifications: 10,

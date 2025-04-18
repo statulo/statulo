@@ -1,7 +1,7 @@
+import type { Organisation, OrgMember, User } from "@prisma/client";
 import type { Permission } from "@/utils/permissions/permission-builder";
 import { basePerms, baseUserPerms, orgRolePerms, rolePerms } from "@/utils/permissions/role-permissions";
 import type { AppRoles, OrgRoles } from "@/utils/permissions/roles";
-import type { Organisation, OrgMember, User } from "@prisma/client";
 
 type PopulatedOrgMember = OrgMember & { org: Organisation };
 export type PopulatedUser = User & {

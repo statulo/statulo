@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { prisma } from "@/modules/db";
 import { emailVerificationUrlEmail } from "@/modules/emails/templates/email-verification-via-url";
 import { mapUser } from "@/routes/v0/mappings/user";
@@ -6,7 +7,6 @@ import { ApiError, NotFoundError } from "@/utils/error";
 import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
 import { makeEmailVerificationUrl } from "@/utils/urls";
-import { z } from "zod";
 import { getUntypedId } from "@/utils/id";
 import { emailVerificationCodeEmail } from "@/modules/emails/templates/email-verification-via-code";
 import { mapSuccess } from "@/routes/v0/mappings/success";

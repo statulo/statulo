@@ -1,6 +1,6 @@
+import type { User } from "@prisma/client";
 import { mapUserSideOrgMember, type UserSideOrgMemberDto } from "@/routes/v1/mappings/org-member";
 import type { PopulatedUser } from "@/utils/permissions/resolve-roles";
-import type { User } from "@prisma/client";
 
 export type UserDto = {
   id: string;

@@ -1,5 +1,5 @@
-import { appRoles } from "@/utils/permissions/roles";
 import { prisma } from "..";
+import { appRoles } from "@/utils/permissions/roles";
 import { hashPassword } from "@/utils/auth/password";
 import { sessionExpiryInMs } from "@/utils/auth/session";
 

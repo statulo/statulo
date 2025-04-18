@@ -1,12 +1,12 @@
+import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/modules/db";
 import { handle } from "@/utils/handle";
 import { getId, getUntypedId } from "@/utils/id";
 import { permissions } from "@/utils/permissions/permissions";
 import { makeRouter } from "@/utils/router";
-import { z } from "zod";
 import { ApiError, NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
-import type { Prisma } from "@prisma/client";
 import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
 import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
