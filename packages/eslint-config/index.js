@@ -7,6 +7,7 @@ import eslintCommentPlugin from "@eslint-community/eslint-plugin-eslint-comments
 import stylisticPlugin from "@stylistic/eslint-plugin";
 import vuePlugin from "eslint-plugin-vue";
 import astroPlugin from "eslint-plugin-astro";
+import importPlugin from "eslint-plugin-import";
 
 const stylisticConfig = stylisticPlugin.configs.customize({
   indent: 2,
@@ -80,6 +81,24 @@ export default defineConfig([
     },
   },
   {
+    name: "statulo/imports",
+    extends: [
+      importPlugin.flatConfigs.recommended,
+    ],
+    rules: {
+      "import/no-mutable-exports": "error",
+      "import/no-self-import": "error",
+      "import/first": "error",
+      "import/no-duplicates": "error",
+      "import/no-named-default": "error",
+
+      "import/order": "error",
+      "import/newline-after-import": ["error", { count: 1 }],
+
+      "import/no-unresolved": "off", // This has the tendency to cause false errors
+    },
+  },
+  {
     name: "statulo/base-globals",
     languageOptions: {
       globals: {
@@ -91,7 +110,11 @@ export default defineConfig([
   {
     // https://eslint.vuejs.org/rules/
     name: "statulo/vue",
-    extends: [vuePlugin.configs["flat/recommended"]],
+    extends: [
+      vuePlugin.configs["flat/essential"],
+      vuePlugin.configs["flat/recommended"],
+      vuePlugin.configs["flat/strongly-recommended"],
+    ],
     files: ["**/*.vue"],
     languageOptions: {
       parserOptions: {
