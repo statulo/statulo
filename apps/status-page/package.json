@@ -17,7 +17,7 @@
     "@repo/eslint-config": "workspace:*",
     "astro": "^5.7.4",
     "astro-icon": "^1.1.5",
-    "eslint": "^9.24.0",
+    "eslint": "catalog:",
     "tailwindcss": "^3.4.17"
   }
 }

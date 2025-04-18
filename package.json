@@ -8,7 +8,7 @@
     "@eslint/js": "^9.18.0",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@types/node": "^20.12.7",
-    "eslint": "^9.18.0",
+    "eslint": "catalog:",
     "eslint-plugin-svelte": "^2.46.1",
     "globals": "^15.14.0",
     "tsup": "7.2.0",
