@@ -38,5 +38,12 @@ export const permissions = {
       delete: p.create("delete", "/organisation/:org/monitor/:mtr"),
       edit: p.create("edit", "/organisation/:org/monitor/:mtr"),
     },
+    statusPage: {
+      list: p.create("list", "/organisation/:org/statusPage"),
+      create: p.create("create", "/organisation/:org/statusPage"),
+      read: p.create("read", "/organisation/:org/statusPage/:stspg"),
+      delete: p.create("delete", "/organisation/:org/statusPage/:stspg"),
+      edit: p.create("edit", "/organisation/:org/statusPage/:stspg"),
+    },
   },
 };
