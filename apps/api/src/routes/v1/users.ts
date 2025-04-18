@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import type { AuthContext } from "@/utils/auth/context";
 import { makeRouter } from "@/utils/router";
 import { handle } from "@/utils/handle";
@@ -9,7 +10,6 @@ import { mapPage, pagerSchema } from "@/utils/pages";
 import { mapExpandedUser, mapUser } from "@/routes/v0/mappings/user";
 import { mapOrgInviteInfo } from "@/routes/v1/mappings/org-invite";
 import { passwordSchema } from "@/utils/zod";
-import type { Prisma } from "@prisma/client";
 import { generateSecureKey, hashPassword, verifyPassword } from "@/utils/auth/password";
 
 function getAtMe(auth: AuthContext, id: string) {

@@ -1,6 +1,6 @@
+import type { OrgInvite, User } from "@prisma/client";
 import { conf } from "@/config";
 import { makeAuthToken } from "@/utils/auth/tokens";
-import type { OrgInvite, User } from "@prisma/client";
 
 const frontendBase = (path: string) => new URL(conf.server.frontendBaseUrl + path);
 

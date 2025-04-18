@@ -1,5 +1,5 @@
-import type { EnumType } from "@/utils/types";
 import { z } from "zod";
+import type { EnumType } from "@/utils/types";
 
 export const intervalUnits = {
   seconds: "s",

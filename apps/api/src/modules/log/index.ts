@@ -1,7 +1,7 @@
-import { conf } from "@/config";
 import { pino } from "pino";
 import pretty from "pino-pretty";
 import figlet from "figlet";
+import { conf } from "@/config";
 
 const prettyStream =
   conf.logging.format === "pretty"
