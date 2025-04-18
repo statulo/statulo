@@ -43,13 +43,12 @@ export const statusPageRouter = makeRouter((app) => {
   );
 
   app.patch(
-    "/api/v1/organisations/:orgId/status-pages/:statusPageId",
+    "/api/v1/status-pages/:id",
     {
       schema: {
         description: "Edit status page",
         params: z.object({
-          orgId: z.string(),
-          statusPageId: z.string(),
+          id: z.string(),
         }),
         body: z.object({
           name: z.string(),
@@ -61,8 +60,7 @@ export const statusPageRouter = makeRouter((app) => {
       auth.checkAuthentication();
       const statusPage = await prisma.statusPage.findUnique({
         where: {
-          id: params.statusPageId,
-          orgId: params.orgId,
+          id: params.id,
         },
       });
       if (!statusPage) throw new NotFoundError();
@@ -84,13 +82,12 @@ export const statusPageRouter = makeRouter((app) => {
   );
 
   app.delete(
-    "/api/v1/organisations/:orgId/status-pages/:statusPageId",
+    "/api/v1/status-pages/:id",
     {
       schema: {
         description: "Delete status page",
         params: z.object({
-          orgId: z.string(),
-          statusPageId: z.string(),
+          id: z.string(),
         }),
       },
     },
@@ -98,8 +95,7 @@ export const statusPageRouter = makeRouter((app) => {
       auth.checkAuthentication();
       const statusPage = await prisma.statusPage.findUnique({
         where: {
-          id: params.statusPageId,
-          orgId: params.orgId,
+          id: params.id,
         },
       });
       if (!statusPage) throw new NotFoundError();
@@ -107,32 +103,30 @@ export const statusPageRouter = makeRouter((app) => {
 
       const oldStatusPage = await prisma.statusPage.delete({
         where: {
-          id: params.statusPageId,
+          id: statusPage.id,
         },
       });
       if (oldStatusPage == null) throw new NotFoundError();
       return {
-        id: params.statusPageId,
+        id: statusPage.id,
       };
     }),
   );
 
   app.get(
-    "/api/v1/organisations/:orgId/status-pages/:statusPageId",
+    "/api/v1/status-pages/:id",
     {
       schema: {
         description: "Get status page",
         params: z.object({
-          orgId: z.string(),
-          statusPageId: z.string(),
+          id: z.string(),
         }),
       },
     },
     handle(async ({ params, auth }) => {
       const statusPage = await prisma.statusPage.findUnique({
         where: {
-          id: params.statusPageId,
-          orgId: params.orgId,
+          id: params.id,
         },
       });
       if (!statusPage) throw new NotFoundError();
