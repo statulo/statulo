@@ -1,5 +1,4 @@
-import { zodCoercedBoolean } from "@neato/config";
-import { createConfigLoader } from "@neato/config";
+import { zodCoercedBoolean, createConfigLoader } from "@neato/config";
 import type { PartialDeep } from "type-fest";
 import { z } from "zod";
 

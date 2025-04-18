@@ -10,11 +10,14 @@
       "pattern": "./packages/*/"
     }
   ],
-  "editor.formatOnSave": false,
+  "eslint.format.enable": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "[prisma]": {
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "Prisma.prisma",
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifier": "non-relative",
-  "eslint.format.enable": true,
 }

@@ -1,7 +1,7 @@
+import cron from "node-cron";
 import { logger } from "@/modules/log";
 import { executeCleanupPendingEmailVerifications } from "@/modules/scheduled/cleanup";
 import { executeHttpMonitors } from "@/modules/scheduled/monitors";
-import cron from "node-cron";
 
 const log = logger.child({ svc: "scheduler" });
 
