@@ -45,6 +45,7 @@ model Organisation {
   members    OrgMember[]
   orgInvites OrgInvite[]
   monitors   Monitor[]
+  StatusPage StatusPage[]
 
   @@map("organisation")
 }
@@ -120,4 +121,18 @@ model PendingEmailVerification {
   userId String @map("user_id")
 
   @@map("pending_email_verification")
+}
+
+model StatusPage {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  name       String
+  externalId String @unique @map("external_id")
+
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId String       @map("org_id")
+
+  @@unique([name, orgId])
+  @@map("status_page")
 }
