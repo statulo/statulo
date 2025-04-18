@@ -90,7 +90,8 @@ model Monitor {
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId String       @map("org_id")
 
-  http HttpMonitor?
+  http              HttpMonitor?
+  StatusPageMonitor StatusPageMonitor[]
 
   @@map("monitor")
 }
@@ -133,6 +134,22 @@ model StatusPage {
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId String       @map("org_id")
 
+  StatusPageMonitor StatusPageMonitor[]
+
   @@unique([name, orgId])
   @@map("status_page")
+}
+
+model StatusPageMonitor {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  statusPage   StatusPage @relation(fields: [statusPageId], references: [id], onDelete: Cascade)
+  statusPageId String     @map("status_page_id")
+
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  monitorId String  @map("monitor_id")
+
+  @@unique([statusPageId, monitorId])
+  @@map("status_page_monitor")
 }
