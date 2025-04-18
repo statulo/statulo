@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { prisma } from "@/modules/db";
 import { emailVerificationUrlEmail } from "@/modules/emails/templates/email-verification-via-url";
 import { mapToken, tokenTypes } from "@/routes/v0/mappings/tokens";
@@ -10,7 +11,6 @@ import { permissions } from "@/utils/permissions/permissions";
 import { makeRouter } from "@/utils/router";
 import { makeEmailVerificationUrl } from "@/utils/urls";
 import { passwordSchema } from "@/utils/zod";
-import { z } from "zod";
 
 export const registerRouter = makeRouter((app) => {
   app.post(

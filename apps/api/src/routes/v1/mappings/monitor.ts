@@ -1,8 +1,8 @@
+import type { HttpMonitor, Monitor } from "@prisma/client";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import { monitorTypes, type MonitorTypes } from "@/routes/v1/monitors";
 import type { Interval } from "@/utils/monitors/intervals";
 import { stringRangeToObject, type Range } from "@/utils/monitors/ranges";
-import type { HttpMonitor, Monitor } from "@prisma/client";
-import type { JsonValue } from "@prisma/client/runtime/client";
 
 export interface HttpMonitorDto {
   id: string;

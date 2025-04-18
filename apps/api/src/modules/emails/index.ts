@@ -1,7 +1,7 @@
 import type { Transporter } from "nodemailer";
 import { createTransport } from "nodemailer";
-import { conf } from "@/config";
 import { logger } from "../log";
+import { conf } from "@/config";
 
 const log = logger.child({ svc: "mailer" });
 let transporter: Transporter | null = null;
