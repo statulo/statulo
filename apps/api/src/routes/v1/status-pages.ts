@@ -1,12 +1,12 @@
+import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/modules/db";
 import { handle } from "@/utils/handle";
 import { getExternalId, getId } from "@/utils/id";
 import { permissions } from "@/utils/permissions/permissions";
 import { makeRouter } from "@/utils/router";
-import { z } from "zod";
 import { NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
-import type { Prisma } from "@prisma/client";
 import { mapStatusPage } from "@/routes/v1/mappings/status-page";
 
 export const statusPageRouter = makeRouter((app) => {
