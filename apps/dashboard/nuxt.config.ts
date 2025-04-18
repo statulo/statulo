@@ -26,6 +26,13 @@ export default defineNuxtConfig({
     },
   },
 
+  eslint: {
+    config: {
+      // We use our own eslint config, so disable all but the nuxt generated rules
+      standalone: false
+    }
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',
