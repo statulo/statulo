@@ -1,14 +1,14 @@
-import type { FastifyInstance } from 'fastify';
-import { indexRouter } from '@/routes/v0';
-import { authRouter } from '@/routes/v0/auth';
-import { passwordAuthrouter } from '@/routes/v0/password';
-import { registerRouter } from '@/routes/v0/register';
-import { userRouter } from '@/routes/v1/users';
-import { orgRouter } from '@/routes/v1/orgs';
-import { orgMemberRouter } from '@/routes/v1/org-member';
-import { orgInviteRouter } from '@/routes/v1/org-invites';
-import { monitorRouter } from '@/routes/v1/monitors';
-import { verifyRouter } from '@/routes/v0/verify';
+import type { FastifyInstance } from "fastify";
+import { indexRouter } from "@/routes/v0";
+import { authRouter } from "@/routes/v0/auth";
+import { passwordAuthrouter } from "@/routes/v0/password";
+import { registerRouter } from "@/routes/v0/register";
+import { userRouter } from "@/routes/v1/users";
+import { orgRouter } from "@/routes/v1/orgs";
+import { orgMemberRouter } from "@/routes/v1/org-member";
+import { orgInviteRouter } from "@/routes/v1/org-invites";
+import { monitorRouter } from "@/routes/v1/monitors";
+import { verifyRouter } from "@/routes/v0/verify";
 
 export async function setupRoutes(app: FastifyInstance) {
   await app.register(indexRouter.register);

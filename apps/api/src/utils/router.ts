@@ -5,8 +5,8 @@ import type {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerBase,
-} from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+} from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 
 export type Instance = FastifyInstance<
   RawServerBase,

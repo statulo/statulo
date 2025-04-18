@@ -1,32 +1,32 @@
-import { prisma } from '@/modules/db';
-import { handle } from '@/utils/handle';
-import { getId, getUntypedId } from '@/utils/id';
-import { permissions } from '@/utils/permissions/permissions';
-import { makeRouter } from '@/utils/router';
-import { z } from 'zod';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import type { Prisma } from '@prisma/client';
-import type { EnumType } from '@/utils/types';
-import { rangeSchema, rangeToString } from '@/utils/monitors/ranges';
-import { mapMonitor, mapShallowMonitor } from '@/routes/v1/mappings/monitor';
-import { intervalSchema } from '@/utils/monitors/intervals';
+import { prisma } from "@/modules/db";
+import { handle } from "@/utils/handle";
+import { getId, getUntypedId } from "@/utils/id";
+import { permissions } from "@/utils/permissions/permissions";
+import { makeRouter } from "@/utils/router";
+import { z } from "zod";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import type { Prisma } from "@prisma/client";
+import type { EnumType } from "@/utils/types";
+import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
+import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
+import { intervalSchema } from "@/utils/monitors/intervals";
 
 export const monitorTypes = {
-  http: 'http',
+  http: "http",
 } as const;
 export type MonitorTypes = EnumType<typeof monitorTypes>;
 
 export const monitorRouter = makeRouter((app) => {
   app.post(
-    '/api/v1/organisations/:id/monitors',
+    "/api/v1/organisations/:id/monitors",
     {
       schema: {
-        description: 'Create monitor',
+        description: "Create monitor",
         params: z.object({
           id: z.string(),
         }),
-        body: z.discriminatedUnion('type', [
+        body: z.discriminatedUnion("type", [
           z.object({
             type: z.literal(monitorTypes.http),
             data: z.object({
@@ -47,7 +47,7 @@ export const monitorRouter = makeRouter((app) => {
 
       const createPayload: Prisma.MonitorUncheckedCreateInput = {
         orgId: params.id,
-        id: getId('mtr'),
+        id: getId("mtr"),
         name: body.name,
         type: body.type,
       };
@@ -75,14 +75,14 @@ export const monitorRouter = makeRouter((app) => {
   );
 
   app.patch(
-    '/api/v1/monitors/:id',
+    "/api/v1/monitors/:id",
     {
       schema: {
-        description: 'Edit monitor',
+        description: "Edit monitor",
         params: z.object({
           id: z.string(),
         }),
-        body: z.discriminatedUnion('type', [
+        body: z.discriminatedUnion("type", [
           z.object({
             type: z.literal(monitorTypes.http),
             data: z.object({
@@ -111,7 +111,7 @@ export const monitorRouter = makeRouter((app) => {
       auth.can404(permissions.org.monitor.edit({ org: monitor.orgId, mtr: monitor.id }));
 
       if (monitor.type !== body.type)
-        throw ApiError.forCode('cantChangeType', 400);
+        throw ApiError.forCode("cantChangeType", 400);
 
       const updatePayload: Prisma.MonitorUncheckedUpdateInput = {
         name: body.name,
@@ -145,10 +145,10 @@ export const monitorRouter = makeRouter((app) => {
   );
 
   app.delete(
-    '/api/v1/monitors/:id',
+    "/api/v1/monitors/:id",
     {
       schema: {
-        description: 'Delete monitor',
+        description: "Delete monitor",
         params: z.object({
           id: z.string(),
         }),
@@ -180,10 +180,10 @@ export const monitorRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/monitors/:id',
+    "/api/v1/monitors/:id",
     {
       schema: {
-        description: 'Get monitor',
+        description: "Get monitor",
         params: z.object({
           id: z.string(),
         }),
@@ -205,10 +205,10 @@ export const monitorRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:id/monitors',
+    "/api/v1/organisations/:id/monitors",
     {
       schema: {
-        description: 'List monitors',
+        description: "List monitors",
         params: z.object({
           id: z.string(),
         }),
@@ -231,7 +231,7 @@ export const monitorRouter = makeRouter((app) => {
           orgId: params.id,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         include: {
           http: {

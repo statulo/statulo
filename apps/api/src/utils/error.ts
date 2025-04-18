@@ -1,6 +1,6 @@
-import { apiErrorCodes, type ApiErrorCodes } from '@/utils/codes';
+import { apiErrorCodes, type ApiErrorCodes } from "@/utils/codes";
 
-const errorSymbol = Symbol('ApiError');
+const errorSymbol = Symbol("ApiError");
 
 export class ApiError extends Error {
   errorStatusCode: number;
@@ -34,6 +34,6 @@ export function isApiError(err: any): err is ApiError {
 
 export class NotFoundError extends ApiError {
   constructor() {
-    super(apiErrorCodes.notFound, 'notFound', 404);
+    super(apiErrorCodes.notFound, "notFound", 404);
   }
 }

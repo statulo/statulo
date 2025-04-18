@@ -1,21 +1,21 @@
-import { z } from 'zod';
-import { prisma } from '@/modules/db';
-import { handle } from '@/utils/handle';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { makeRouter } from '@/utils/router';
-import { timeout } from '@/utils/timeout';
-import { verifyPassword } from '@/utils/auth/password';
-import { createSession, makeSessionToken } from '@/utils/auth/session';
-import { mapExpandedUser } from '@/routes/v0/mappings/user';
-import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
-import { mapSuccess } from '@/routes/v0/mappings/success';
+import { z } from "zod";
+import { prisma } from "@/modules/db";
+import { handle } from "@/utils/handle";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { makeRouter } from "@/utils/router";
+import { timeout } from "@/utils/timeout";
+import { verifyPassword } from "@/utils/auth/password";
+import { createSession, makeSessionToken } from "@/utils/auth/session";
+import { mapExpandedUser } from "@/routes/v0/mappings/user";
+import { mapToken, tokenTypes } from "@/routes/v0/mappings/tokens";
+import { mapSuccess } from "@/routes/v0/mappings/success";
 
 export const authRouter = makeRouter((app) => {
   app.post(
-    '/api/auth/login',
+    "/api/auth/login",
     {
       schema: {
-        description: 'Login user',
+        description: "Login user",
         body: z.object({
           email: z.string().min(1),
           password: z.string().min(1),
@@ -40,11 +40,11 @@ export const authRouter = makeRouter((app) => {
       });
       if (!user) {
         await timeoutPromise;
-        throw ApiError.forCode('authInvalidInput', 400);
+        throw ApiError.forCode("authInvalidInput", 400);
       }
       if (!(await verifyPassword(user.passwordHash, body.password))) {
         await timeoutPromise;
-        throw ApiError.forCode('authInvalidInput', 400);
+        throw ApiError.forCode("authInvalidInput", 400);
       }
 
       const session = await createSession(user);
@@ -56,14 +56,14 @@ export const authRouter = makeRouter((app) => {
   );
 
   app.post(
-    '/api/auth/logout',
+    "/api/auth/logout",
     {
       schema: {
-        description: 'Logout user',
+        description: "Logout user",
       },
     },
     handle(async ({ auth }) => {
-      auth.check(c => c.isAuthType('session'));
+      auth.check(c => c.isAuthType("session"));
       const id = auth.data.getSession().id;
 
       const oldSessions = await prisma.userSession.deleteMany({

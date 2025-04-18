@@ -1,25 +1,25 @@
-import { z } from 'zod';
-import { prisma } from '@/modules/db';
-import { handle } from '@/utils/handle';
-import { makeRouter } from '@/utils/router';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { timeout } from '@/utils/timeout';
-import { resetPasswordEmail } from '@/modules/emails/templates/reset-password';
-import { generateSecureKey, hashPassword } from '@/utils/auth/password';
-import { createSession, makeSessionToken } from '@/utils/auth/session';
-import { passwordSchema } from '@/utils/zod';
-import { makeAuthToken, parseAuthToken } from '@/utils/auth/tokens';
-import { makePasswordResetUrl } from '@/utils/urls';
-import { mapSuccess } from '@/routes/v0/mappings/success';
-import { mapExpandedUser } from '@/routes/v0/mappings/user';
-import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
+import { z } from "zod";
+import { prisma } from "@/modules/db";
+import { handle } from "@/utils/handle";
+import { makeRouter } from "@/utils/router";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { timeout } from "@/utils/timeout";
+import { resetPasswordEmail } from "@/modules/emails/templates/reset-password";
+import { generateSecureKey, hashPassword } from "@/utils/auth/password";
+import { createSession, makeSessionToken } from "@/utils/auth/session";
+import { passwordSchema } from "@/utils/zod";
+import { makeAuthToken, parseAuthToken } from "@/utils/auth/tokens";
+import { makePasswordResetUrl } from "@/utils/urls";
+import { mapSuccess } from "@/routes/v0/mappings/success";
+import { mapExpandedUser } from "@/routes/v0/mappings/user";
+import { mapToken, tokenTypes } from "@/routes/v0/mappings/tokens";
 
 export const passwordAuthrouter = makeRouter((app) => {
   app.post(
-    '/api/auth/password-reset',
+    "/api/auth/password-reset",
     {
       schema: {
-        description: 'Request password reset',
+        description: "Request password reset",
         body: z.object({
           email: z.string().min(1),
         }),
@@ -40,7 +40,7 @@ export const passwordAuthrouter = makeRouter((app) => {
       }
 
       const token = makeAuthToken({
-        t: 'passreset',
+        t: "passreset",
         stamp: user.securityStamp,
         uid: user.id,
       });
@@ -62,10 +62,10 @@ export const passwordAuthrouter = makeRouter((app) => {
   );
 
   app.post(
-    '/api/auth/password-reset/submit',
+    "/api/auth/password-reset/submit",
     {
       schema: {
-        description: 'Submit a password reset',
+        description: "Submit a password reset",
         body: z.object({
           token: z.string().min(1),
           newPassword: passwordSchema(),
@@ -74,7 +74,7 @@ export const passwordAuthrouter = makeRouter((app) => {
     },
     handle(async ({ body }) => {
       const parsedToken = parseAuthToken(body.token);
-      if (!parsedToken || parsedToken.t !== 'passreset') throw ApiError.forCode('authInvalidToken');
+      if (!parsedToken || parsedToken.t !== "passreset") throw ApiError.forCode("authInvalidToken");
 
       const userId = parsedToken.uid;
 
@@ -84,7 +84,7 @@ export const passwordAuthrouter = makeRouter((app) => {
         },
       });
       if (!user) throw new NotFoundError();
-      if (user.securityStamp !== parsedToken.stamp) throw ApiError.forCode('authInvalidToken');
+      if (user.securityStamp !== parsedToken.stamp) throw ApiError.forCode("authInvalidToken");
 
       const newUser = await prisma.user.update({
         where: {

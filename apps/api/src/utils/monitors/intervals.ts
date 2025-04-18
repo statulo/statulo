@@ -1,11 +1,11 @@
-import type { EnumType } from '@/utils/types';
-import { z } from 'zod';
+import type { EnumType } from "@/utils/types";
+import { z } from "zod";
 
 export const intervalUnits = {
-  seconds: 's',
-  minutes: 'm',
-  hours: 'h',
-  days: 'd',
+  seconds: "s",
+  minutes: "m",
+  hours: "h",
+  days: "d",
 } as const;
 export type IntervalUnit = EnumType<typeof intervalUnits>;
 
@@ -20,7 +20,7 @@ export const intervalSchema = () => z.object({
   unit: z.nativeEnum(intervalUnits),
   amount: z.number().positive().safe().finite().int(),
 }).refine(validateInterval, {
-  message: 'Interval outside of acceptable range',
+  message: "Interval outside of acceptable range",
 });
 export type Interval = z.infer<ReturnType<typeof intervalSchema>>;
 

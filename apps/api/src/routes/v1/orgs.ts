@@ -1,21 +1,21 @@
-import { prisma } from '@/modules/db';
-import { handle } from '@/utils/handle';
-import { getId } from '@/utils/id';
-import { permissions } from '@/utils/permissions/permissions';
-import { orgRoles } from '@/utils/permissions/roles';
-import { makeRouter } from '@/utils/router';
-import { z } from 'zod';
-import { NotFoundError } from '@/utils/error';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import { mapOrganisation } from '@/routes/v1/mappings/organisation';
-import { mapSuccess } from '@/routes/v0/mappings/success';
+import { prisma } from "@/modules/db";
+import { handle } from "@/utils/handle";
+import { getId } from "@/utils/id";
+import { permissions } from "@/utils/permissions/permissions";
+import { orgRoles } from "@/utils/permissions/roles";
+import { makeRouter } from "@/utils/router";
+import { z } from "zod";
+import { NotFoundError } from "@/utils/error";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import { mapOrganisation } from "@/routes/v1/mappings/organisation";
+import { mapSuccess } from "@/routes/v0/mappings/success";
 
 export const orgRouter = makeRouter((app) => {
   app.post(
-    '/api/v1/organisations',
+    "/api/v1/organisations",
     {
       schema: {
-        description: 'Create organisation',
+        description: "Create organisation",
         body: z.object({
           name: z.string().min(1),
           description: z.string().min(1).nullable(),
@@ -28,12 +28,12 @@ export const orgRouter = makeRouter((app) => {
 
       const newOrg = await prisma.organisation.create({
         data: {
-          id: getId('org'),
+          id: getId("org"),
           name: body.name,
           description: body.description,
           members: {
             create: {
-              id: getId('orgmbr'),
+              id: getId("orgmbr"),
               roles: [orgRoles.admin],
               userId: auth.data.getUserId(),
             },
@@ -46,10 +46,10 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.patch(
-    '/api/v1/organisations/:id',
+    "/api/v1/organisations/:id",
     {
       schema: {
-        description: 'Edit organisation',
+        description: "Edit organisation",
         params: z.object({
           id: z.string(),
         }),
@@ -76,10 +76,10 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.delete(
-    '/api/v1/organisations/:id',
+    "/api/v1/organisations/:id",
     {
       schema: {
-        description: 'Delete organisation',
+        description: "Delete organisation",
         params: z.object({
           id: z.string(),
         }),
@@ -102,10 +102,10 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:id',
+    "/api/v1/organisations/:id",
     {
       schema: {
-        description: 'Get organisation',
+        description: "Get organisation",
         params: z.object({
           id: z.string(),
         }),
@@ -125,10 +125,10 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations',
+    "/api/v1/organisations",
     {
       schema: {
-        description: 'List organisations',
+        description: "List organisations",
         querystring: pagerSchema(),
       },
     },
@@ -141,7 +141,7 @@ export const orgRouter = makeRouter((app) => {
         take: query.limit,
         skip: query.offset,
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
       });
       return mapPage(query, orgs.map(mapOrganisation), totalOrgs);
@@ -149,10 +149,10 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.delete(
-    '/api/v1/organisations/:id/leave',
+    "/api/v1/organisations/:id/leave",
     {
       schema: {
-        description: 'Leave organisation',
+        description: "Leave organisation",
         params: z.object({
           id: z.string(),
         }),
