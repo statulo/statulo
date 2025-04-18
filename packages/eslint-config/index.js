@@ -82,9 +82,9 @@ export default defineConfig([
   },
   {
     name: "statulo/imports",
-    extends: [
-      importPlugin.flatConfigs.recommended,
-    ],
+    plugins: {
+      import: importPlugin,
+    },
     rules: {
       "import/no-mutable-exports": "error",
       "import/no-self-import": "error",
@@ -94,8 +94,6 @@ export default defineConfig([
 
       "import/order": "error",
       "import/newline-after-import": ["error", { count: 1 }],
-
-      "import/no-unresolved": "off", // This has the tendency to cause false errors
     },
   },
   {
