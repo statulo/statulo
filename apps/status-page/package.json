@@ -11,8 +11,10 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
+    "@astrojs/tailwind": "^6.0.2",
     "@repo/eslint-config": "workspace:*",
     "astro": "^5.7.4",
-    "eslint": "^9.24.0"
+    "eslint": "^9.24.0",
+    "tailwindcss": "^3.4.17"
   }
 }
