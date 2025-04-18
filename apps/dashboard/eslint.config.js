@@ -1,7 +1,7 @@
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
-import eslintConfig from "@repo/eslint-config"
+import eslintConfig from "@repo/eslint-config";
+import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt(
-  eslintConfig
-)
+  eslintConfig,
+);

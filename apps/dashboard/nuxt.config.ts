@@ -1,9 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-04-15',
+  compatibilityDate: "2025-04-15",
 
   future: {
-    compatibilityVersion: 4
+    compatibilityVersion: 4,
   },
 
   devtools: { enabled: true },
@@ -29,20 +29,20 @@ export default defineNuxtConfig({
   eslint: {
     config: {
       // We use our own eslint config, so disable all but the nuxt generated rules
-      standalone: false
-    }
+      standalone: false,
+    },
   },
 
   modules: [
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxt/image',
-    '@nuxt/scripts',
-    '@nuxtjs/tailwindcss',
-    '@vueuse/nuxt',
-    '@pinia/nuxt',
-    'pinia-plugin-persistedstate/nuxt',
-    '@nuxtjs/robots'
-  ]
-})
+    "@nuxt/eslint",
+    "@nuxt/fonts",
+    "@nuxt/icon",
+    "@nuxt/image",
+    "@nuxt/scripts",
+    "@nuxtjs/tailwindcss",
+    "@vueuse/nuxt",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/robots",
+  ],
+});
