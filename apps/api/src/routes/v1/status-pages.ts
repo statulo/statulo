@@ -51,7 +51,7 @@ export const statusPageRouter = makeRouter((app) => {
           id: z.string(),
         }),
         body: z.object({
-          name: z.string(),
+          name: z.string().optional(),
           regenerateExternalId: z.boolean().optional(),
         }),
       },
