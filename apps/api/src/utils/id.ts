@@ -10,6 +10,7 @@ export const idTypes = [
   "orginv", // org invite
   "mtr", // monitor
   "stspg", // status page
+  "stspg_mtr", // status page monitor
 ] as const;
 
 export function getId(prefix: ArrayValues<typeof idTypes>): string {
