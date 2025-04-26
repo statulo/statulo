@@ -20,7 +20,8 @@
     "lint:fix": "eslint --fix .",
     "prisma": "prisma",
     "prisma:studio": "prisma studio",
-    "email:dev": "email dev --dir=src/modules/emails/templates"
+    "email:dev": "email dev --dir=src/modules/emails/templates",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
