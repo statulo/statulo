@@ -42,10 +42,10 @@ model Organisation {
   name        String
   description String?
 
-  members    OrgMember[]
-  orgInvites OrgInvite[]
-  monitors   Monitor[]
-  StatusPage StatusPage[]
+  members     OrgMember[]
+  orgInvites  OrgInvite[]
+  monitors    Monitor[]
+  statusPages StatusPage[]
 
   @@map("organisation")
 }
@@ -90,8 +90,8 @@ model Monitor {
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId String       @map("org_id")
 
-  http              HttpMonitor?
-  StatusPageMonitor StatusPageMonitor[]
+  http               HttpMonitor?
+  statusPageMonitors StatusPageMonitor[]
 
   @@map("monitor")
 }
@@ -134,7 +134,7 @@ model StatusPage {
   org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId String       @map("org_id")
 
-  StatusPageMonitor StatusPageMonitor[]
+  statusPageMonitors StatusPageMonitor[]
 
   @@unique([name, orgId])
   @@map("status_page")
