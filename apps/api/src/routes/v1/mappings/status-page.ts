@@ -14,7 +14,6 @@ export interface StatusPageMonitorDto {
   id: string;
   createdAt: string;
   statusPageId: string;
-  monitorId: string;
   monitor: MonitorDto;
 }
 
@@ -33,7 +32,6 @@ export function mapStatusPageMonitor(statusPageMonitor: StatusPageMonitor & { mo
     id: statusPageMonitor.id,
     createdAt: statusPageMonitor.createdAt.toISOString(),
     statusPageId: statusPageMonitor.statusPageId,
-    monitorId: statusPageMonitor.monitorId,
     monitor: mapMonitor(statusPageMonitor.monitor),
   };
 }
