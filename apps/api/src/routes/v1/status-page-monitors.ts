@@ -49,6 +49,7 @@ export const statusPageMonitorRouter = makeRouter((app) => {
 
     return mapPage(query, monitors.map(mapStatusPageMonitor), monitors.length);
   }));
+
   app.get("/api/v1/status-pages/:id/monitors/:monitorId", {
     schema: {
       description: "Get a monitor for a status page",
@@ -70,6 +71,7 @@ export const statusPageMonitorRouter = makeRouter((app) => {
     const monitor = await prisma.statusPageMonitor.findUnique({
       where: {
         id: params.monitorId,
+        statusPageId: statusPage.id,
       },
       include: {
         monitor: {
@@ -81,7 +83,6 @@ export const statusPageMonitorRouter = makeRouter((app) => {
     });
 
     if (!monitor) throw new NotFoundError();
-    if (monitor.statusPageId !== statusPage.id) throw new NotFoundError();
     return mapStatusPageMonitor(monitor);
   }));
 
@@ -146,11 +147,11 @@ export const statusPageMonitorRouter = makeRouter((app) => {
     const monitor = await prisma.statusPageMonitor.findUnique({
       where: {
         id: params.monitorId,
+        statusPageId: statusPage.id,
       },
     });
 
     if (!monitor) throw new NotFoundError();
-    if (monitor.statusPageId !== statusPage.id) throw new NotFoundError();
 
     await prisma.statusPageMonitor.delete({
       where: {
