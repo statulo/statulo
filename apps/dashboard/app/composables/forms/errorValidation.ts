@@ -58,6 +58,7 @@ export function useErrorValidation(
 
   function addZodError(issue: ZodIssue) {
     errors[issue.path.join(".")] = issue.message;
+    // TODO publish errors to the form after zod issues
   }
 
   function insertError(inputError: Error) {
