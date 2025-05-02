@@ -8,14 +8,28 @@ import {
   hydrate,
   dehydrate,
 } from "@tanstack/vue-query";
-// Nuxt 3 app aliases
-import { useState } from "#app";
+import { FetchError } from "ofetch";
 
 export default defineNuxtPlugin((nuxt) => {
   const vueQueryState = useState<DehydratedState | null>("vue-query");
 
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { staleTime: 5000 } },
+    defaultOptions: {
+      queries: {
+        staleTime: 5000, retry(failureCount, error) {
+          // Don't retry on 4xx errors
+          if (
+            error instanceof FetchError &&
+            error.statusCode != null &&
+            error.statusCode >= 400 &&
+            error.statusCode < 500
+          ) {
+            return false;
+          }
+          return failureCount < 3;
+        },
+      },
+    },
   });
   const options: VueQueryPluginOptions = { queryClient };
 
@@ -32,4 +46,10 @@ export default defineNuxtPlugin((nuxt) => {
       hydrate(queryClient, vueQueryState.value);
     });
   }
+
+  return {
+    provide: {
+      queryClient,
+    },
+  };
 });

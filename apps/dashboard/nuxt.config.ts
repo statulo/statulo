@@ -8,6 +8,17 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    public: {
+      http: {
+        browserBaseUrl: "http://localhost:8080",
+      },
+    },
+    http: {
+      baseUrl: "http://localhost:8080",
+    },
+  },
+
   components: [
     {
       path: "~/components/",
