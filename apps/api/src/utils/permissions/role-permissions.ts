@@ -32,6 +32,8 @@ export const orgRolePerms: Record<OrgRoles, (orgId: string) => Permission[]> = {
     permissions.org.invite.list({ org: orgId }),
     permissions.org.monitor.read({ org: orgId, mtr: all }),
     permissions.org.monitor.list({ org: orgId }),
+    permissions.org.statusPage.read({ org: orgId, stspg: all }),
+    permissions.org.statusPage.list({ org: orgId }),
   ],
   "org:admin": orgId => [
     ...orgRolePerms["org:viewer"](orgId),
@@ -46,5 +48,8 @@ export const orgRolePerms: Record<OrgRoles, (orgId: string) => Permission[]> = {
     permissions.org.monitor.create({ org: orgId }),
     permissions.org.monitor.edit({ org: orgId, mtr: all }),
     permissions.org.monitor.delete({ org: orgId, mtr: all }),
+    permissions.org.statusPage.create({ org: orgId }),
+    permissions.org.statusPage.edit({ org: orgId, stspg: all }),
+    permissions.org.statusPage.delete({ org: orgId, stspg: all }),
   ],
 };

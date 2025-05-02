@@ -1,4 +1,4 @@
-import type { HttpMonitor, Monitor } from "@prisma/client";
+import type { HttpMonitor, Monitor, Prisma } from "@prisma/client";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { monitorTypes, type MonitorTypes } from "@/routes/v1/monitors";
 import type { Interval } from "@/utils/monitors/intervals";
@@ -29,6 +29,11 @@ export interface ShallowMonitorDto {
   primaryInterval: Interval | null;
 }
 
+export type FullMonitor = Prisma.MonitorGetPayload<{
+  include: {
+    http: true;
+  };
+}>;
 type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
 
 function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
@@ -51,7 +56,7 @@ function mapPrimaryInterval(monitor: ShallowMonitorInput): Interval | null {
   return null;
 }
 
-export function mapMonitor(monitor: Monitor & { http: HttpMonitor | null }): MonitorDto {
+export function mapMonitor(monitor: FullMonitor): MonitorDto {
   return {
     id: monitor.id,
     type: monitor.type as MonitorTypes,
