@@ -28,12 +28,11 @@ export const useAuthStore = defineStore(
       if (!state.token) return;
       const user = await getQueryClient().fetchQuery({
         queryKey: queryKeys.users.me(),
-        queryFn: async () =>
-          httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me", {
-            headers: {
-              Authorization: `Bearer ${state.token}`,
-            },
-          }),
+        queryFn: () => httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me", {
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        }),
       });
 
       state.user = user;

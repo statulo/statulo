@@ -44,6 +44,12 @@ export default defineNuxtConfig({
     },
   },
 
+  experimental: {
+    // This enables the nuxtApp context to be accessible in async functions
+    // Especially useful for the vue-query plugin, where retries using the nuxtApp context will fail without this
+    asyncContext: true,
+  },
+
   modules: [
     "@nuxt/eslint",
     "@nuxt/fonts",
