@@ -29,7 +29,8 @@ export default defineNuxtPlugin((nuxt) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 5000, retry(failureCount, error) {
+        staleTime: 5000,
+        retry(failureCount, error) {
           // Don't retry on error codes that aren't in the retry status codes
           if (
             error instanceof FetchError &&
@@ -41,6 +42,7 @@ export default defineNuxtPlugin((nuxt) => {
 
           return failureCount < 3;
         },
+
       },
     },
   });
