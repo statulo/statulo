@@ -9,15 +9,14 @@
       Submit
     </button>
     <p>{{ form.errors.formErrors() }}</p>
+    <p>{{ authStore.user }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { z } from "zod";
 
-definePageMeta({
-  auth: false,
-});
+const authStore = useAuthStore();
 
 const form = useForm({
   id: "edit",
