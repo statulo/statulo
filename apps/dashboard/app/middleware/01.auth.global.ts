@@ -50,6 +50,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return;
   }
 
+  // If the user is not logged in, but the page is in guest mode, skip the middleware
+  if (isPage("/login") || pageIsInGuestMode) {
+    return;
+  }
+
   return navigateTo({
     path: "/login",
     query: {
