@@ -10,6 +10,19 @@ import {
 } from "@tanstack/vue-query";
 import { FetchError } from "ofetch";
 
+// Taken from https://github.com/unjs/ofetch/blob/main/src/fetch.ts
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+const retryStatusCodes = new Set([
+  408, // Request Timeout
+  409, // Conflict
+  425, // Too Early (Experimental)
+  429, // Too Many Requests
+  500, // Internal Server Error
+  502, // Bad Gateway
+  503, // Service Unavailable
+  504, // Gateway Timeout
+]);
+
 export default defineNuxtPlugin((nuxt) => {
   const vueQueryState = useState<DehydratedState | null>("vue-query");
 
@@ -17,15 +30,15 @@ export default defineNuxtPlugin((nuxt) => {
     defaultOptions: {
       queries: {
         staleTime: 5000, retry(failureCount, error) {
-          // Don't retry on 4xx errors
+          // Don't retry on error codes that aren't in the retry status codes
           if (
             error instanceof FetchError &&
             error.statusCode != null &&
-            error.statusCode >= 400 &&
-            error.statusCode < 500
+            !retryStatusCodes.has(error.statusCode)
           ) {
             return false;
           }
+
           return failureCount < 3;
         },
       },
