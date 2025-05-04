@@ -1,4 +1,4 @@
-import type { AnyZodObject, z } from "zod";
+import type { AnyZodObject, z, ZodEffects } from "zod";
 import { useErrorValidation } from "./errorValidation";
 
 export type FormValidateResult<TOutput> =
@@ -33,7 +33,7 @@ export type FormControls<TOutput, TInput> = {
   };
 };
 
-export type FormOptions<TSchema extends AnyZodObject, TInput> = {
+export type FormOptions<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>, TInput extends z.infer<TSchema>> = {
   id: string;
   init: () => TInput;
   schema: TSchema;
@@ -41,7 +41,7 @@ export type FormOptions<TSchema extends AnyZodObject, TInput> = {
 
 export const FORM_PREFIX = "FORM::";
 
-export function createFormComposable<TSchema extends AnyZodObject, TInit>(
+export function createFormComposable<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>, TInit extends z.infer<TSchema>>(
   ops: FormOptions<TSchema, TInit>,
 ): FormControls<z.infer<TSchema>, TInit> {
   const data = ref(ops.init()) as Ref<TInit>;
