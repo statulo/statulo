@@ -4,8 +4,8 @@ function key<const T extends string[]>(...args: T) {
 
 export const queryKeys = {
   users: {
-    me: () => key("users", "@me"),
-    all: () => key("users"),
+    me: key("users", "@me"),
+    all: key("users"),
     one: (id: string) => key("users", id),
   },
 };

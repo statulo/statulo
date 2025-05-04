@@ -20,14 +20,14 @@ export const useAuthStore = defineStore(
 
     const state = reactive<AuthState>(structuredClone(initialState));
 
-    useQuerySubscribe<ExpandedUserResponse>(queryKeys.users.me(), (user) => {
+    useQuerySubscribe<ExpandedUserResponse>(queryKeys.users.me, (user) => {
       state.user = user ?? null;
     });
 
     async function fetchUser() {
       if (!state.token) return;
       const user = await getQueryClient().fetchQuery({
-        queryKey: queryKeys.users.me(),
+        queryKey: queryKeys.users.me,
         queryFn: () => httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me", {
           headers: {
             Authorization: `Bearer ${state.token}`,
@@ -77,7 +77,7 @@ export const useAuthStore = defineStore(
     function resetAuth() {
       Object.assign(state, initialState);
       getQueryClient().removeQueries({
-        queryKey: queryKeys.users.me(),
+        queryKey: queryKeys.users.me,
       });
     }
 
