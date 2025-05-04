@@ -32,18 +32,16 @@ export async function httpRequest<T = never>(
   const { $ofetch } = useNuxtApp();
   const authStore = useAuthStore();
 
+  const headers = authStore.token
+    ? { Authorization: `Bearer ${authStore.token}` }
+    : undefined;
+
   const requestConfig = defu<FetchOptions<"json">, FetchOptions<"json">[]>(
     config,
     {
       method,
+      headers,
     },
-    authStore.token
-      ? {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-          },
-        }
-      : {},
   );
 
   try {
