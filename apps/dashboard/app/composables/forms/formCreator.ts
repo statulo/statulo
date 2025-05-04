@@ -19,7 +19,7 @@ export type FormError = {
   id: string;
 };
 
-export type FormControls<TOutput, TInput> = {
+export type FormControls<TInput, TOutput> = {
   id: string;
   validate: () => FormValidateResult<TOutput>;
   reset: () => void;
@@ -33,21 +33,21 @@ export type FormControls<TOutput, TInput> = {
   };
 };
 
-export type FormOptions<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>, TInput extends z.infer<TSchema>> = {
+export type FormOptions<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>> = {
   id: string;
-  init: () => TInput;
+  init: () => z.input<TSchema>;
   schema: TSchema;
 };
 
 export const FORM_PREFIX = "FORM::";
 
-export function createFormComposable<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>, TInit extends z.infer<TSchema>>(
-  ops: FormOptions<TSchema, TInit>,
-): FormControls<z.infer<TSchema>, TInit> {
-  const data = ref(ops.init()) as Ref<TInit>;
+export function createFormComposable<TSchema extends AnyZodObject | ZodEffects<AnyZodObject>>(
+  ops: FormOptions<TSchema>,
+): FormControls<z.input<TSchema>, z.output<TSchema>> {
+  const data = ref(ops.init()) as Ref<z.input<TSchema>>;
   const errors = useErrorValidation(ops.id);
 
-  const controls: FormControls<z.infer<TSchema>, TInit> = {
+  const controls: FormControls<z.input<TSchema>, z.output<TSchema>> = {
     id: ops.id,
     reset() {
       data.value = ops.init();
