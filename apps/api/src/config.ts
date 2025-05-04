@@ -1,4 +1,4 @@
-import { zodCoercedBoolean, createConfigLoader } from "@neato/config";
+import { zodCoercedBoolean, createConfig, loaders } from "@neato/config";
 import type { PartialDeep } from "type-fest";
 import { z } from "zod";
 
@@ -43,7 +43,7 @@ const schema = z.object({
     .default({ enabled: "false" }),
 });
 
-export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
+export const presets: Record<string, PartialDeep<z.infer<typeof schema>>> = {
   docker: {
     server: {
       cors: "http://localhost:3000 http://localhost:5173",
@@ -69,10 +69,13 @@ export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
 // TODO get version not from env but from package.json file
 export const version = process.env.npm_package_version ?? "unknown";
 
-export const conf = createConfigLoader()
-  .addFromEnvironment("STL_")
-  .addFromFile(".env", { prefix: "STL_" })
-  .addZodSchema(schema)
-  .addConfigFragments(fragments)
-  .setFragmentKey("USE_PRESETS")
-  .load();
+export const conf = createConfig({
+  envPrefix: "STL_",
+  loaders: [
+    loaders.environment(),
+    loaders.file(".env"),
+  ],
+  presetKey: "usePresets",
+  presets,
+  schema,
+});
