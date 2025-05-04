@@ -8,7 +8,7 @@ const prettyStream =
     ? pretty({
         colorize: true,
         translateTime: true,
-        ignore: "pid,hostname,response,svc,type",
+        ignore: "pid,hostname,reqId,response,svc,type",
         messageFormat: (log, messageKey, _, { colors }) => {
           let message = String(log[messageKey]);
           // If a service name is provided, prepend it to the message
