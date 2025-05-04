@@ -18,7 +18,7 @@ export const useAuthStore = defineStore(
       token: null,
     };
 
-    const state = reactive<AuthState>(initialState);
+    const state = reactive<AuthState>(structuredClone(initialState));
 
     useQuerySubscribe<ExpandedUserResponse>(queryKeys.users.me(), (user) => {
       state.user = user ?? null;
@@ -67,8 +67,7 @@ export const useAuthStore = defineStore(
       }
 
       resetAuth();
-
-      navigateTo("/login");
+      await navigateTo("/login");
     }
 
     function resetAuth() {

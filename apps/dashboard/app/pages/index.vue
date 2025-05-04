@@ -10,6 +10,9 @@
     </button>
     <p>{{ form.errors.formErrors() }}</p>
     <p>{{ authStore.user }}</p>
+    <button @click="authStore.logout()">
+      Logout
+    </button>
   </div>
 </template>
 
