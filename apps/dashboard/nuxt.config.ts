@@ -50,6 +50,10 @@ export default defineNuxtConfig({
     asyncContext: true,
   },
 
+  tailwindcss: {
+    viewer: true,
+  },
+
   modules: [
     "@nuxt/eslint",
     "@nuxt/fonts",
