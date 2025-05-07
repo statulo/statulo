@@ -22,16 +22,15 @@ export default {
         100: "#C3C3D7",
       },
       primary: {
-        600: "#B96910",
+        600: "#AD6311",
         500: "#CB7A1F",
         400: "#DD8828",
         300: "#E69F4F",
+        100: "#FFE9D0",
       },
       status: {
-        successDark: "#3ACE3F",
-        successLight: "#56B838",
-        errorDark: "#F3585A",
-        errorLight: "#E93134",
+        success: "#3ACE3F",
+        danger: "#F3585A",
       },
     },
     fontFamily: {
