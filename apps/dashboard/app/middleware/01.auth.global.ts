@@ -36,7 +36,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const pageIsInGuestMode = to.meta.auth === "guest";
-  const nextPage = to.query.next?.toString();
+  let nextPage = to.query.next?.toString();
+  // Next page must be a root relative path, if not, ignore it
+  if (!nextPage?.startsWith("/")) nextPage = undefined;
 
   const isPage = (page: `/${string}`) => to.path === page;
 
