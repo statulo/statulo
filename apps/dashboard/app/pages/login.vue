@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { z } from "zod";
+import { getNextPage } from "~/utils/urls";
 
 definePageMeta({
   auth: "guest",
 });
 
 const authStore = useAuthStore();
+const query = useRoute().query;
 
 const form = useForm({
   id: "login",
@@ -32,7 +34,8 @@ async function submit() {
     return;
   }
   if (authStore.isLoggedIn) {
-    navigateTo("/");
+    const nextPage = getNextPage(query);
+    navigateTo(nextPage);
   }
 }
 

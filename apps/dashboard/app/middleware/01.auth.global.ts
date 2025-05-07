@@ -1,7 +1,5 @@
 import { FetchError } from "ofetch";
-
-// Ensure a root relative path can't start with a //
-const rootRelativeRegex = /^(\/[^/]+)+$/;
+import { getNextPage } from "~/utils/urls";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const nuxtApp = useNuxtApp();
@@ -39,16 +37,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const pageIsInGuestMode = to.meta.auth === "guest";
-  let nextPage = to.query.next?.toString();
-  // Next page must be a root relative path, if not, ignore it
-  if (nextPage && !rootRelativeRegex.test(nextPage)) nextPage = undefined;
+  const nextPage = getNextPage(to.query);
 
   const isPage = (page: `/${string}`) => to.path === page;
 
   if (authStore.isLoggedIn && authStore.user) {
     // If the user is logged in, redirect them away from guest pages
     if (isPage("/login") && pageIsInGuestMode) {
-      return navigateTo(nextPage || "/");
+      return navigateTo(nextPage);
     }
 
     // The user is logged in, so we can skip the middleware
