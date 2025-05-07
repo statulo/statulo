@@ -1,5 +1,8 @@
 import { FetchError } from "ofetch";
 
+// Ensure a root relative path can't start with a //
+const rootRelativeRegex = /^(\/[^/]+)+$/;
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const nuxtApp = useNuxtApp();
 
@@ -38,7 +41,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const pageIsInGuestMode = to.meta.auth === "guest";
   let nextPage = to.query.next?.toString();
   // Next page must be a root relative path, if not, ignore it
-  if (!nextPage?.startsWith("/")) nextPage = undefined;
+  if (nextPage && !rootRelativeRegex.test(nextPage)) nextPage = undefined;
 
   const isPage = (page: `/${string}`) => to.path === page;
 
