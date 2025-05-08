@@ -1,7 +1,7 @@
 import type { LocationQuery } from "vue-router";
 
 // Ensure a root relative path can't start with a //
-const rootRelativeRegex = /^(\/[^/]+)+$/;
+const rootRelativeRegex = /^\/[^/]/;
 
 export function getNextPage(query: LocationQuery): string {
   const nextPage = query.next?.toString();
