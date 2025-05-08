@@ -19,6 +19,9 @@ export interface MonitorDto {
   computedName: string;
   primaryInterval: Interval | null;
   http: HttpMonitorDto | null;
+}
+
+export type MonitorWithContactPointsDto = MonitorDto & {
   contactPoints: ContactPointDto[];
 }
 
@@ -34,6 +37,11 @@ export interface ShallowMonitorDto {
 export type FullMonitor = Prisma.MonitorGetPayload<{
   include: {
     http: true;
+  };
+}>;
+
+export type FullMonitorWithContactPoints = FullMonitor & Prisma.MonitorGetPayload<{
+  include: {
     contactPoints: {
       include: {
         contactPoint: {
@@ -54,6 +62,7 @@ export type FullMonitor = Prisma.MonitorGetPayload<{
     }
   };
 }>;
+
 type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
 
 function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
@@ -84,8 +93,14 @@ export function mapMonitor(monitor: FullMonitor): MonitorDto {
     computedName: mapComputedName(monitor),
     primaryInterval: mapPrimaryInterval(monitor),
     createdAt: monitor.createdAt.toISOString(),
-    contactPoints: monitor.contactPoints.map(contactPoint => mapContactPoint(contactPoint.contactPoint)),
     http: monitor.type === monitorTypes.http && monitor.http ? mapHttpMonitor(monitor.http) : null,
+  };
+}
+
+export function mapMonitorWithContactPoints(monitor: FullMonitorWithContactPoints): MonitorWithContactPointsDto {
+  return {
+    ...mapMonitor(monitor),
+    contactPoints: monitor.contactPoints.map(contactPoint => mapContactPoint(contactPoint.contactPoint)),
   };
 }
 

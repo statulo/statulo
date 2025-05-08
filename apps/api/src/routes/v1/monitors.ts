@@ -9,7 +9,7 @@ import { ApiError, NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
 import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
-import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
+import { mapMonitorWithContactPoints, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
 import { intervalSchema } from "@/utils/monitors/intervals";
 import { listModifySchema } from '@/utils/zod';
 import { createContactPointJoins } from '@/routes/v1/contact-points';
@@ -80,7 +80,7 @@ export const monitorRouter = makeRouter((app) => {
           },
         },
       });
-      return mapMonitor(newMonitor);
+      return mapMonitorWithContactPoints(newMonitor);
     }),
   );
 
@@ -170,7 +170,7 @@ export const monitorRouter = makeRouter((app) => {
           },
         },
       });
-      return mapMonitor(newMonitor);
+      return mapMonitorWithContactPoints(newMonitor);
     }),
   );
 
@@ -237,7 +237,7 @@ export const monitorRouter = makeRouter((app) => {
       });
       if (!monitor) throw new NotFoundError();
       auth.can404(permissions.org.monitor.read({ org: monitor.orgId, mtr: monitor.id }));
-      return mapMonitor(monitor);
+      return mapMonitorWithContactPoints(monitor);
     }),
   );
 
