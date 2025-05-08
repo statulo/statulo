@@ -50,7 +50,7 @@ export const contactPointRouter = makeRouter((app) => {
           z.object({
             type: z.literal(contactPointTypes.discord),
             data: z.object({
-              webhookUrl: z.string().url().startsWith('https://discord.com/api/webhooks/'),
+              webhookUrl: z.string().url(),
             }),
           }),
         ]),
@@ -104,7 +104,7 @@ export const contactPointRouter = makeRouter((app) => {
           z.object({
             type: z.literal(contactPointTypes.discord),
             data: z.object({
-              webhookUrl: z.string().url().startsWith('https://discord.com/api/webhooks/').optional(),
+              webhookUrl: z.string().url().optional(),
             }),
           }),
         ]),
