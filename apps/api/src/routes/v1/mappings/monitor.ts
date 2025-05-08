@@ -38,7 +38,15 @@ export type FullMonitor = Prisma.MonitorGetPayload<{
       include: {
         contactPoint: {
           include: {
-            member: true;
+            member: {
+              include: {
+                orgMember: {
+                  include: {
+                    user: true;
+                  }
+                }
+              }
+            };
             discord: true;
           }
         }

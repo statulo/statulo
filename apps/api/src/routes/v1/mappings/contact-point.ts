@@ -1,7 +1,7 @@
 import type { ContactPointTypes } from '@/routes/v1/contact-points';
 import { contactPointTypes } from '@/routes/v1/contact-points';
 import { mapOrgMember, type OrgMemberDto } from '@/routes/v1/mappings/org-member';
-import type { ContactPoint, DiscordContactPoint, MemberContactPoint, OrgMember, User } from '@prisma/client';
+import type { DiscordContactPoint, MemberContactPoint, OrgMember, Prisma, User } from '@prisma/client';
 
 export interface MemberContactPointDto {
   id: string;
@@ -37,10 +37,20 @@ function mapDiscordContactPoint(discordContactPoint: DiscordContactPoint): Disco
 
 export type PopulatedMemberContactPoint = (MemberContactPoint & { orgMember: OrgMember & { user: User } });
 
-export type PopulatedContactPoint = ContactPoint & {
-  member: PopulatedMemberContactPoint | null;
-  discord: DiscordContactPoint | null;
-};
+export type PopulatedContactPoint = Prisma.ContactPointGetPayload<{
+  include: {
+    member: {
+      include: {
+        orgMember: {
+          include: {
+            user: true;
+          }
+        }
+      }
+    };
+    discord: true;
+  };
+}>;
 
 export function mapContactPoint(contactPoint: PopulatedContactPoint): ContactPointDto {
   return {
