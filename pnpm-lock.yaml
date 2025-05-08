@@ -60,8 +60,8 @@ importers:
         specifier: ^9.4.2
         version: 9.4.2
       '@neato/config':
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^4.0.3
+        version: 4.0.3
       '@prisma/client':
         specifier: ^6.5.0
         version: 6.5.0(prisma@6.5.0(typescript@5.8.2))(typescript@5.8.2)
@@ -1548,8 +1548,9 @@ packages:
   '@napi-rs/wasm-runtime@0.2.9':
     resolution: {integrity: sha512-OKRBiajrrxB9ATokgEQoG87Z25c67pCpYcCwmXYX8PBftC9pBfN18gnm/fh1wurSLEKIAt+QRFLFCQISrb66Jg==}
 
-  '@neato/config@3.0.0':
-    resolution: {integrity: sha512-K+YDuvt5EgQEwhwI1UI8zTXVUc+iFfTe7OzjHza96HEDYP/XsEQrwLj31VSaesVDSgxkepRczen1Lzt+zCROGA==}
+  '@neato/config@4.0.3':
+    resolution: {integrity: sha512-vsUbUsjotT5HGemF7uChjAfKdUQAt17zWRcKXayYUGQ8pxc5l23DRIeLUQw5X1h3SsgvxtOnCiHUpEPDvM0A8g==}
+    engines: {node: '>=20'}
 
   '@netlify/binary-info@1.0.0':
     resolution: {integrity: sha512-4wMPu9iN3/HL97QblBsBay3E1etIciR84izI3U+4iALY+JHCrI+a2jO0qbAZ/nxKoegypYEaiiqWXylm+/zfrw==}
@@ -5688,6 +5689,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
@@ -9089,7 +9091,7 @@ snapshots:
       '@tybys/wasm-util': 0.9.0
     optional: true
 
-  '@neato/config@3.0.0':
+  '@neato/config@4.0.3':
     dependencies:
       chalk: 4.1.2
       dotenv: 16.4.7
