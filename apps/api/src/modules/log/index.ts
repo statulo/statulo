@@ -8,8 +8,30 @@ const prettyStream =
     ? pretty({
         colorize: true,
         translateTime: true,
-        ignore: "pid,hostname,reqId,responseTime,req,res,svc,type",
-        messageFormat: "{msg}{if req} [{req.method} {req.url}]{end}",
+        ignore: "pid,hostname,reqId,response,svc,type",
+        messageFormat: (log, messageKey, _, { colors }) => {
+          let message = String(log[messageKey]);
+          // If a service name is provided, prepend it to the message
+          if (log.svc) message = `[${log.svc}] ${message}`;
+
+          // If a response is present, format it
+          if (log.response) {
+            const res = log.response as any;
+            // Colour error status codes red, success codes green
+            const statusCode = res.statusCode >= 400 ? colors.red(res.statusCode) : colors.green(res.statusCode);
+
+            // Colour elapsed time based on thresholds, green for < 500ms, yellow for 500ms-1s, red for > 1s
+            const elapsedTime = res.elapsedTime >= 1000
+              ? colors.red(res.elapsedTime + "ms")
+              : res.elapsedTime >= 500
+                ? colors.yellow(res.elapsedTime + "ms")
+                : colors.green(res.elapsedTime + "ms");
+
+            const responseSection = ` [${colors.white(res.method + " " + res.url)} - ${statusCode} - ${elapsedTime}]`;
+            message += responseSection;
+          }
+          return `${message}`;
+        },
       })
     : undefined;
 
