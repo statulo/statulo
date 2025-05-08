@@ -3,10 +3,10 @@ import type {
   Organisation,
   User,
   UserSession,
-} from '@prisma/client';
-import { prisma } from '@/modules/db';
-import { getId } from '@/utils/id';
-import { makeAuthToken } from '@/utils/auth/tokens';
+} from "@prisma/client";
+import { prisma } from "@/modules/db";
+import { getId } from "@/utils/id";
+import { makeAuthToken } from "@/utils/auth/tokens";
 
 export const sessionExpiryInMs = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -57,7 +57,7 @@ export async function createSession(user: User) {
       expiresAt: new Date(Date.now() + sessionExpiryInMs), // new expiry date = NOW + expiry delay
       userId: user.id,
       securityStamp: user.securityStamp,
-      id: getId('ses'),
+      id: getId("ses"),
     },
   });
   return session;
@@ -65,7 +65,7 @@ export async function createSession(user: User) {
 
 export function makeSessionToken(id: string): string {
   return makeAuthToken({
-    t: 'session',
+    t: "session",
     id,
   });
 }

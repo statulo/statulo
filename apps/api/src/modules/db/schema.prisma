@@ -46,6 +46,7 @@ model Organisation {
   orgInvites   OrgInvite[]
   monitors     Monitor[]
   ContactPoint ContactPoint[]
+  statusPages  StatusPage[]
 
   @@map("organisation")
 }
@@ -92,7 +93,8 @@ model Monitor {
   org           Organisation                    @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId         String                          @map("org_id")
 
-  http HttpMonitor?
+  http               HttpMonitor?
+  statusPageMonitors StatusPageMonitor[]
 
   @@map("monitor")
 }
@@ -174,4 +176,34 @@ model PendingEmailVerification {
   userId String @map("user_id")
 
   @@map("pending_email_verification")
+}
+
+model StatusPage {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  name       String
+  externalId String @unique @map("external_id")
+
+  org   Organisation @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId String       @map("org_id")
+
+  statusPageMonitors StatusPageMonitor[]
+
+  @@unique([name, orgId])
+  @@map("status_page")
+}
+
+model StatusPageMonitor {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  statusPage   StatusPage @relation(fields: [statusPageId], references: [id], onDelete: Cascade)
+  statusPageId String     @map("status_page_id")
+
+  monitor   Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  monitorId String  @map("monitor_id")
+
+  @@unique([statusPageId, monitorId])
+  @@map("status_page_monitor")
 }

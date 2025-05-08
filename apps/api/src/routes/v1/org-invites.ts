@@ -1,37 +1,37 @@
-import { z } from 'zod';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import { makeRouter } from '@/utils/router';
-import { handle } from '@/utils/handle';
-import { permissions } from '@/utils/permissions/permissions';
-import { prisma } from '@/modules/db';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { orgRolesSchema } from '@/utils/permissions/roles';
-import { getId } from '@/utils/id';
-import { generateSecureKey } from '@/utils/auth/password';
-import { mapOrgInvite, mapOrgInviteInfo } from './mappings/org-invite';
-import { parseAuthToken } from '@/utils/auth/tokens';
-import { mapOrgMember } from '@/routes/v1/mappings/org-member';
-import { orgInviteEmail } from '@/modules/emails/templates/org-invite';
-import { makeInvitationUrl } from '@/utils/urls';
+import { z } from "zod";
+import { mapOrgInvite, mapOrgInviteInfo } from "./mappings/org-invite";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import { makeRouter } from "@/utils/router";
+import { handle } from "@/utils/handle";
+import { permissions } from "@/utils/permissions/permissions";
+import { prisma } from "@/modules/db";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { orgRolesSchema } from "@/utils/permissions/roles";
+import { getId } from "@/utils/id";
+import { generateSecureKey } from "@/utils/auth/password";
+import { parseAuthToken } from "@/utils/auth/tokens";
+import { mapOrgMember } from "@/routes/v1/mappings/org-member";
+import { orgInviteEmail } from "@/modules/emails/templates/org-invite";
+import { makeInvitationUrl } from "@/utils/urls";
 
 export const orgInviteRouter = makeRouter((app) => {
   app.post(
-    '/api/v1/org-invites/accept',
+    "/api/v1/org-invites/accept",
     {
       schema: {
-        description: 'Accept invitation',
+        description: "Accept invitation",
         body: z.object({
           token: z.string(),
         }),
       },
     },
     handle(async ({ body, auth }) => {
-      auth.check(c => c.isAuthType('session'));
+      auth.check(c => c.isAuthType("session"));
       const session = auth.data.getSession();
       const user = session.user;
 
       const tokenData = parseAuthToken(body.token);
-      if (tokenData?.t !== 'invite') throw ApiError.forCode('authInvalidToken');
+      if (tokenData?.t !== "invite") throw ApiError.forCode("authInvalidToken");
 
       const invite = await prisma.orgInvite.findFirst({
         where: {
@@ -46,7 +46,7 @@ export const orgInviteRouter = makeRouter((app) => {
       const [newOrgMember] = await prisma.$transaction([
         prisma.orgMember.create({
           data: {
-            id: getId('orgmbr'),
+            id: getId("orgmbr"),
             orgId: invite.orgId,
             userId: user.id,
             roles: invite.roles,
@@ -76,10 +76,10 @@ export const orgInviteRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/org-invites/accept',
+    "/api/v1/org-invites/accept",
     {
       schema: {
-        description: 'Get invitation data',
+        description: "Get invitation data",
         querystring: z.object({
           token: z.string(),
         }),
@@ -87,7 +87,7 @@ export const orgInviteRouter = makeRouter((app) => {
     },
     handle(async ({ query }) => {
       const tokenData = parseAuthToken(query.token);
-      if (tokenData?.t !== 'invite') throw ApiError.forCode('authInvalidToken');
+      if (tokenData?.t !== "invite") throw ApiError.forCode("authInvalidToken");
 
       const invite = await prisma.orgInvite.findFirst({
         where: {
@@ -104,10 +104,10 @@ export const orgInviteRouter = makeRouter((app) => {
   );
 
   app.post(
-    '/api/v1/organisations/:org/org-invites',
+    "/api/v1/organisations/:org/org-invites",
     {
       schema: {
-        description: 'Create invitation',
+        description: "Create invitation",
         params: z.object({
           org: z.string(),
         }),
@@ -132,7 +132,7 @@ export const orgInviteRouter = makeRouter((app) => {
         data: {
           email: body.email,
           code: generateSecureKey(),
-          id: getId('orginv'),
+          id: getId("orginv"),
           orgId: params.org,
           userId: user?.id,
           roles: body.roles,
@@ -158,10 +158,10 @@ export const orgInviteRouter = makeRouter((app) => {
   );
 
   app.delete(
-    '/api/v1/organisations/:org/org-invites/:id',
+    "/api/v1/organisations/:org/org-invites/:id",
     {
       schema: {
-        description: 'Delete invitation',
+        description: "Delete invitation",
         params: z.object({
           org: z.string(),
           id: z.string(),
@@ -186,10 +186,10 @@ export const orgInviteRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:org/org-invites',
+    "/api/v1/organisations/:org/org-invites",
     {
       schema: {
-        description: 'List invites',
+        description: "List invites",
         params: z.object({
           org: z.string(),
         }),
@@ -208,7 +208,7 @@ export const orgInviteRouter = makeRouter((app) => {
           orgId: params.org,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         include: {
           org: true,

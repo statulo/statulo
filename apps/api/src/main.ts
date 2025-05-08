@@ -1,15 +1,15 @@
-import { createProgram } from '@/cli';
-import { setupMailer } from '@/modules/emails';
+import { createProgram } from "@/cli";
+import { setupMailer } from "@/modules/emails";
 import {
   setupFastify,
   setupFastifyRoutes,
   startFastify,
-} from '@/modules/fastify';
-import { logDivide, logger, logIntro } from '@/modules/log';
-import { setupScheduler } from '@/modules/scheduled';
+} from "@/modules/fastify";
+import { logDivide, logger, logIntro } from "@/modules/log";
+import { setupScheduler } from "@/modules/scheduled";
 
 async function run() {
-  const log = logger.child({ svc: 'statulo' });
+  const log = logger.child({ svc: "statulo" });
 
   logIntro();
   log.info(`App booting...`);

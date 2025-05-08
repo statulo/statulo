@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import { conf } from '@/config';
-import { logger } from '../log';
+import { PrismaClient } from "@prisma/client";
+import { logger } from "../log";
+import { conf } from "@/config";
 
 export const prisma = new PrismaClient({
   datasources: {
@@ -15,7 +15,7 @@ export async function isPrismaConnected() {
     await prisma.$queryRaw`SELECT 1`;
     return true;
   } catch (err) {
-    logger.error('Failed to healthcheck prisma');
+    logger.error("Failed to healthcheck prisma");
     logger.error(err);
     return false;
   }

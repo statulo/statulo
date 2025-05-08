@@ -1,7 +1,4 @@
-import type { AuthContext } from '@/utils/auth/context';
-import { makeAuthContext } from '@/utils/auth/context';
 import type {
-  ContextConfigDefault,
   FastifyBaseLogger,
   FastifyReply,
   FastifyRequest,
@@ -9,25 +6,24 @@ import type {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerBase,
-  RawServerDefault,
   RouteGenericInterface,
   RouteHandlerMethod,
-} from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
-import type { ResolveFastifyReplyReturnType } from 'fastify/types/type-provider';
+} from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type { ResolveFastifyReplyReturnType } from "fastify/types/type-provider";
+import { makeAuthContext } from "@/utils/auth/context";
+import type { AuthContext } from "@/utils/auth/context";
 
-export const DONT_REPLY = Symbol('dont-reply');
+export const DONT_REPLY = Symbol("dont-reply");
 
 export type RequestContext<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends
-  RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends
-  RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  ContextConfig = ContextConfigDefault,
-  SchemaCompiler extends FastifySchema = FastifySchema,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface,
+  ContextConfig,
+  SchemaCompiler extends FastifySchema,
+  Logger extends FastifyBaseLogger,
 > = {
   req: FastifyRequest<
     RouteGeneric,
@@ -55,7 +51,7 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['body'];
+  >["body"];
   params: FastifyRequest<
     RouteGeneric,
     RawServer,
@@ -64,7 +60,7 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['params'];
+  >["params"];
   query: FastifyRequest<
     RouteGeneric,
     RawServer,
@@ -73,20 +69,18 @@ export type RequestContext<
     ZodTypeProvider,
     ContextConfig,
     Logger
-  >['query'];
+  >["query"];
   auth: AuthContext;
 };
 
 export function handle<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends
-  RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends
-  RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  ContextConfig = ContextConfigDefault,
-  SchemaCompiler extends FastifySchema = FastifySchema,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface,
+  ContextConfig,
+  SchemaCompiler extends FastifySchema,
+  Logger extends FastifyBaseLogger,
 >(
   handler: (
     ctx: RequestContext<

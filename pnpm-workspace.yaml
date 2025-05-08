@@ -1,2 +1,6 @@
 packages:
   - "apps/*"
+  - "packages/*"
+
+catalog:
+  eslint: ^9.24.0

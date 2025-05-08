@@ -1,27 +1,19 @@
 import type {
-  FastifyBaseLogger,
-  FastifyInstance,
   FastifyPluginAsync,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerBase,
-} from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+  RawServerDefault,
+} from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import type pino from "pino";
+import type { StatuloFastifyInstance } from "@/modules/fastify";
 
-export type Instance = FastifyInstance<
-  RawServerBase,
-  RawRequestDefaultExpression<RawServerBase>,
-  RawReplyDefaultExpression<RawServerBase>,
-  FastifyBaseLogger,
-  ZodTypeProvider
->;
 export type RegisterPlugin = FastifyPluginAsync<
   Record<never, never>,
-  RawServerBase,
-  ZodTypeProvider
+  RawServerDefault,
+  ZodTypeProvider,
+  pino.Logger
 >;
 
-export function makeRouter(cb: (app: Instance) => void): {
+export function makeRouter(cb: (app: StatuloFastifyInstance) => void): {
   register: RegisterPlugin;
 } {
   return {

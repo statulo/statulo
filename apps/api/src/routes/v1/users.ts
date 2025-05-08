@@ -1,28 +1,28 @@
-import { z } from 'zod';
-import type { AuthContext } from '@/utils/auth/context';
-import { makeRouter } from '@/utils/router';
-import { handle } from '@/utils/handle';
-import { permissions } from '@/utils/permissions/permissions';
-import { prisma } from '@/modules/db';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import { mapExpandedUser, mapUser } from '@/routes/v0/mappings/user';
-import { mapOrgInviteInfo } from '@/routes/v1/mappings/org-invite';
-import { passwordSchema } from '@/utils/zod';
-import type { Prisma } from '@prisma/client';
-import { generateSecureKey, hashPassword, verifyPassword } from '@/utils/auth/password';
+import { z } from "zod";
+import type { Prisma } from "@prisma/client";
+import type { AuthContext } from "@/utils/auth/context";
+import { makeRouter } from "@/utils/router";
+import { handle } from "@/utils/handle";
+import { permissions } from "@/utils/permissions/permissions";
+import { prisma } from "@/modules/db";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import { mapExpandedUser, mapUser } from "@/routes/v0/mappings/user";
+import { mapOrgInviteInfo } from "@/routes/v1/mappings/org-invite";
+import { passwordSchema } from "@/utils/zod";
+import { generateSecureKey, hashPassword, verifyPassword } from "@/utils/auth/password";
 
 function getAtMe(auth: AuthContext, id: string) {
-  if (id === '@me') return auth.data.getUserIdOrDefault() ?? id;
+  if (id === "@me") return auth.data.getUserIdOrDefault() ?? id;
   return id;
 }
 
 export const userRouter = makeRouter((app) => {
   app.delete(
-    '/api/v1/users/:id',
+    "/api/v1/users/:id",
     {
       schema: {
-        description: 'Delete user',
+        description: "Delete user",
         params: z.object({
           id: z.string(),
         }),
@@ -46,10 +46,10 @@ export const userRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/users/:id',
+    "/api/v1/users/:id",
     {
       schema: {
-        description: 'Get user',
+        description: "Get user",
         params: z.object({
           id: z.string(),
         }),
@@ -78,10 +78,10 @@ export const userRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/users/:id/org-invites',
+    "/api/v1/users/:id/org-invites",
     {
       schema: {
-        description: 'List org invites',
+        description: "List org invites",
         params: z.object({
           id: z.string(),
         }),
@@ -117,10 +117,10 @@ export const userRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/users',
+    "/api/v1/users",
     {
       schema: {
-        description: 'List users',
+        description: "List users",
         querystring: pagerSchema(),
       },
     },
@@ -133,7 +133,7 @@ export const userRouter = makeRouter((app) => {
         take: query.limit,
         skip: query.offset,
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
       });
       return mapPage(query, users.map(mapUser), totalUsers);
@@ -141,10 +141,10 @@ export const userRouter = makeRouter((app) => {
   );
 
   app.patch(
-    '/api/v1/users/:id/security',
+    "/api/v1/users/:id/security",
     {
       schema: {
-        description: 'Edit user security settings',
+        description: "Edit user security settings",
         params: z.object({
           id: z.string(),
         }),
@@ -164,7 +164,7 @@ export const userRouter = makeRouter((app) => {
       auth.checkAuthentication();
       const id = getAtMe(auth, params.id);
       auth.can404(permissions.user.edit({ usr: id }));
-      const session = auth.checkers.isAuthType('session') ? auth.data.getSession() : null;
+      const session = auth.checkers.isAuthType("session") ? auth.data.getSession() : null;
 
       const user = await prisma.user.findUnique({
         where: {
@@ -183,8 +183,8 @@ export const userRouter = makeRouter((app) => {
             code: body.email.code,
           },
         });
-        if (!verificationCode) throw ApiError.forCode('authInvalidInput', 400);
-        if (verificationCode.expiresAt < new Date()) throw ApiError.forCode('authInvalidInput', 400);
+        if (!verificationCode) throw ApiError.forCode("authInvalidInput", 400);
+        if (verificationCode.expiresAt < new Date()) throw ApiError.forCode("authInvalidInput", 400);
         await prisma.pendingEmailVerification.delete({
           where: {
             id: verificationCode.id,
@@ -198,7 +198,7 @@ export const userRouter = makeRouter((app) => {
       if (body.password) {
         const isCorrectOldPassword = await verifyPassword(user.passwordHash, body.password.oldPassword);
         if (!isCorrectOldPassword)
-          throw ApiError.forCode('authInvalidInput', 400);
+          throw ApiError.forCode("authInvalidInput", 400);
         updateData.passwordHash = await hashPassword(body.password.newPassword);
         updateData.securityStamp = generateSecureKey();
       }

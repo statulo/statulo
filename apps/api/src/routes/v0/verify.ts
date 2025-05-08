@@ -1,22 +1,22 @@
-import { prisma } from '@/modules/db';
-import { emailVerificationUrlEmail } from '@/modules/emails/templates/email-verification-via-url';
-import { mapUser } from '@/routes/v0/mappings/user';
-import { parseAuthToken } from '@/utils/auth/tokens';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { handle } from '@/utils/handle';
-import { makeRouter } from '@/utils/router';
-import { makeEmailVerificationUrl } from '@/utils/urls';
-import { z } from 'zod';
-import { getUntypedId } from '@/utils/id';
-import { emailVerificationCodeEmail } from '@/modules/emails/templates/email-verification-via-code';
-import { mapSuccess } from '@/routes/v0/mappings/success';
-import { generateRandomCode } from '@/utils/auth/password';
+import { z } from "zod";
+import { prisma } from "@/modules/db";
+import { emailVerificationUrlEmail } from "@/modules/emails/templates/email-verification-via-url";
+import { mapUser } from "@/routes/v0/mappings/user";
+import { parseAuthToken } from "@/utils/auth/tokens";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { handle } from "@/utils/handle";
+import { makeRouter } from "@/utils/router";
+import { makeEmailVerificationUrl } from "@/utils/urls";
+import { getUntypedId } from "@/utils/id";
+import { emailVerificationCodeEmail } from "@/modules/emails/templates/email-verification-via-code";
+import { mapSuccess } from "@/routes/v0/mappings/success";
+import { generateRandomCode } from "@/utils/auth/password";
 
 export const verifyRouter = makeRouter((app) => {
-  app.post('/api/auth/verify',
+  app.post("/api/auth/verify",
     {
       schema: {
-        description: 'Verify users email',
+        description: "Verify users email",
         querystring: z.object({
           token: z.string(),
         }),
@@ -24,7 +24,7 @@ export const verifyRouter = makeRouter((app) => {
     },
     handle(async ({ query }) => {
       const tokenData = parseAuthToken(query.token);
-      if (tokenData?.t !== 'emailverify') throw ApiError.forCode('authInvalidToken');
+      if (tokenData?.t !== "emailverify") throw ApiError.forCode("authInvalidToken");
 
       const user = await prisma.user.findUnique({
         where: {
@@ -35,7 +35,7 @@ export const verifyRouter = makeRouter((app) => {
 
       // The security stamp will invalidate tokens if the user's email is changed
       if (user.securityStamp !== tokenData.stamp) {
-        throw ApiError.forCode('authInvalidToken');
+        throw ApiError.forCode("authInvalidToken");
       }
 
       // Already verified, just return the user
@@ -56,13 +56,13 @@ export const verifyRouter = makeRouter((app) => {
     }),
   );
 
-  app.post('/api/auth/verify/resend',
+  app.post("/api/auth/verify/resend",
     handle(async ({ auth }) => {
       auth.checkAuthentication();
 
       const user = auth.data.getUser();
       if (user.emailVerified) {
-        throw ApiError.forCode('authEmailAlreadyVerified');
+        throw ApiError.forCode("authEmailAlreadyVerified");
       }
 
       const verificationUrl = makeEmailVerificationUrl(user);
@@ -77,10 +77,10 @@ export const verifyRouter = makeRouter((app) => {
     }),
   );
 
-  app.post('/api/auth/verify/code',
+  app.post("/api/auth/verify/code",
     {
       schema: {
-        description: 'Send an email verification code',
+        description: "Send an email verification code",
         body: z.object({
           email: z.string().email(),
         }),
@@ -92,7 +92,7 @@ export const verifyRouter = makeRouter((app) => {
       const user = auth.data.getUser();
 
       if (body.email === user.email && user.emailVerified) {
-        throw ApiError.forCode('authEmailAlreadyVerified');
+        throw ApiError.forCode("authEmailAlreadyVerified");
       }
 
       const emailVerifyCode = generateRandomCode();

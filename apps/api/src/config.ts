@@ -1,20 +1,19 @@
-import { zodCoercedBoolean } from '@neato/config';
-import { createConfigLoader } from '@neato/config';
-import type { PartialDeep } from 'type-fest';
-import { z } from 'zod';
+import { zodCoercedBoolean, createConfig, loaders } from "@neato/config";
+import type { PartialDeep } from "type-fest";
+import { z } from "zod";
 
 const schema = z.object({
   server: z
     .object({
       port: z.coerce.number().default(8080),
-      cors: z.string().default(''),
-      basePath: z.string().default('/'),
-      backendBaseUrl: z.string().url().endsWith('/'),
-      frontendBaseUrl: z.string().url().endsWith('/'),
+      cors: z.string().default(""),
+      basePath: z.string().default("/"),
+      backendBaseUrl: z.string().url().endsWith("/"),
+      frontendBaseUrl: z.string().url().endsWith("/"),
     }),
   logging: z
     .object({
-      format: z.enum(['json', 'pretty']).default('pretty'),
+      format: z.enum(["json", "pretty"]).default("pretty"),
       debug: zodCoercedBoolean().default(false),
       silenceNoisyLogs: zodCoercedBoolean().default(false),
     })
@@ -27,12 +26,12 @@ const schema = z.object({
     ssl: zodCoercedBoolean().default(false),
   }),
   mailer: z
-    .discriminatedUnion('enabled', [
+    .discriminatedUnion("enabled", [
       z.object({
-        enabled: z.literal('false'),
+        enabled: z.literal("false"),
       }),
       z.object({
-        enabled: z.literal('true'),
+        enabled: z.literal("true"),
         smtpHost: z.string().min(1),
         smtpPort: z.coerce.number().positive(),
         secure: zodCoercedBoolean().default(false),
@@ -41,39 +40,42 @@ const schema = z.object({
         from: z.string().min(1).optional(),
       }),
     ])
-    .default({ enabled: 'false' }),
+    .default({ enabled: "false" }),
 });
 
-export const fragments: Record<string, PartialDeep<z.infer<typeof schema>>> = {
+export const presets: Record<string, PartialDeep<z.infer<typeof schema>>> = {
   docker: {
     server: {
-      cors: 'http://localhost:3000 http://localhost:5173',
-      frontendBaseUrl: 'http://localhost:5173/',
-      backendBaseUrl: 'http://localhost:8080/',
+      cors: "http://localhost:3000 http://localhost:5173",
+      frontendBaseUrl: "http://localhost:5173/",
+      backendBaseUrl: "http://localhost:8080/",
     },
     db: {
-      connection: 'postgres://postgres:postgres@localhost:5432/postgres',
+      connection: "postgres://postgres:postgres@localhost:5432/postgres",
     },
     crypto: {
-      secret: '12345678901234567890123456789012',
+      secret: "12345678901234567890123456789012",
     },
     mailer: {
-      enabled: 'true',
-      smtpHost: 'localhost',
+      enabled: "true",
+      smtpHost: "localhost",
       smtpPort: 1025,
       secure: false,
-      from: 'Statulo <no-reply@example.com>',
+      from: "Statulo <no-reply@example.com>",
     },
   },
 };
 
 // TODO get version not from env but from package.json file
-export const version = process.env.npm_package_version ?? 'unknown';
+export const version = process.env.npm_package_version ?? "unknown";
 
-export const conf = createConfigLoader()
-  .addFromEnvironment('STL_')
-  .addFromFile('.env', { prefix: 'STL_' })
-  .addZodSchema(schema)
-  .addConfigFragments(fragments)
-  .setFragmentKey('USE_PRESETS')
-  .load();
+export const conf = createConfig({
+  envPrefix: "STL_",
+  loaders: [
+    loaders.environment(),
+    loaders.file(".env"),
+  ],
+  presetKey: "usePresets",
+  presets,
+  schema,
+});

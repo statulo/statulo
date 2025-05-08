@@ -1,24 +1,52 @@
-import Fastify, { type FastifyInstance } from 'fastify';
-import cors from '@fastify/cors';
+import type { RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault, FastifyInstance } from "fastify";
+import Fastify from "fastify";
+import cors from "@fastify/cors";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
-} from 'fastify-type-provider-zod';
-import { ZodError } from 'zod';
-import { fastifySwagger } from '@fastify/swagger';
-import { conf, version } from '@/config';
-import { isApiError } from '@/utils/error';
-import { logger } from '@/modules/log';
-import { setupRoutes } from '@/routes/routes';
+} from "fastify-type-provider-zod";
+import { ZodError } from "zod";
+import { fastifySwagger } from "@fastify/swagger";
+import type pino from "pino";
+import { conf, version } from "@/config";
+import { isApiError } from "@/utils/error";
+import { logger } from "@/modules/log";
+import { setupRoutes } from "@/routes/routes";
 
-const log = logger.child({ svc: 'fastify' });
+const log = logger.child({ svc: "fastify" });
 
-export async function setupFastify(): Promise<FastifyInstance> {
+export type StatuloFastifyInstance = FastifyInstance<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  pino.Logger,
+  ZodTypeProvider
+>;
+
+export async function setupFastify(): Promise<StatuloFastifyInstance> {
   log.info(`setting up fastify...`);
 
   const app = Fastify({
-    loggerInstance: log.child({ type: 'req' }) as any,
+    loggerInstance: log,
+    disableRequestLogging: true,
+  });
+
+  app.addHook("onResponse", (req, reply, done) => {
+    req.log.info(
+      {
+        svc: "http",
+        response: {
+          url: req.raw.url,
+          method: req.raw.method,
+          statusCode: reply.raw.statusCode,
+          elapsedTime: Math.round(reply.elapsedTime),
+        },
+      },
+      "request completed",
+    );
+    done();
   });
 
   app.setValidatorCompiler(validatorCompiler);
@@ -27,22 +55,22 @@ export async function setupFastify(): Promise<FastifyInstance> {
   await app.register(fastifySwagger, {
     openapi: {
       info: {
-        title: 'Statulo',
-        description: 'API server for Statulo',
+        title: "Statulo",
+        description: "API server for Statulo",
         version,
       },
       servers: [
         {
-          url: 'http://localhost:' + conf.server.port,
-          description: 'Development server',
+          url: "http://localhost:" + conf.server.port,
+          description: "Development server",
         },
       ],
       components: {
         securitySchemes: {
           bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
           },
         },
       },
@@ -53,7 +81,7 @@ export async function setupFastify(): Promise<FastifyInstance> {
   app.setErrorHandler((err, req, reply) => {
     if (err instanceof ZodError) {
       void reply.status(400).send({
-        errorType: 'validation',
+        errorType: "validation",
         errors: err.errors,
       });
       return;
@@ -62,24 +90,24 @@ export async function setupFastify(): Promise<FastifyInstance> {
     if (isApiError(err)) {
       if (err.errorCode) {
         void reply.status(err.errorStatusCode).send({
-          errorType: 'code',
+          errorType: "code",
           code: err.errorCode,
           message: err.message,
         });
       } else {
         void reply.status(err.errorStatusCode).send({
-          errorType: 'message',
+          errorType: "message",
           message: err.message,
         });
       }
       return;
     }
 
-    log.error('unhandled exception on server:', err);
+    log.error("unhandled exception on server:", err);
     log.error(err.stack);
     void reply.status(500).send({
-      errorType: 'message',
-      message: 'Internal server error',
+      errorType: "message",
+      message: "Internal server error",
       ...(conf.logging.debug
         ? {
             trace: err.stack,
@@ -92,7 +120,7 @@ export async function setupFastify(): Promise<FastifyInstance> {
 
   // plugins
   log.info(`setting up plugins`);
-  const corsDomains = conf.server.cors.split(' ').filter(v => v.length > 0);
+  const corsDomains = conf.server.cors.split(" ").filter(v => v.length > 0);
   await app.register(cors, {
     origin: corsDomains,
     credentials: true,
@@ -101,14 +129,14 @@ export async function setupFastify(): Promise<FastifyInstance> {
   return app;
 }
 
-export function startFastify(app: FastifyInstance) {
+export function startFastify(app: StatuloFastifyInstance) {
   // listen to port
   log.info(`listening to port`);
   return new Promise<void>((resolve) => {
     app.listen(
       {
         port: conf.server.port,
-        host: '0.0.0.0',
+        host: "0.0.0.0",
       },
       (err: any) => {
         if (err) {
@@ -123,14 +151,14 @@ export function startFastify(app: FastifyInstance) {
   });
 }
 
-export async function setupFastifyRoutes(app: FastifyInstance) {
+export async function setupFastifyRoutes(app: StatuloFastifyInstance) {
   log.info(`setting up routes`);
   await app.register(
-    async (api) => {
+    async (api: StatuloFastifyInstance) => {
       await setupRoutes(api);
       app.route({
-        url: '/swagger',
-        method: 'GET',
+        url: "/swagger",
+        method: "GET",
         handler: (req, res) => {
           return res.send(app.swagger());
         },

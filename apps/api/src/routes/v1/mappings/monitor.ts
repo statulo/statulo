@@ -2,7 +2,7 @@ import { mapContactPoint, type ContactPointDto, type PopulatedContactPoint } fro
 import { monitorTypes, type MonitorTypes } from '@/routes/v1/monitors';
 import type { Interval } from '@/utils/monitors/intervals';
 import { stringRangeToObject, type Range } from '@/utils/monitors/ranges';
-import type { HttpMonitor, Monitor, MonitorContactPointAssignment } from '@prisma/client';
+import type { HttpMonitor, Monitor, MonitorContactPointAssignment, Prisma } from '@prisma/client';
 import type { JsonValue } from '@prisma/client/runtime/client';
 
 export interface HttpMonitorDto {
@@ -31,6 +31,21 @@ export interface ShallowMonitorDto {
   primaryInterval: Interval | null;
 }
 
+export type FullMonitor = Prisma.MonitorGetPayload<{
+  include: {
+    http: true;
+    contactPoints: {
+      include: {
+        contactPoint: {
+          include: {
+            member: true;
+            discord: true;
+          }
+        }
+      }
+    }
+  };
+}>;
 type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
 
 function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
@@ -44,7 +59,7 @@ function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
 function mapComputedName(monitor: ShallowMonitorInput): string {
   if (monitor.type === monitorTypes.http && monitor.http)
     return monitor.http.url;
-  return 'Unknown';
+  return "Unknown";
 }
 
 function mapPrimaryInterval(monitor: ShallowMonitorInput): Interval | null {
@@ -53,12 +68,7 @@ function mapPrimaryInterval(monitor: ShallowMonitorInput): Interval | null {
   return null;
 }
 
-export type PopulatedMonitor = Monitor & {
-  http: HttpMonitor | null;
-  contactPoints: Array<MonitorContactPointAssignment & { contactPoint: PopulatedContactPoint }>;
-};
-
-export function mapMonitor(monitor: PopulatedMonitor): MonitorDto {
+export function mapMonitor(monitor: FullMonitor): MonitorDto {
   return {
     id: monitor.id,
     type: monitor.type as MonitorTypes,

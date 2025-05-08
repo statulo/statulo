@@ -1,23 +1,23 @@
-import { prisma } from '@/modules/db';
-import { emailVerificationUrlEmail } from '@/modules/emails/templates/email-verification-via-url';
-import { mapToken, tokenTypes } from '@/routes/v0/mappings/tokens';
-import { mapExpandedUser } from '@/routes/v0/mappings/user';
-import { hashPassword } from '@/utils/auth/password';
-import { createSession, makeSessionToken } from '@/utils/auth/session';
-import { handle } from '@/utils/handle';
-import { getId } from '@/utils/id';
-import { permissions } from '@/utils/permissions/permissions';
-import { makeRouter } from '@/utils/router';
-import { makeEmailVerificationUrl } from '@/utils/urls';
-import { passwordSchema } from '@/utils/zod';
-import { z } from 'zod';
+import { z } from "zod";
+import { prisma } from "@/modules/db";
+import { emailVerificationUrlEmail } from "@/modules/emails/templates/email-verification-via-url";
+import { mapToken, tokenTypes } from "@/routes/v0/mappings/tokens";
+import { mapExpandedUser } from "@/routes/v0/mappings/user";
+import { hashPassword } from "@/utils/auth/password";
+import { createSession, makeSessionToken } from "@/utils/auth/session";
+import { handle } from "@/utils/handle";
+import { getId } from "@/utils/id";
+import { permissions } from "@/utils/permissions/permissions";
+import { makeRouter } from "@/utils/router";
+import { makeEmailVerificationUrl } from "@/utils/urls";
+import { passwordSchema } from "@/utils/zod";
 
 export const registerRouter = makeRouter((app) => {
   app.post(
-    '/api/auth/register',
+    "/api/auth/register",
     {
       schema: {
-        description: 'Create user',
+        description: "Create user",
         body: z.object({
           email: z.string().email(),
           password: passwordSchema(),
@@ -28,7 +28,7 @@ export const registerRouter = makeRouter((app) => {
       auth.can(permissions.user.create({}));
       const newUser = await prisma.user.create({
         data: {
-          id: getId('usr'),
+          id: getId("usr"),
           email: body.email,
           passwordHash: await hashPassword(body.password),
         },

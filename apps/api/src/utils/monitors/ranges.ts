@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const rangeSchema = () => z.object({
   from: z.number().nonnegative(),
@@ -15,7 +15,7 @@ export function stringRangeToObject(range: string): Range {
   const isValid = /^\d+-\d+$/g.test(range);
   if (!isValid) throw new Error(`Cannot turn string range '${range}' to object`);
 
-  const [from, to] = range.split('-').map(v => Number(v));
+  const [from, to] = range.split("-").map(v => Number(v));
   const clampedTo = Math.max(from, to);
   return {
     from,
