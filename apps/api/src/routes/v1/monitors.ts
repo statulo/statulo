@@ -11,8 +11,8 @@ import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
 import { mapMonitorWithContactPoints, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
 import { intervalSchema } from "@/utils/monitors/intervals";
-import { listModifySchema } from '@/utils/zod';
-import { createContactPointJoins } from '@/routes/v1/contact-points';
+import { listModifySchema } from "@/utils/zod";
+import { createContactPointJoins } from "@/routes/v1/contact-points";
 
 export const monitorTypes = {
   http: "http",

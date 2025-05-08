@@ -2,7 +2,6 @@ import type { ArrayValues } from "type-fest";
 import { typeidUnboxed } from "typeid-js";
 import * as nanoid from "nanoid";
 
-
 export const idTypes = [
   "usr", // user
   "ses", // user session
@@ -12,7 +11,7 @@ export const idTypes = [
   "mtr", // monitor
   "stspg", // status page
   "stspg_mtr", // status page monitor
-  'con', // contact point
+  "con", // contact point
 ] as const;
 
 export function getId(prefix: ArrayValues<typeof idTypes>): string {

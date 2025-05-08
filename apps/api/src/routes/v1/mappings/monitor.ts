@@ -1,9 +1,9 @@
-import { mapContactPoint, type ContactPointDto, type PopulatedContactPoint } from '@/routes/v1/mappings/contact-point';
-import { monitorTypes, type MonitorTypes } from '@/routes/v1/monitors';
-import type { Interval } from '@/utils/monitors/intervals';
-import { stringRangeToObject, type Range } from '@/utils/monitors/ranges';
-import type { HttpMonitor, Monitor, MonitorContactPointAssignment, Prisma } from '@prisma/client';
-import type { JsonValue } from '@prisma/client/runtime/client';
+import type { HttpMonitor, Monitor, Prisma } from "@prisma/client";
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { mapContactPoint, type ContactPointDto } from "@/routes/v1/mappings/contact-point";
+import { monitorTypes, type MonitorTypes } from "@/routes/v1/monitors";
+import type { Interval } from "@/utils/monitors/intervals";
+import { stringRangeToObject, type Range } from "@/utils/monitors/ranges";
 
 export interface HttpMonitorDto {
   id: string;
@@ -23,7 +23,7 @@ export interface MonitorDto {
 
 export type MonitorWithContactPointsDto = MonitorDto & {
   contactPoints: ContactPointDto[];
-}
+};
 
 export interface ShallowMonitorDto {
   id: string;
@@ -51,15 +51,15 @@ export type FullMonitorWithContactPoints = FullMonitor & Prisma.MonitorGetPayloa
                 orgMember: {
                   include: {
                     user: true;
-                  }
-                }
-              }
+                  };
+                };
+              };
             };
             discord: true;
-          }
-        }
-      }
-    }
+          };
+        };
+      };
+    };
   };
 }>;
 

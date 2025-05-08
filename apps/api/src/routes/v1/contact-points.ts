@@ -1,18 +1,18 @@
-import { prisma } from '@/modules/db';
-import { handle } from '@/utils/handle';
-import { getId, getUntypedId } from '@/utils/id';
-import { permissions } from '@/utils/permissions/permissions';
-import { makeRouter } from '@/utils/router';
-import { z } from 'zod';
-import { ApiError, NotFoundError } from '@/utils/error';
-import { mapPage, pagerSchema } from '@/utils/pages';
-import type { Prisma } from '@prisma/client';
-import type { EnumType } from '@/utils/types';
-import { mapContactPoint } from '@/routes/v1/mappings/contact-point';
+import { z } from "zod";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/modules/db";
+import { handle } from "@/utils/handle";
+import { getId, getUntypedId } from "@/utils/id";
+import { permissions } from "@/utils/permissions/permissions";
+import { makeRouter } from "@/utils/router";
+import { ApiError, NotFoundError } from "@/utils/error";
+import { mapPage, pagerSchema } from "@/utils/pages";
+import type { EnumType } from "@/utils/types";
+import { mapContactPoint } from "@/routes/v1/mappings/contact-point";
 
 export const contactPointTypes = {
-  member: 'member',
-  discord: 'discord',
+  member: "member",
+  discord: "discord",
 } as const;
 export type ContactPointTypes = EnumType<typeof contactPointTypes>;
 
@@ -33,14 +33,14 @@ export function createContactPointJoins() {
 
 export const contactPointRouter = makeRouter((app) => {
   app.post(
-    '/api/v1/organisations/:id/contact-points',
+    "/api/v1/organisations/:id/contact-points",
     {
       schema: {
-        description: 'Create contact point',
+        description: "Create contact point",
         params: z.object({
           id: z.string(),
         }),
-        body: z.discriminatedUnion('type', [
+        body: z.discriminatedUnion("type", [
           z.object({
             type: z.literal(contactPointTypes.member),
             data: z.object({
@@ -62,7 +62,7 @@ export const contactPointRouter = makeRouter((app) => {
 
       const createPayload: Prisma.ContactPointUncheckedCreateInput = {
         orgId: params.id,
-        id: getId('con'),
+        id: getId("con"),
         type: body.type,
       };
 
@@ -93,14 +93,14 @@ export const contactPointRouter = makeRouter((app) => {
   );
 
   app.patch(
-    '/api/v1/contact-points/:id',
+    "/api/v1/contact-points/:id",
     {
       schema: {
-        description: 'Edit contact point',
+        description: "Edit contact point",
         params: z.object({
           id: z.string(),
         }),
-        body: z.discriminatedUnion('type', [
+        body: z.discriminatedUnion("type", [
           z.object({
             type: z.literal(contactPointTypes.discord),
             data: z.object({
@@ -122,7 +122,7 @@ export const contactPointRouter = makeRouter((app) => {
       auth.can404(permissions.org.contactPoint.edit({ org: contactPoint.orgId, con: contactPoint.id }));
 
       if (contactPoint.type !== body.type)
-        throw ApiError.forCode('cantChangeType', 400);
+        throw ApiError.forCode("cantChangeType", 400);
 
       const updatePayload: Prisma.ContactPointUncheckedUpdateInput = {};
 
@@ -146,10 +146,10 @@ export const contactPointRouter = makeRouter((app) => {
   );
 
   app.delete(
-    '/api/v1/contact-points/:id',
+    "/api/v1/contact-points/:id",
     {
       schema: {
-        description: 'Delete contact point',
+        description: "Delete contact point",
         params: z.object({
           id: z.string(),
         }),
@@ -178,10 +178,10 @@ export const contactPointRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/contact-point/:id',
+    "/api/v1/contact-point/:id",
     {
       schema: {
-        description: 'Get contact point',
+        description: "Get contact point",
         params: z.object({
           id: z.string(),
         }),
@@ -203,10 +203,10 @@ export const contactPointRouter = makeRouter((app) => {
   );
 
   app.get(
-    '/api/v1/organisations/:id/contact-points',
+    "/api/v1/organisations/:id/contact-points",
     {
       schema: {
-        description: 'List contact points',
+        description: "List contact points",
         params: z.object({
           id: z.string(),
         }),
@@ -229,7 +229,7 @@ export const contactPointRouter = makeRouter((app) => {
           orgId: params.id,
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         include: createContactPointJoins(),
       });

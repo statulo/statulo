@@ -1,7 +1,7 @@
-import type { ContactPointTypes } from '@/routes/v1/contact-points';
-import { contactPointTypes } from '@/routes/v1/contact-points';
-import { mapOrgMember, type OrgMemberDto } from '@/routes/v1/mappings/org-member';
-import type { DiscordContactPoint, MemberContactPoint, OrgMember, Prisma, User } from '@prisma/client';
+import type { DiscordContactPoint, MemberContactPoint, OrgMember, Prisma, User } from "@prisma/client";
+import type { ContactPointTypes } from "@/routes/v1/contact-points";
+import { contactPointTypes } from "@/routes/v1/contact-points";
+import { mapOrgMember, type OrgMemberDto } from "@/routes/v1/mappings/org-member";
 
 export interface MemberContactPointDto {
   id: string;
@@ -44,9 +44,9 @@ export type PopulatedContactPoint = Prisma.ContactPointGetPayload<{
         orgMember: {
           include: {
             user: true;
-          }
-        }
-      }
+          };
+        };
+      };
     };
     discord: true;
   };
