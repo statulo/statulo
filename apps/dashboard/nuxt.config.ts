@@ -8,6 +8,17 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    public: {
+      http: {
+        browserBaseUrl: "http://localhost:8080",
+      },
+    },
+    http: {
+      baseUrl: "http://localhost:8080",
+    },
+  },
+
   components: [
     {
       path: "~/components/",
@@ -31,6 +42,16 @@ export default defineNuxtConfig({
       // We use our own eslint config, so disable all but the nuxt generated rules
       standalone: false,
     },
+  },
+
+  experimental: {
+    // This enables the nuxtApp context to be accessible in async functions
+    // Especially useful for the vue-query plugin, where retries using the nuxtApp context will fail without this
+    asyncContext: true,
+  },
+
+  tailwindcss: {
+    viewer: true,
   },
 
   modules: [

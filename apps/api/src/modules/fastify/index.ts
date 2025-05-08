@@ -1,5 +1,7 @@
-import Fastify, { type FastifyInstance } from "fastify";
+import type { RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault, FastifyInstance } from "fastify";
+import Fastify from "fastify";
 import cors from "@fastify/cors";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -7,6 +9,7 @@ import {
 } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { fastifySwagger } from "@fastify/swagger";
+import type pino from "pino";
 import { conf, version } from "@/config";
 import { isApiError } from "@/utils/error";
 import { logger } from "@/modules/log";
@@ -14,11 +17,36 @@ import { setupRoutes } from "@/routes/routes";
 
 const log = logger.child({ svc: "fastify" });
 
-export async function setupFastify(): Promise<FastifyInstance> {
+export type StatuloFastifyInstance = FastifyInstance<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  pino.Logger,
+  ZodTypeProvider
+>;
+
+export async function setupFastify(): Promise<StatuloFastifyInstance> {
   log.info(`setting up fastify...`);
 
   const app = Fastify({
-    loggerInstance: log.child({ type: "req" }) as any,
+    loggerInstance: log,
+    disableRequestLogging: true,
+  });
+
+  app.addHook("onResponse", (req, reply, done) => {
+    req.log.info(
+      {
+        svc: "http",
+        response: {
+          url: req.raw.url,
+          method: req.raw.method,
+          statusCode: reply.raw.statusCode,
+          elapsedTime: Math.round(reply.elapsedTime),
+        },
+      },
+      "request completed",
+    );
+    done();
   });
 
   app.setValidatorCompiler(validatorCompiler);
@@ -101,7 +129,7 @@ export async function setupFastify(): Promise<FastifyInstance> {
   return app;
 }
 
-export function startFastify(app: FastifyInstance) {
+export function startFastify(app: StatuloFastifyInstance) {
   // listen to port
   log.info(`listening to port`);
   return new Promise<void>((resolve) => {
@@ -123,10 +151,10 @@ export function startFastify(app: FastifyInstance) {
   });
 }
 
-export async function setupFastifyRoutes(app: FastifyInstance) {
+export async function setupFastifyRoutes(app: StatuloFastifyInstance) {
   log.info(`setting up routes`);
   await app.register(
-    async (api) => {
+    async (api: StatuloFastifyInstance) => {
       await setupRoutes(api);
       app.route({
         url: "/swagger",
