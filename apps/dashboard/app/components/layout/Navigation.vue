@@ -24,6 +24,25 @@
       </div>
     </template>
 
-    <p>Items</p>
+    <div class="flex items-center gap-7">
+      <NavigationItem
+        to="/monitors"
+        icon="basil:fire-solid"
+      >
+        Monitors
+      </NavigationItem>
+      <NavigationItem
+        to="/incidents"
+        icon="basil:lightning-alt-solid"
+      >
+        Incidents
+      </NavigationItem>
+      <NavigationItem
+        to="/pages"
+        icon="basil:globe-solid"
+      >
+        Pages
+      </NavigationItem>
+    </div>
   </NavigationBar>
 </template>

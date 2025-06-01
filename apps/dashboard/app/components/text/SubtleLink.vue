@@ -7,7 +7,7 @@ const props = defineProps<ClickableProps>();
 <template>
   <Clickable
     v-bind="props"
-    class="text-neutral-200 hover:text-neutral-100 active:text-white transition duration-100"
+    class="text-neutral-200 hover:text-neutral-100 active:text-white active:scale-95 transition duration-75"
   >
     <slot />
   </Clickable>
