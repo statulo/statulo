@@ -1,5 +1,5 @@
 <template>
-  <p class="leading-snug">
+  <p class="leading-relaxed">
     <slot />
   </p>
 </template>

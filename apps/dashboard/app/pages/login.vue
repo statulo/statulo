@@ -4,6 +4,7 @@ import { getNextPage } from "~/utils/urls";
 
 definePageMeta({
   auth: "guest",
+  layout: "auth",
 });
 
 const authStore = useAuthStore();
@@ -42,25 +43,46 @@ async function submit() {
 </script>
 
 <template>
-  <div>
-    <form @submit.prevent="submit">
-      <h1>Login</h1>
+  <Form @submit="submit()">
+    <AuthHeading>What's your email?</AuthHeading>
+    <Label
+      text="Email"
+      class="mb-5"
+    >
       <TextInput
         v-model="form.data.email"
         type="email"
         placeholder="Email"
         :error="form.error('email')"
       />
+    </Label>
+    <Label
+      text="Password"
+      class="mb-8"
+    >
       <TextInput
         v-model="form.data.password"
         type="password"
         placeholder="Password"
         :error="form.error('password')"
       />
-      <button type="submit">
-        Login
-      </button>
-      <p>{{ form.errors.formErrors() }}</p>
-    </form>
-  </div>
+    </Label>
+    <Button
+      submit
+      stretch
+    >
+      Log in
+    </Button>
+    <Text class="text-sm text-center mt-10">
+      New to Statulo?
+      <TextLink to="/register">
+        Create an account
+      </TextLink><br>
+      or
+      <TextLink to="#">
+        learn more
+      </TextLink>
+    </Text>
+    <p>{{ form.errors.formErrors() }}</p>
+  </Form>
 </template>
