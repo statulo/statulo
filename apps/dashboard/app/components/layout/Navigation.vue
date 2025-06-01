@@ -26,13 +26,14 @@
 
     <div class="flex items-center gap-7">
       <NavigationItem
-        to="/monitors"
+        to="/"
+        exact
         icon="basil:fire-solid"
       >
         Monitors
       </NavigationItem>
       <NavigationItem
-        to="/incidents"
+        to="/test"
         icon="basil:lightning-alt-solid"
       >
         Incidents
