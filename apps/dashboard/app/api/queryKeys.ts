@@ -8,4 +8,7 @@ export const queryKeys = {
     all: key("users"),
     one: (id: string) => key("users", id),
   },
+  monitors: {
+    all: key("monitors"),
+  },
 };
