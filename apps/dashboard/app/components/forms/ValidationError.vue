@@ -6,8 +6,12 @@
     />
     <div
       v-if="props.err.content"
-      class="text-red-500 text-xs flex items-center font-bold py-2 my-2"
+      class="text-status-danger text-xs flex items-start font-semibold py-0.5 my-2"
     >
+      <Icon
+        name="streamline:warning-triangle-solid"
+        class="mr-2 mt-0.5"
+      />
       <p>
         {{ props.err.content.text }}
       </p>
