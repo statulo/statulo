@@ -1,11 +1,20 @@
+<script setup lang="ts">
+const authStore = useAuthStore();
+const self = computed(() => authStore.user);
+const org = computed(() => self.value?.orgMembers[0]?.org); // TODO temp
+</script>
+
 <template>
   <NavigationBar>
     <template #left>
-      <div class="flex items-center gap-3">
-        <Avatar name="Pretendo" />
+      <div
+        v-if="org"
+        class="flex items-center gap-3"
+      >
+        <Avatar :name="org.name" />
         <div>
-          <Bold>Pretendo</Bold>
-          <Small>Remaking Nintendo</Small>
+          <Bold>{{ org.name }}</Bold>
+          <Small>{{ org.description }}</Small>
         </div>
       </div>
     </template>
@@ -18,7 +27,8 @@
           Docs
         </SubtleLink>
         <Avatar
-          name="Jvs"
+          v-if="self"
+          :name="self.email"
           :chars="1"
         />
       </div>
