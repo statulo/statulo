@@ -22,9 +22,9 @@ function trigger() {
     v-bind="props"
     class="py-2 px-4 rounded-lg active:scale-95 transition duration-75"
     :class="{
-      'bg-gradient-to-b from-primary-500 to-primary-600 border border-primary-400 text-primary-100': type === 'primary',
+      'bg-gradient-to-b from-primary-500 to-primary-600 shadow-md border border-primary-400 text-primary-100': type === 'primary',
       'hover:from-primary-600 hover:to-primary-600 border hover:border-primary-300': type === 'primary',
-      'bg-neutral-500 border border-neutral-400 text-neutral-100': type === 'secondary',
+      'bg-neutral-500 border border-neutral-400 shadow-md text-neutral-100': type === 'secondary',
       'hover:bg-neutral-400 hover:border-neutral-300': type === 'secondary',
     }"
     @click="trigger()"

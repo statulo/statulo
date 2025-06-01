@@ -16,7 +16,7 @@ const props = defineProps<{
     <span
       class="flex items-center gap-1.5 active:scale-95 rounded-full py-[5px] px-2.5 border border-neutral-300/0 bg-neutral-500/0 transition duration-75"
       :class="{
-        'border-neutral-300/100 bg-neutral-500/100 group-hover:border-neutral-250 group-hover:bg-neutral-400': props.exact ? isExactActive : isActive,
+        'shadow-md border-neutral-300/100 bg-neutral-500/100 group-hover:border-neutral-250 group-hover:bg-neutral-400': props.exact ? isExactActive : isActive,
       }"
     >
       <Icon
