@@ -52,8 +52,26 @@ const { isPending, data } = useQuery({
           :key="item.id"
         >
           <Divider v-if="ind !== 0" />
-          <div class="my-4">
-            <p>{{ item.computedName }} - {{ item.type }}</p>
+          <div class="my-4 flex items-center gap-3">
+            <MonitorStatus
+              status="up"
+              class="mt-2 self-start text-lg"
+            />
+            <div class="flex-1">
+              <SubHeading>{{ item.computedName }}</SubHeading>
+              <div class="flex items-center mt-1">
+                <MonitorType
+                  :type="item.type"
+                  class="mr-2"
+                />
+                <span>Checked every 30s</span>
+              </div>
+            </div>
+            <MonitorStatus
+              status="up"
+              with-text
+              class="text-sm"
+            />
           </div>
         </div>
       </div>
