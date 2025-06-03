@@ -3,6 +3,7 @@ import { z } from "zod";
 
 definePageMeta({
   auth: "guest",
+  layout: "auth",
 });
 
 const authStore = useAuthStore();
@@ -41,31 +42,57 @@ async function submit() {
 </script>
 
 <template>
-  <div>
-    <form @submit.prevent="submit">
-      <h1>Register</h1>
+  <Form @submit="submit()">
+    <AuthHeading>Let's create a new Statulo account!</AuthHeading>
+    <Label
+      text="Email"
+      class="mb-5"
+    >
       <TextInput
         v-model="form.data.email"
         type="email"
         placeholder="Email"
         :error="form.error('email')"
       />
+    </Label>
+    <Label
+      text="Password"
+      class="mb-5"
+    >
       <TextInput
         v-model="form.data.password"
         type="password"
         placeholder="Password"
         :error="form.error('password')"
       />
+    </Label>
+    <Label
+      text="Confirm Password"
+      class="mb-8"
+    >
       <TextInput
         v-model="form.data.confirmPassword"
         type="password"
         placeholder="Confirm Password"
         :error="form.error('confirmPassword')"
       />
-      <button type="submit">
-        Register
-      </button>
-      <p>{{ form.errors.formErrors() }}</p>
-    </form>
-  </div>
+    </Label>
+    <Button
+      submit
+      stretch
+    >
+      Create account
+    </Button>
+    <Text class="text-sm text-center mt-10">
+      Already have an account?
+      <TextLink to="/login">
+        Go to login
+      </TextLink><br>
+      or
+      <TextLink to="#">
+        learn more
+      </TextLink>
+    </Text>
+    <p>{{ form.errors.formErrors() }}</p>
+  </Form>
 </template>
