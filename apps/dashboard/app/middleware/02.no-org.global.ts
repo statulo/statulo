@@ -23,9 +23,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return;
   }
 
-  // If user has organisatios, don't do anything
-  const hasOrg = authStore.user?.orgMembers.length > 0;
-  if (!hasOrg) {
+  // If user has organisations, don't do anything
+  const hasOrg = authStore.user.orgMembers.length > 0;
+  if (hasOrg) {
     return;
   }
 
