@@ -11,6 +11,7 @@ import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
 import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
 import { intervalSchema } from "@/utils/monitors/intervals";
+import { listModifySchema } from "@/utils/zod";
 
 export const monitorTypes = {
   http: "http",
@@ -38,6 +39,7 @@ export const monitorRouter = makeRouter((app) => {
           }),
         ]).and(z.object({
           name: z.string().min(1).nullable(),
+          contactPointIds: z.array(z.string()).default([]),
         })),
       },
     },
@@ -50,6 +52,12 @@ export const monitorRouter = makeRouter((app) => {
         id: getId("mtr"),
         name: body.name,
         type: body.type,
+        contactPoints: {
+          create: body.contactPointIds.map(id => ({
+            id: getUntypedId(),
+            contactPointId: id,
+          })),
+        },
       };
 
       if (body.type === monitorTypes.http) {
@@ -94,6 +102,7 @@ export const monitorRouter = makeRouter((app) => {
           }),
         ]).and(z.object({
           name: z.string().min(1).nullable().optional(),
+          contactPointIds: listModifySchema(z.string()).optional(),
         })),
       },
     },
@@ -115,6 +124,17 @@ export const monitorRouter = makeRouter((app) => {
 
       const updatePayload: Prisma.MonitorUncheckedUpdateInput = {
         name: body.name,
+        contactPoints: {
+          create: (body.contactPointIds?.add ?? []).map(id => ({
+            id: getUntypedId(),
+            contactPointId: id,
+          })),
+          deleteMany: {
+            contactPointId: {
+              in: body.contactPointIds?.remove ?? [],
+            },
+          },
+        },
       };
 
       if (monitor.type === monitorTypes.http) {

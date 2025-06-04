@@ -34,6 +34,7 @@ export type FullMonitor = Prisma.MonitorGetPayload<{
     http: true;
   };
 }>;
+
 type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
 
 function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
