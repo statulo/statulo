@@ -7,6 +7,11 @@ const legitCompany = {
   memberId: "orgmbr_01jqvh74fvfahtq3q9mexxp8zv",
 };
 
+const foobar = {
+  id: "org_01jwpqqpmben8vqe1p7mfk6wxr",
+  memberId: "orgmbr_01jwpndndnen8vqe11p3pk4t06",
+};
+
 export async function seedOrgs() {
   await prisma.organisation.create({
     data: {
@@ -16,6 +21,21 @@ export async function seedOrgs() {
       members: {
         create: {
           id: legitCompany.memberId,
+          roles: [orgRoles.admin],
+          userId: testUser.id,
+        },
+      },
+    },
+  });
+
+  await prisma.organisation.create({
+    data: {
+      id: foobar.id,
+      name: "Foobar Industries",
+      description: "Putting the foo in the bar!",
+      members: {
+        create: {
+          id: foobar.memberId,
           roles: [orgRoles.admin],
           userId: testUser.id,
         },
