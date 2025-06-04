@@ -52,6 +52,12 @@ export const monitorRouter = makeRouter((app) => {
         id: getId("mtr"),
         name: body.name,
         type: body.type,
+        contactPoints: {
+          create: body.contactPointIds.map(id => ({
+            id: getUntypedId(),
+            contactPointId: id,
+          })),
+        },
       };
 
       if (body.type === monitorTypes.http) {
@@ -122,7 +128,6 @@ export const monitorRouter = makeRouter((app) => {
           create: (body.contactPointIds?.add ?? []).map(id => ({
             id: getUntypedId(),
             contactPointId: id,
-            monitorId: monitor.id,
           })),
           deleteMany: {
             contactPointId: {
