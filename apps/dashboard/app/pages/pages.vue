@@ -1,3 +1,9 @@
+<script setup lang="ts">
+definePageMeta({
+  auth: "org-scoped",
+});
+</script>
+
 <template>
   <div>
     <div class="flex items-end mb-8">

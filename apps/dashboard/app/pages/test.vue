@@ -25,6 +25,9 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+definePageMeta({
+  auth: "org-scoped",
+});
 const authStore = useAuthStore();
 
 const form = useForm({

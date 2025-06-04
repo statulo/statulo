@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/vue-query";
 import { listMonitors } from "~/api/monitors";
 import { queryKeys } from "~/api/queryKeys";
 
+definePageMeta({
+  auth: "org-scoped",
+});
 const auth = useAuthStore();
 
 const { isPending, data } = useQuery({
