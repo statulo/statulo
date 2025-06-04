@@ -45,5 +45,12 @@ export const permissions = {
       delete: p.create("delete", "/organisation/:org/statusPage/:stspg"),
       edit: p.create("edit", "/organisation/:org/statusPage/:stspg"),
     },
+    contactPoint: {
+      list: p.create("list", "/organisation/:org/contact-point"),
+      create: p.create("create", "/organisation/:org/contact-point"),
+      read: p.create("read", "/organisation/:org/contact-point/:con"),
+      delete: p.create("delete", "/organisation/:org/contact-point/:con"),
+      edit: p.create("edit", "/organisation/:org/contact-point/:con"),
+    },
   },
 };
