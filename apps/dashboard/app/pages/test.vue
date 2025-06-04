@@ -42,14 +42,19 @@ function submit() {
       </div>
     </div>
 
-    <SubHeading>Organisations for user</SubHeading>
-    <div>
-      <Divider />
+    <Panel
+      titled
+      class="mb-8"
+    >
+      <template #title>
+        <Bold>Organisations for user</Bold>
+      </template>
       <div
         v-for="member of orgMembers"
         :key="member.id"
       >
-        <div class="bg-neutral-500 rounded flex items-center">
+        <Divider />
+        <div class="p-2 flex items-center">
           <div class="flex-1">
             <Bold>
               {{ member.org.name }}
@@ -58,15 +63,15 @@ function submit() {
             <Small>{{ member.org.description ?? "" }}</Small>
           </div>
           <Button
+            v-if="org?.id !== member.org.id"
             type="secondary"
             @click="authStore.switchOrg(member.org.id)"
           >
             Switch
           </Button>
         </div>
-        <Divider />
       </div>
-    </div>
+    </Panel>
 
     <SubHeading>Form test</SubHeading>
     <TextInput

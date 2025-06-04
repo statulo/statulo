@@ -12,7 +12,7 @@ const { isPending, data } = useQuery({
   queryKey: queryKeys.monitors.all,
   queryFn: async () => {
     // TODO temp
-    return await listMonitors(auth.user?.orgMembers[0]?.org.id ?? "", {
+    return await listMonitors(auth.org?.id ?? "", {
       limit: 25,
       offset: 0,
     });
