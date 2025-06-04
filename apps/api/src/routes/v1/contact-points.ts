@@ -236,4 +236,51 @@ export const contactPointRouter = makeRouter((app) => {
       return mapPage(query, contactPoints.map(mapContactPoint), totalContactPoints);
     }),
   );
+
+  app.get(
+    "/api/v1/monitors/:id/contact-points",
+    {
+      schema: {
+        description: "Get Contact points for monitor",
+        params: z.object({
+          id: z.string(),
+        }),
+        querystring: pagerSchema(),
+      },
+    },
+    handle(async ({ params, auth, query }) => {
+      const monitor = await prisma.monitor.findUnique({
+        where: {
+          id: params.id,
+        },
+        include: {
+          http: true,
+        },
+      });
+      if (!monitor) throw new NotFoundError();
+      auth.can404(permissions.org.monitor.read({ org: monitor.orgId, mtr: monitor.id }));
+
+      const totalContactPoints = await prisma.monitorContactPointAssignment.count({
+        where: {
+          monitorId: params.id,
+        },
+      });
+      const contactPoints = await prisma.monitorContactPointAssignment.findMany({
+        take: query.limit,
+        skip: query.offset,
+        where: {
+          monitorId: params.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          contactPoint: {
+            include: createContactPointJoins(),
+          },
+        },
+      });
+      return mapPage(query, contactPoints.map(v => mapContactPoint(v.contactPoint)), totalContactPoints);
+    }),
+  );
 });

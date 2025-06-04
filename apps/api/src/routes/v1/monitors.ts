@@ -9,10 +9,9 @@ import { ApiError, NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
 import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
-import { mapMonitorWithContactPoints, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
+import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
 import { intervalSchema } from "@/utils/monitors/intervals";
 import { listModifySchema } from "@/utils/zod";
-import { createContactPointJoins } from "@/routes/v1/contact-points";
 
 export const monitorTypes = {
   http: "http",
@@ -71,16 +70,9 @@ export const monitorRouter = makeRouter((app) => {
         data: createPayload,
         include: {
           http: true,
-          contactPoints: {
-            include: {
-              contactPoint: {
-                include: createContactPointJoins(),
-              },
-            },
-          },
         },
       });
-      return mapMonitorWithContactPoints(newMonitor);
+      return mapMonitor(newMonitor);
     }),
   );
 
@@ -161,16 +153,9 @@ export const monitorRouter = makeRouter((app) => {
         data: updatePayload,
         include: {
           http: true,
-          contactPoints: {
-            include: {
-              contactPoint: {
-                include: createContactPointJoins(),
-              },
-            },
-          },
         },
       });
-      return mapMonitorWithContactPoints(newMonitor);
+      return mapMonitor(newMonitor);
     }),
   );
 
@@ -226,18 +211,11 @@ export const monitorRouter = makeRouter((app) => {
         },
         include: {
           http: true,
-          contactPoints: {
-            include: {
-              contactPoint: {
-                include: createContactPointJoins(),
-              },
-            },
-          },
         },
       });
       if (!monitor) throw new NotFoundError();
       auth.can404(permissions.org.monitor.read({ org: monitor.orgId, mtr: monitor.id }));
-      return mapMonitorWithContactPoints(monitor);
+      return mapMonitor(monitor);
     }),
   );
 
