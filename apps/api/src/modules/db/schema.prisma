@@ -124,6 +124,7 @@ model MonitorContactPointAssignment {
   contactPoint   ContactPoint @relation(fields: [contactPointId], references: [id], onDelete: Cascade)
   contactPointId String       @map("contact_point_id")
 
+  @@unique([monitorId, contactPointId])
   @@map("monitor_contact_point_assignment")
 }
 
