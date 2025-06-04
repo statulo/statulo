@@ -178,7 +178,7 @@ export const contactPointRouter = makeRouter((app) => {
   );
 
   app.get(
-    "/api/v1/contact-point/:id",
+    "/api/v1/contact-points/:id",
     {
       schema: {
         description: "Get contact point",
