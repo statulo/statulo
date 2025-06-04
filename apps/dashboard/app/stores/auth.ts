@@ -100,6 +100,16 @@ export const useAuthStore = defineStore(
       });
     }
 
+    function switchOrg(orgId: string) {
+      if (!state.user) return;
+
+      // sanity check
+      const selectedOrg = state.user.orgMembers.find(v => v.org.id === orgId);
+      if (!selectedOrg) return;
+
+      state.selectedOrgId = orgId;
+    }
+
     return {
       ...toRefs(state),
       isLoggedIn,
@@ -109,6 +119,7 @@ export const useAuthStore = defineStore(
       register,
       fetchUser,
       resetAuth,
+      switchOrg,
     };
   },
   {
