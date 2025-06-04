@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const authStore = useAuthStore();
 const self = computed(() => authStore.user);
-const org = computed(() => self.value?.orgMembers[0]?.org); // TODO temp
+const org = computed(() => authStore.org);
 </script>
 
 <template>
