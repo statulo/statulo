@@ -1,6 +1,6 @@
 declare module "#app" {
   interface PageMeta {
-    auth?: boolean | "guest";
+    auth?: boolean | "guest" | "org-scoped";
   }
 }
 

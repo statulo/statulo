@@ -6,9 +6,19 @@ import { login as loginRequest, register as registerRequest, type LoginRequest, 
 interface AuthState {
   user: ExpandedUserResponse | null;
   token: string | null;
+  selectedOrgId: string | null;
 }
 
 type CookiesStorageOptions = PublicRuntimeConfig["piniaPluginPersistedstate"]["cookieOptions"];
+
+function getNewSelectedOrgId(user: ExpandedUserResponse, oldOrgId: string | null): string | null {
+  if (oldOrgId) {
+    const oldSelectedOrg = user.orgMembers.find(v => v.org.id === oldOrgId);
+    if (oldSelectedOrg)
+      return oldSelectedOrg.org.id;
+  }
+  return user.orgMembers[0]?.org.id ?? null;
+}
 
 export const useAuthStore = defineStore(
   "auth",
@@ -16,12 +26,14 @@ export const useAuthStore = defineStore(
     const initialState: AuthState = {
       user: null,
       token: null,
+      selectedOrgId: null,
     };
 
     const state = reactive<AuthState>(structuredClone(initialState));
 
     useQuerySubscribe<ExpandedUserResponse>(queryKeys.users.me, (user) => {
       state.user = user ?? null;
+      if (user) state.selectedOrgId = getNewSelectedOrgId(user, state.selectedOrgId);
     });
 
     async function fetchUser() {
@@ -36,10 +48,17 @@ export const useAuthStore = defineStore(
       });
 
       state.user = user;
+      state.selectedOrgId = getNewSelectedOrgId(user, state.selectedOrgId);
       return user;
     }
 
     const isLoggedIn = computed(() => state.token != null && state.user != null);
+    const org = computed(() => {
+      if (!isLoggedIn.value) return null;
+      if (!state.user) return null;
+      if (!state.selectedOrgId) return null;
+      return state.user.orgMembers.find(v => v.org.id === state.selectedOrgId)?.org ?? null;
+    });
 
     async function login(request: LoginRequest) {
       const loginResponse = await loginRequest(request);
@@ -81,20 +100,32 @@ export const useAuthStore = defineStore(
       });
     }
 
+    function switchOrg(orgId: string) {
+      if (!state.user) return;
+
+      // sanity check
+      const selectedOrg = state.user.orgMembers.find(v => v.org.id === orgId);
+      if (!selectedOrg) return;
+
+      state.selectedOrgId = orgId;
+    }
+
     return {
       ...toRefs(state),
       isLoggedIn,
+      org,
       login,
       logout,
       register,
       fetchUser,
       resetAuth,
+      switchOrg,
     };
   },
   {
     persist: {
       key: "statulo-session",
-      pick: ["token"],
+      pick: ["token", "selectedOrgId"],
       storage: {
         getItem(key) {
           return piniaPluginPersistedstate.cookies().getItem(key);
