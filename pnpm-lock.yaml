@@ -223,6 +223,9 @@ importers:
         specifier: ^3.25.56
         version: 3.25.56
     devDependencies:
+      '@iconify-json/basil':
+        specifier: ^1.2.2
+        version: 1.2.2
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -985,6 +988,9 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@iconify-json/basil@1.2.2':
+    resolution: {integrity: sha512-l2RX+0Hw831WrnvnuWsBPT5ipG7hP+Q24DiN5kUt/Afi7kaO7p6eUnl/BmhbJIS4ySpw0hjtJ4lcEkpy2VAYgg==}
 
   '@iconify/collections@1.0.556':
     resolution: {integrity: sha512-/k11MrPCUOZ/UShNXcOgDtoGOqkXTkzt2MVHbVcH59w/BDydD3R8SYLOQw4owN4wMul0x55RCx7C3T+BvFTyow==}
@@ -8431,6 +8437,10 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
+
+  '@iconify-json/basil@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/collections@1.0.556':
     dependencies:

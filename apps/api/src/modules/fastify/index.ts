@@ -123,6 +123,7 @@ export async function setupFastify(): Promise<StatuloFastifyInstance> {
   const corsDomains = conf.server.cors.split(" ").filter(v => v.length > 0);
   await app.register(cors, {
     origin: corsDomains,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     credentials: true,
   });
 

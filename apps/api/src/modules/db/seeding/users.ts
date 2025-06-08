@@ -5,6 +5,7 @@ import { sessionExpiryInMs } from "@/utils/auth/session";
 
 export const adminUser = {
   id: "usr_01jqs4rrjve8mr5jmaqz7rzxnh",
+  name: "Admin User",
   email: "admin@statulo.com",
   sessionId: "ses_01jqvmcf0ffq8sf628wa5se6bh",
   password: "Testtest123!",
@@ -13,6 +14,7 @@ export const adminUser = {
 
 export const testUser = {
   id: "usr_01jqs42erwf2697qc73vzwnkwt",
+  name: "Test User",
   email: "test@statulo.com",
   sessionId: "ses_01jqvmc6cafq8sf626crrhpwxa",
   password: "Testtest123!",
@@ -24,12 +26,14 @@ export async function seedUsers() {
     data: [
       {
         id: adminUser.id,
+        name: adminUser.name,
         email: adminUser.email,
         passwordHash: await hashPassword(adminUser.password),
         roles: adminUser.roles,
       },
       {
         id: testUser.id,
+        name: testUser.name,
         email: testUser.email,
         passwordHash: await hashPassword(testUser.password),
         roles: testUser.roles,

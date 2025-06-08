@@ -39,6 +39,7 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
+    "@iconify-json/basil": "^1.2.2",
     "type-fest": "^4.41.0",
     "vue-tsc": "^2.2.10"
   }

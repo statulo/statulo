@@ -11,6 +11,7 @@ model User {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
 
+  name                      String                     @map("name")
   passwordHash              String                     @map("password_hash")
   securityStamp             String                     @default("default-stamp")
   email                     String                     @unique
