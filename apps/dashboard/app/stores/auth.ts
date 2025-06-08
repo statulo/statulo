@@ -90,7 +90,7 @@ export const useAuthStore = defineStore(
       }
 
       resetAuth();
-      await navigateTo("/login");
+      await navigateTo(urls.home);
     }
 
     function resetAuth() {

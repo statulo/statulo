@@ -22,7 +22,7 @@ function trigger() {
 <template>
   <Clickable
     v-bind="props"
-    class="py-2 px-4 rounded-lg active:scale-95 transition duration-75"
+    class="py-2 px-4 rounded-lg active:scale-95 inline-block transition duration-75"
     :type="props.submit ? 'submit' : undefined"
     :class="{
       'bg-gradient-to-b from-primary-500 to-primary-600 shadow-md border border-primary-400 text-primary-100': type === 'primary',

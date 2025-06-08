@@ -5,7 +5,7 @@ const org = computed(() => authStore.org);
 </script>
 
 <template>
-  <NavigationBar>
+  <NavigationBar class="-mt-2">
     <template #left>
       <div
         v-if="org"
@@ -20,17 +20,28 @@ const org = computed(() => authStore.org);
     </template>
     <template #right>
       <div class="flex gap-8 items-center text-sm">
-        <SubtleLink to="#">
+        <SubtleLink :to="urls.feedback">
           Feedback
         </SubtleLink>
-        <SubtleLink to="#">
+        <SubtleLink :to="urls.documentation">
           Docs
         </SubtleLink>
-        <Avatar
-          v-if="self"
-          :name="self.email"
-          :chars="1"
-        />
+        <UserMenu
+          v-slot="{ open }"
+        >
+          <div
+            class="bg-neutral-900/0 p-2 active:scale-95 rounded-full transition duration-100 hover:bg-neutral-900/100"
+            :class="{
+              '!bg-neutral-900/100': open,
+            }"
+          >
+            <Avatar
+              v-if="self"
+              :name="self.email"
+              :chars="1"
+            />
+          </div>
+        </UserMenu>
       </div>
     </template>
 
