@@ -3,4 +3,4 @@ packages:
   - "packages/*"
 
 catalog:
-  eslint: ^9.24.0
+  eslint: ^9.28.0
