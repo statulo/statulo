@@ -9,7 +9,7 @@ export type ClickableProps = {
 
 const props = defineProps<ClickableProps>();
 const emit = defineEmits<{
-  (_event: "click"): void;
+  (event: "click", data: MouseEvent): void;
 }>();
 </script>
 
@@ -28,7 +28,7 @@ const emit = defineEmits<{
   </a>
   <button
     v-else
-    @click="emit('click')"
+    @click="emit('click', $event)"
   >
     <slot />
   </button>

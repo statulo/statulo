@@ -7,14 +7,14 @@ const props = defineProps<{
   stretch?: boolean;
 } & ClickableProps>();
 const emit = defineEmits<{
-  (_event: "click"): void;
+  (event: "click"): void;
 }>();
 
 const type = computed(() => props.type ?? "primary");
 
-function trigger() {
-  if (props.loading) return;
-  if (props.disabled) return;
+function trigger($event: MouseEvent) {
+  if (props.loading) return $event.preventDefault();
+  if (props.disabled) return $event.preventDefault();
   emit("click");
 }
 </script>
@@ -22,7 +22,7 @@ function trigger() {
 <template>
   <Clickable
     v-bind="props"
-    class="py-2 px-4 rounded-lg active:scale-95 inline-block transition duration-75"
+    class="inline-block px-4 py-2 transition duration-75 rounded-lg active:scale-95"
     :type="props.submit ? 'submit' : undefined"
     :class="{
       'bg-gradient-to-b from-primary-500 to-primary-600 shadow-md border border-primary-400 text-primary-100': type === 'primary',
@@ -31,7 +31,7 @@ function trigger() {
       'hover:bg-neutral-400 hover:border-neutral-300': type === 'secondary',
       'w-full': props.stretch,
     }"
-    @click="trigger()"
+    @click="trigger"
   >
     <slot />
   </Clickable>
