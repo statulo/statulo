@@ -60,6 +60,12 @@ function changeEmailSubmit() {
   emailToChange.value = res.data.email;
 }
 
+async function onEmailChangeSuccess() {
+  // TODO: Notify user success
+  await authStore.fetchUser();
+  changeEmailForm.reset();
+  emailToChange.value = null;
+}
 </script>
 
 <template>
@@ -70,8 +76,11 @@ function changeEmailSubmit() {
     </div>
 
     <ChangeEmailVerificationDialog
+      v-if="emailToChange != null"
+      :email="emailToChange"
       :open="emailToChange != null"
-      @update:open="emailToChange = null"
+      @cancel="emailToChange = null"
+      @success="onEmailChangeSuccess"
     />
 
     <div class="flex flex-col gap-8 lg:flex-row">
@@ -101,7 +110,7 @@ function changeEmailSubmit() {
               />
               <Button
                 submit
-                :disabled="!changeEmailForm.changed"
+                :disabled="changeEmailForm.changed('email') === false"
               >
                 Change
               </Button>
