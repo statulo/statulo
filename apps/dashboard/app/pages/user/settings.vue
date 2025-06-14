@@ -51,12 +51,13 @@ async function changePasswordSubmit() {
   }
 }
 
+const emailToChange = ref<string | null>(null);
+
 function changeEmailSubmit() {
   const res = changeEmailForm.validate();
   if (!res.success) return;
 
-  console.log("Email changed successfully", res.data);
-  changeEmailForm.reset();
+  emailToChange.value = res.data.email;
 }
 
 </script>
@@ -67,6 +68,11 @@ function changeEmailSubmit() {
       <BigTitle>User Settings</BigTitle>
       <p>Manage your account settings and preferences here.</p>
     </div>
+
+    <ChangeEmailVerificationDialog
+      :open="emailToChange != null"
+      @update:open="emailToChange = null"
+    />
 
     <div class="flex flex-col gap-8 lg:flex-row">
       <div class="flex-1 space-y-4">
@@ -93,7 +99,10 @@ function changeEmailSubmit() {
                 class="flex-1"
                 :error="changeEmailForm.error('email')"
               />
-              <Button submit>
+              <Button
+                submit
+                :disabled="!changeEmailForm.changed"
+              >
                 Change
               </Button>
             </div>

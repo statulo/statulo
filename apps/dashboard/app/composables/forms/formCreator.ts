@@ -24,6 +24,7 @@ export type FormControls<TInput, TOutput> = {
   validate: () => FormValidateResult<TOutput>;
   reset: () => void;
   data: TInput;
+  changed: boolean;
   error: (key: string) => FormError;
   errors: {
     clear: () => void;
@@ -47,9 +48,15 @@ export function createFormComposable<TSchema extends AnyZodObject | ZodEffects<A
   const data = ref(ops.init()) as Ref<z.input<TSchema>>;
   const errors = useErrorValidation(ops.id);
 
+  const changed = ref(false);
+  watch(data, () => {
+    changed.value = true;
+  });
+
   const controls: FormControls<z.input<TSchema>, z.output<TSchema>> = {
     id: ops.id,
     reset() {
+      changed.value = false;
       data.value = ops.init();
       errors.clear();
     },
@@ -85,6 +92,9 @@ export function createFormComposable<TSchema extends AnyZodObject | ZodEffects<A
     },
     get data() {
       return data.value;
+    },
+    get changed() {
+      return changed.value;
     },
     errors: {
       clear() {
