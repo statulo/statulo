@@ -32,7 +32,7 @@ const value = defineModel<number[] | string[]>();
       v-for="(id, index) in props.count"
       :key="id"
       :index="index"
-      class="w-10 h-10 text-center rounded-lg outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-500 bg-neutral-600 text-neutral-100 placeholder:text-neutral-400 disabled:bg-neutral-500 disabled:cursor-not-allowed"
+      class="w-10 h-10 text-center border rounded-lg outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-500 bg-neutral-950 border-neutral-600 placeholder:text-neutral-200 text-neutral-100 disabled:bg-neutral-500 disabled:cursor-not-allowed"
     />
   </PinInputRoot>
 </template>
