@@ -3,7 +3,6 @@ import type { OrganisationResponse } from "~/api/orgs";
 
 export interface UserSideOrgMemberResponse {
   id: string;
-  name: string;
   createdAt: string;
   userId: string;
   org: OrganisationResponse;

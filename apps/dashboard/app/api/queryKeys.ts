@@ -3,6 +3,9 @@ function key<const T extends string[]>(...args: T) {
 }
 
 export const queryKeys = {
+  invites: {
+    token: (token: string) => key("invites", token),
+  },
   users: {
     me: key("users", "@me"),
     all: key("users"),
