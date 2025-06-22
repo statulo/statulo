@@ -3,8 +3,6 @@ import isEqual from "lodash/isEqual";
 export function getDeepChangedFields<T>(a: T, b: T): string[] {
   const changes: string[] = [];
 
-  console.log("Comparing objects:", a, b);
-
   const compare = (objA: any, objB: any, path: string[] = []) => {
     if (typeof objA !== "object" && typeof objB !== "object" && isEqual(objA, objB)) return;
 
