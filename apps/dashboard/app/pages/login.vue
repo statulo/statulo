@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useMutation } from "@tanstack/vue-query";
 import { z } from "zod";
+import type { LoginRequest } from "~/api/auth";
 import { getNextPage } from "~/utils/urls";
 
 definePageMeta({
@@ -22,24 +24,27 @@ const form = useForm({
   }),
 });
 
+const { mutate, isPending } = useMutation({
+  async mutationFn(data: LoginRequest) {
+    await authStore.login(data);
+  },
+});
+
 async function submit() {
   const res = form.validate();
   if (!res.success) return;
-  try {
-    await authStore.login(res.data);
-  } catch (error) {
-    if (error instanceof Error) {
-      form.errors.insert(error);
-      return;
-    }
-    return;
-  }
-  if (authStore.isLoggedIn) {
-    const nextPage = getNextPage(query);
-    navigateTo(nextPage);
-  }
+  mutate(res.data, {
+    onError(err) {
+      form.errors.insert(err);
+    },
+    onSuccess() {
+      if (authStore.isLoggedIn) {
+        const nextPage = getNextPage(query);
+        navigateTo(nextPage);
+      }
+    },
+  });
 }
-
 </script>
 
 <template>
@@ -68,6 +73,7 @@ async function submit() {
       />
     </Label>
     <Button
+      :loading="isPending"
       submit
       stretch
     >

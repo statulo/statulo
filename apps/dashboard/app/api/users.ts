@@ -1,11 +1,5 @@
 import type { OrgRoles } from "~/api/enums";
-
-export interface OrganisationResponse {
-  id: string;
-  name: string;
-  description: string | null;
-  createdAt: string;
-}
+import type { OrganisationResponse } from "~/api/orgs";
 
 export interface UserSideOrgMemberResponse {
   id: string;
