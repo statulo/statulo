@@ -68,7 +68,7 @@ const editEmailForm = useForm({
           })
         );
       }, {
-        message: "Code must be an array of 6 digits between 0 and 9",
+        message: "Code must be 6 digits",
       })
       .transform(val => val.join("")),
   }),
