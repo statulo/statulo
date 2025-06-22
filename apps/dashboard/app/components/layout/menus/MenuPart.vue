@@ -17,19 +17,21 @@ const props = defineProps<{
     <div class="p-1">
       <Clickable
         v-bind="props"
-        class="p-1 px-2 flex w-full items-center transition active:bg-neutral-800 rounded bg-neutral-800/0 hover:bg-neutral-700/100 duration-100 gap-2"
+        class="w-full transition active:bg-neutral-800 rounded bg-neutral-800/0 hover:bg-neutral-700/100 duration-100"
         :class="{
           'hover:text-neutral-150': !props.danger,
           'hover:text-status-danger': props.danger,
         }"
       >
-        <Icon
-          v-if="props.icon"
-          :name="props.icon"
-          class="text-neutral-300 text-lg"
-        />
-        <span>
-          <slot />
+        <span class="flex items-center gap-2 p-1 px-2">
+          <Icon
+            v-if="props.icon"
+            :name="props.icon"
+            class="text-neutral-300 text-lg"
+          />
+          <span>
+            <slot />
+          </span>
         </span>
       </Clickable>
     </div>
