@@ -1,6 +1,6 @@
 import type { ZodIssue } from "zod";
-import { FetchError } from "ofetch";
 import { getInvisibleValidations } from "./errorTags";
+import { getErrorMessage, isStatuloError } from "~/utils/errors";
 
 export type ErrorDetails = {
   id: string;
@@ -64,24 +64,12 @@ export function useErrorValidation(
 
   function insertError(inputError: Error) {
     clear();
-    if (inputError instanceof NetworkError) {
-      globalErrorRef.value = "Network error occurred. Please try again later.";
-      publishErrors();
-      return;
+
+    if (isStatuloError(inputError) && inputError.data?.errorType === "validation") {
+      // TODO: Handle validation errors
     }
 
-    if (inputError instanceof FetchError && inputError.data) {
-      const data = inputError.data;
-      if (data.errorType === "code") {
-        globalErrorRef.value = data.message ?? data.code; // TODO: Use code for localization
-        publishErrors();
-        return;
-      }
-
-      // TODO: Handle other error types: validation
-    }
-
-    globalErrorRef.value = inputError.message;
+    globalErrorRef.value = getErrorMessage(inputError);
     publishErrors();
   }
 
