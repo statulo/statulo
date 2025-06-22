@@ -33,7 +33,6 @@ const { mutate, isPending } = useMutation({
 async function submit() {
   const res = form.validate();
   if (!res.success) return;
-  console.log(res.data);
   mutate(res.data, {
     onError(err) {
       form.errors.insert(err);
