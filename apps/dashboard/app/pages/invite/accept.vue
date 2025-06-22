@@ -24,7 +24,7 @@ const { mutate, isPending: isMutatePending } = useMutation({
   async mutationFn() {
     const newMember = await acceptInviteInfoByToken(token.value);
     await authStore.fetchUser();
-    await authStore.switchOrg(newMember.orgId);
+    authStore.switchOrg(newMember.orgId);
     router.push("/");
   },
 });

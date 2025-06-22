@@ -61,12 +61,6 @@ export function listUserInvites(
   return httpRequest<OrgInviteInfoResponse[]>("get", `/api/v1/users/${userId}/org-invites`);
 }
 
-export function acceptInvite(
-  _inviteId: string,
-) {
-  throw new Error("Not yet implemented");
-}
-
 export function verifyEmailByToken(
   token: string,
 ) {

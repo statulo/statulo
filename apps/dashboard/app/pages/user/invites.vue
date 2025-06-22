@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useMutation, useQuery } from "@tanstack/vue-query";
+import { acceptInviteById } from "~/api/invites";
 import { queryKeys } from "~/api/queryKeys";
-import { acceptInvite, listUserInvites } from "~/api/users";
+import { listUserInvites } from "~/api/users";
 
 const authStore = useAuthStore();
+const router = useRouter();
 const hasVerifiedEmail = computed(() => authStore.user?.emailVerified ?? false);
 
-const { data } = await useQuery({
+const { data } = useQuery({
   queryKey: queryKeys.users.invites.me,
   queryFn: async () => {
     if (!authStore.user) return [];
@@ -16,7 +18,10 @@ const { data } = await useQuery({
 
 const { mutate, isPending } = useMutation({
   async mutationFn(inviteId: string) {
-    await acceptInvite(inviteId);
+    const newMember = await acceptInviteById(inviteId);
+    await authStore.fetchUser();
+    authStore.switchOrg(newMember.orgId);
+    router.push("/");
   },
 });
 </script>

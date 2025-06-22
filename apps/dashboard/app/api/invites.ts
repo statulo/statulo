@@ -28,3 +28,9 @@ export function acceptInviteInfoByToken(
     },
   });
 }
+
+export function acceptInviteById(
+  id: string,
+) {
+  return httpRequest<OrgMemberResponse>("post", `/api/v1/org-invites/${id}/accept`);
+}

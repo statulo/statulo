@@ -75,6 +75,64 @@ export const orgInviteRouter = makeRouter((app) => {
     }),
   );
 
+  app.post(
+    "/api/v1/org-invites/:id/accept",
+    {
+      schema: {
+        description: "Accept invitation from user login",
+        params: z.object({
+          id: z.string(),
+        }),
+      },
+    },
+    handle(async ({ params, auth }) => {
+      auth.check(c => c.isAuthType("session"));
+      auth.checkEmailVerified();
+      const session = auth.data.getSession();
+      const user = session.user;
+
+      const invite = await prisma.orgInvite.findFirst({
+        where: {
+          id: params.id,
+        },
+      });
+      if (!invite) throw new NotFoundError();
+      const wrongUserId = invite.userId !== null && invite.userId !== user.id;
+      const wrongEmail = invite.email !== user.email;
+      if (wrongUserId && wrongEmail) throw new NotFoundError();
+
+      const [newOrgMember] = await prisma.$transaction([
+        prisma.orgMember.create({
+          data: {
+            id: getId("orgmbr"),
+            orgId: invite.orgId,
+            userId: user.id,
+            roles: invite.roles,
+          },
+          include: {
+            org: true,
+            user: true,
+          },
+        }),
+        prisma.user.update({
+          where: {
+            id: auth.data.getUserId(),
+          },
+          data: {
+            emailVerified: true,
+          },
+        }),
+        prisma.orgInvite.delete({
+          where: {
+            id: invite.id,
+          },
+        }),
+      ]);
+
+      return mapOrgMember(newOrgMember);
+    }),
+  );
+
   app.get(
     "/api/v1/org-invites/accept",
     {
