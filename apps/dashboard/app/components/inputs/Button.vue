@@ -14,12 +14,6 @@ const emit = defineEmits<{
 
 const type = computed(() => props.type ?? "primary");
 
-function trigger($event: MouseEvent) {
-  if (props.loading) return $event.preventDefault();
-  if (props.disabled) return $event.preventDefault();
-  emit("click");
-}
-
 const buttonVariants = tv({
   base: "inline-block px-4 py-2 border transition duration-75 rounded-lg active:scale-95 select-none",
   variants: {
@@ -53,7 +47,7 @@ const buttonClasses = computed(() => {
     v-bind="props"
     :type="props.submit ? 'submit' : undefined"
     :class="buttonClasses"
-    @click="trigger"
+    @click="emit('click')"
   >
     <slot />
   </Clickable>
