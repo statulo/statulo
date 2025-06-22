@@ -53,7 +53,24 @@ const editEmailForm = useForm({
     code: [],
   }),
   schema: z.object({
-    code: z.array(z.coerce.number().min(0).max(9)).length(6, "Code must be 6 digits").transform(arr => arr.join("")),
+    code: z
+      .custom<string[] | number[]>((val) => {
+        if (!Array.isArray(val)) return false;
+
+        // Required to convert a spare array to an array with undefined values in the "empty" slots
+        const normalisedArray = Array.from(val);
+
+        return (
+          normalisedArray.length === 6 &&
+          normalisedArray.every((el) => {
+            const str = String(el);
+            return /^\d$/.test(str); // Matches a single digit 0–9
+          })
+        );
+      }, {
+        message: "Code must be an array of 6 digits between 0 and 9",
+      })
+      .transform(val => val.join("")),
   }),
 });
 
@@ -71,7 +88,6 @@ function onOpenUpdate(open: boolean) {
 
 function editEmail() {
   const res = editEmailForm.validate();
-  console.log("Edit email form validation result:", res, editEmailForm.data);
   if (!res.success) return;
 
   requestEditEmail(res.data.code, {
@@ -117,6 +133,7 @@ const heading = resolveComponent("Heading");
             :count="6"
             type="number"
           />
+          <ValidationError :err="editEmailForm.error('code')" />
           <div class="flex gap-2 mt-6">
             <Button
               type="primary"
@@ -132,7 +149,10 @@ const heading = resolveComponent("Heading");
               Cancel
             </Button>
           </div>
-          <div>
+          <div
+            v-if="editEmailForm.errors.formErrors()"
+            class="mt-4 text-status-danger"
+          >
             {{ editEmailForm.errors.formErrors() }}
           </div>
         </Form>
