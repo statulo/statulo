@@ -33,6 +33,16 @@ export type UserSecuritySettingsRequest = {
   };
 };
 
+export interface OrgInviteInfoResponse {
+  id: string;
+  createdAt: string;
+  org: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+}
+
 export function getMe() {
   return httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me");
 }
@@ -44,4 +54,16 @@ export function editUserSecuritySettings(
   return httpRequest<ExpandedUserResponse>("patch", `/api/v1/users/${userId}/security`, {
     body,
   });
+}
+
+export function listUserInvites(
+  userId: string,
+) {
+  return httpRequest<OrgInviteInfoResponse[]>("get", `/api/v1/users/${userId}/org-invites`);
+}
+
+export function acceptInvite(
+  _inviteId: string,
+) {
+  throw new Error("Not yet implemented");
 }
