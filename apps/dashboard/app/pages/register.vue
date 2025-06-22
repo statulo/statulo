@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useMutation } from "@tanstack/vue-query";
 import { z } from "zod";
+import type { RegisterRequest } from "~/api/auth";
 
 definePageMeta({
   auth: "guest",
@@ -22,21 +24,25 @@ const form = useForm({
   }).refine(data => data.password === data.confirmPassword, { message: "Passwords do not match", path: ["confirmPassword"] }),
 });
 
+const { mutate, isPending } = useMutation({
+  async mutationFn(data: RegisterRequest) {
+    await authStore.register(data);
+  },
+});
+
 async function submit() {
   const res = form.validate();
   if (!res.success) return;
-  try {
-    await authStore.register(res.data);
-  } catch (error) {
-    if (error instanceof Error) {
-      form.errors.insert(error);
-      return;
-    }
-    return;
-  }
-  if (authStore.isLoggedIn) {
-    navigateTo("/");
-  }
+  mutate(res.data, {
+    onError(err) {
+      form.errors.insert(err);
+    },
+    onSuccess() {
+      if (authStore.isLoggedIn) {
+        navigateTo("/");
+      }
+    },
+  });
 }
 
 </script>
@@ -80,6 +86,7 @@ async function submit() {
     <Button
       submit
       stretch
+      :loading="isPending"
     >
       Create account
     </Button>
