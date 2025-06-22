@@ -66,3 +66,13 @@ export function acceptInvite(
 ) {
   throw new Error("Not yet implemented");
 }
+
+export function verifyEmailByToken(
+  token: string,
+) {
+  return httpRequest<void>("post", `/api/auth/verify`, {
+    query: {
+      token,
+    },
+  });
+}
