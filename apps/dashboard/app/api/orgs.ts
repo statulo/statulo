@@ -15,3 +15,7 @@ export function createOrganisation(body: CreateOrgansationRequest) {
     body,
   });
 }
+
+export function deleteOrg(id: string) {
+  return httpRequest<OrganisationResponse>("delete", `/api/v1/organisations/${id}`);
+}

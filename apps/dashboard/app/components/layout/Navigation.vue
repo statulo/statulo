@@ -47,6 +47,13 @@ const org = computed(() => authStore.org);
 
     <div class="flex items-center gap-7">
       <NavigationItem
+        to="/org/members"
+        exact
+        icon="basil:fire-solid"
+      >
+        Manage
+      </NavigationItem>
+      <NavigationItem
         to="/"
         exact
         icon="basil:fire-solid"
