@@ -104,7 +104,7 @@ const heading = resolveComponent("Heading");
 
 <template>
   <DialogRoot
-    :open="open"
+    :open="props.open"
     @update:open="onOpenUpdate"
   >
     <DialogTrigger />

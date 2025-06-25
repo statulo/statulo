@@ -12,6 +12,9 @@ export const queryKeys = {
     members: {
       all: (id: string) => key("orgs", id, "members"),
     },
+    invites: {
+      all: (id: string) => key("orgs", id, "invites"),
+    },
   },
   monitors: {
     all: key("monitors"),
