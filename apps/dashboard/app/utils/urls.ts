@@ -9,3 +9,14 @@ export function getNextPage(query: LocationQuery): string {
   if (nextPage && !rootRelativeRegex.test(nextPage)) return "/";
   return nextPage ?? "/";
 }
+
+// TODO these are all temporary
+export const urls = {
+  feedback: "#",
+  termsOfService: "#",
+  privacyPolicy: "#",
+  contact: "#",
+  documentation: "#",
+  help: "#",
+  home: "/login",
+} as const;

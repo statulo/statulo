@@ -12,7 +12,7 @@ export function useQuerySubscribe<T>(
       event.type === "updated" &&
       event.action.type === "success" &&
       matchQuery(
-        { queryKey: Array.isArray(queryKey) ? queryKey : [queryKey] },
+        { queryKey: Array.isArray(queryKey) ? queryKey : [queryKey], exact: true },
         event.query,
       )
     ) {

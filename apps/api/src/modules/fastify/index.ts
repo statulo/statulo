@@ -14,6 +14,7 @@ import { conf, version } from "@/config";
 import { isApiError } from "@/utils/error";
 import { logger } from "@/modules/log";
 import { setupRoutes } from "@/routes/routes";
+import { apiErrorCodes } from "@/utils/codes";
 
 const log = logger.child({ svc: "fastify" });
 
@@ -106,8 +107,9 @@ export async function setupFastify(): Promise<StatuloFastifyInstance> {
     log.error("unhandled exception on server:", err);
     log.error(err.stack);
     void reply.status(500).send({
-      errorType: "message",
-      message: "Internal server error",
+      errorType: "code",
+      code: "internalServerError",
+      message: apiErrorCodes.internalServerError,
       ...(conf.logging.debug
         ? {
             trace: err.stack,
@@ -123,6 +125,7 @@ export async function setupFastify(): Promise<StatuloFastifyInstance> {
   const corsDomains = conf.server.cors.split(" ").filter(v => v.length > 0);
   await app.register(cors, {
     origin: corsDomains,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     credentials: true,
   });
 

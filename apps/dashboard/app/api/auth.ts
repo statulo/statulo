@@ -11,6 +11,15 @@ export type RegisterRequest = {
   password: string;
 };
 
+export type PasswordResetRequest = {
+  email: string;
+};
+
+export type SubmitPasswordResetRequest = {
+  token: string;
+  newPassword: string;
+};
+
 export type TokenResponse = {
   type: TokenTypes;
   token: string;
@@ -33,6 +42,24 @@ export function logout() {
 
 export function register(body: RegisterRequest) {
   return httpRequest<LoginResponse>("post", "/api/auth/register", {
+    body,
+  });
+}
+
+export function requestEmailVerificationCode(email: string) {
+  return httpRequest<void>("post", "/api/auth/verify/code", {
+    body: { email },
+  });
+}
+
+export function requestPasswordReset(body: PasswordResetRequest) {
+  return httpRequest<void>("post", "/api/auth/password-reset", {
+    body,
+  });
+}
+
+export function submitPasswordReset(body: SubmitPasswordResetRequest) {
+  return httpRequest<LoginResponse>("post", "/api/auth/password-reset/submit", {
     body,
   });
 }

@@ -11,6 +11,7 @@ model User {
   id        String   @id
   createdAt DateTime @default(now()) @map("created_at")
 
+  name                      String                     @map("name")
   passwordHash              String                     @map("password_hash")
   securityStamp             String                     @default("default-stamp")
   email                     String                     @unique
@@ -171,11 +172,12 @@ model PendingEmailVerification {
   createdAt DateTime @default(now()) @map("created_at")
   expiresAt DateTime @map("expires_at")
 
-  code   String @unique
+  code   String
   email  String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
+  @@unique([email, code])
   @@map("pending_email_verification")
 }
 

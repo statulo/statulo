@@ -1,7 +1,7 @@
 import type { PublicRuntimeConfig } from "nuxt/schema";
 import { queryKeys } from "~/api/queryKeys";
 import type { ExpandedUserResponse } from "~/api/users";
-import { login as loginRequest, register as registerRequest, type LoginRequest, type RegisterRequest } from "~/api/auth";
+import { login as loginRequest, register as registerRequest, type LoginRequest, type LoginResponse, type RegisterRequest } from "~/api/auth";
 
 interface AuthState {
   user: ExpandedUserResponse | null;
@@ -62,14 +62,17 @@ export const useAuthStore = defineStore(
 
     async function login(request: LoginRequest) {
       const loginResponse = await loginRequest(request);
-      state.token = loginResponse.token.token;
+      await setAuth(loginResponse);
+    }
+
+    async function setAuth(data: LoginResponse) {
+      state.token = data.token.token;
       await fetchUser();
     }
 
     async function register(request: RegisterRequest) {
       const loginResponse = await registerRequest(request);
-      state.token = loginResponse.token.token;
-      await fetchUser();
+      await setAuth(loginResponse);
     }
 
     async function logout() {
@@ -90,7 +93,7 @@ export const useAuthStore = defineStore(
       }
 
       resetAuth();
-      await navigateTo("/login");
+      await navigateTo(urls.home);
     }
 
     function resetAuth() {
@@ -119,6 +122,7 @@ export const useAuthStore = defineStore(
       register,
       fetchUser,
       resetAuth,
+      setAuth,
       switchOrg,
     };
   },

@@ -19,6 +19,7 @@ export const registerRouter = makeRouter((app) => {
       schema: {
         description: "Create user",
         body: z.object({
+          name: z.string().trim().min(1),
           email: z.string().email(),
           password: passwordSchema(),
         }),
@@ -29,6 +30,7 @@ export const registerRouter = makeRouter((app) => {
       const newUser = await prisma.user.create({
         data: {
           id: getId("usr"),
+          name: body.name,
           email: body.email,
           passwordHash: await hashPassword(body.password),
         },

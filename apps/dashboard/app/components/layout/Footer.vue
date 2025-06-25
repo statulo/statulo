@@ -6,13 +6,13 @@
         class="w-px h-5 bg-neutral-400"
       />
       <p class="flex items-center gap-5">
-        <SubtleLink to="#">
-          ToS
+        <SubtleLink :to="urls.termsOfService">
+          Terms
         </SubtleLink>
-        <SubtleLink to="#">
+        <SubtleLink :to="urls.privacyPolicy">
           Privacy
         </SubtleLink>
-        <SubtleLink to="#">
+        <SubtleLink :to="urls.contact">
           Contact
         </SubtleLink>
       </p>

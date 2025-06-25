@@ -1,26 +1,10 @@
+import type { IntervalResponse, PageControls, PageResponse, RangeResponse } from "~/api/common";
 import type { EnumType } from "~/api/enums";
 
 export const monitorTypes = {
   http: "http",
 } as const;
 export type MonitorTypes = EnumType<typeof monitorTypes>;
-
-export type IntervalResponse = {
-  unit: "d" | "h" | "m" | "s";
-  amount: number;
-};
-
-export type PageResponse<T> = {
-  data: T[];
-  total: number;
-  offset: number;
-  count: number;
-};
-
-export type RangeResponse = {
-  from: number;
-  to: number;
-};
 
 export interface HttpMonitorResponse {
   id: string;
@@ -46,11 +30,6 @@ export interface ShallowMonitorResponse {
   computedName: string;
   primaryInterval: IntervalResponse | null;
 }
-
-export type PageControls = {
-  limit: number;
-  offset: number;
-};
 
 export function listMonitors(orgId: string, page: PageControls) {
   return httpRequest<PageResponse<ShallowMonitorResponse>>("get", `/api/v1/organisations/${orgId}/monitors`, {

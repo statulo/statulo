@@ -4,6 +4,7 @@ import type { PopulatedUser } from "@/utils/permissions/resolve-roles";
 
 export type UserDto = {
   id: string;
+  name: string;
   email: string;
   createdAt: string;
   emailVerified: boolean;
@@ -16,6 +17,7 @@ export type ExpandedUserDto = UserDto & {
 export function mapUser(user: User): UserDto {
   return {
     id: user.id,
+    name: user.name,
     email: user.email,
     createdAt: user.createdAt.toISOString(),
     emailVerified: user.emailVerified,

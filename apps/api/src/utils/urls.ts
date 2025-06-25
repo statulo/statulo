@@ -5,13 +5,13 @@ import { makeAuthToken } from "@/utils/auth/tokens";
 const frontendBase = (path: string) => new URL(conf.server.frontendBaseUrl + path);
 
 export function makePasswordResetUrl(token: string) {
-  const url = frontendBase("auth/reset-password");
+  const url = frontendBase("password/reset");
   url.searchParams.append("token", token);
   return url.toString();
 }
 
 export function makeInvitationUrl(invite: OrgInvite) {
-  const url = frontendBase("invite");
+  const url = frontendBase("invite/accept");
   const token = makeAuthToken({
     t: "invite",
     code: invite.code,
@@ -21,7 +21,7 @@ export function makeInvitationUrl(invite: OrgInvite) {
 }
 
 export function makeEmailVerificationUrl(user: User) {
-  const url = frontendBase("auth/verify-email");
+  const url = frontendBase("user/verify");
   const token = makeAuthToken({
     t: "emailverify",
     uid: user.id,

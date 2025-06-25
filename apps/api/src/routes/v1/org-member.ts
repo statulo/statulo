@@ -159,7 +159,11 @@ export const orgMemberRouter = makeRouter((app) => {
       auth.checkAuthentication();
       auth.can(permissions.org.member.list({ org: params.org }));
 
-      const totalMembers = await prisma.orgMember.count();
+      const totalMembers = await prisma.orgMember.count({
+        where: {
+          orgId: params.org,
+        },
+      });
       const members = await prisma.orgMember.findMany({
         take: query.limit,
         skip: query.offset,

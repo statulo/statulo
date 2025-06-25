@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  (_event: "submit"): void;
+  (event: "submit"): void;
 }>();
 </script>
 

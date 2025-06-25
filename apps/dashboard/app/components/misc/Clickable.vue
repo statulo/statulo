@@ -7,29 +7,66 @@ export type ClickableProps = {
   // TODO unfinished
 };
 
+const classes = computed(() => {
+  return {
+    "relative": true,
+    "[&>*]:invisible": props.loading,
+  };
+});
+
 const props = defineProps<ClickableProps>();
 const emit = defineEmits<{
-  (_event: "click"): void;
+  (event: "click"): void;
 }>();
+
+function handleClick(event: MouseEvent) {
+  if (props.loading || props.disabled) {
+    event.preventDefault();
+    return;
+  }
+  emit("click");
+}
+
 </script>
 
 <template>
   <NuxtLink
     v-if="props.to"
+    :class="classes"
     :to="props.to"
   >
-    <slot />
+    <span
+      v-if="props.loading"
+      class="absolute !visible inset-0 flex items-center justify-center"
+    >
+      Loading...
+    </span>
+    <span><slot /></span>
   </NuxtLink>
   <a
     v-else-if="props.href"
+    :class="classes"
     :href="props.href"
   >
-    <slot />
+    <span
+      v-if="props.loading"
+      class="absolute !visible inset-0 flex items-center justify-center"
+    >
+      Loading...
+    </span>
+    <span><slot /></span>
   </a>
   <button
     v-else
-    @click="emit('click')"
+    :class="classes"
+    @click="handleClick($event)"
   >
-    <slot />
+    <span
+      v-if="props.loading"
+      class="absolute !visible inset-0 flex items-center justify-center"
+    >
+      Loading...
+    </span>
+    <span><slot /></span>
   </button>
 </template>
