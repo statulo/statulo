@@ -4,4 +4,9 @@ import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt(
   eslintConfig,
+  {
+    rules: {
+      "no-console": "warn",
+    },
+  },
 );
