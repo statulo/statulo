@@ -37,8 +37,8 @@ const { mutate, isPending: isMutatePending } = useMutation({
   >
     <AuthHeading>You've been invited</AuthHeading>
     <div class="border-neutral-500 mb-4 border rounded-xl p-3">
-      <Bold>{{ data?.org.name }}</Bold>
-      <p>{{ data?.org.description }}</p>
+      <Bold>{{ data.org.name }}</Bold>
+      <p>{{ data.org.description }}</p>
     </div>
     <Button
       submit
