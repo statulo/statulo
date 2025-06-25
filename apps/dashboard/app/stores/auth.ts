@@ -45,6 +45,7 @@ export const useAuthStore = defineStore(
             Authorization: `Bearer ${state.token}`,
           },
         }),
+        staleTime: 0,
       });
 
       state.user = user;
