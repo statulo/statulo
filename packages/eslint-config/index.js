@@ -40,7 +40,7 @@ export default defineConfig([
     // https://typescript-eslint.io/rules/
     name: "statulo/typescript-eslint",
     extends: [tseslint.configs.recommended],
-    files: ["**/*.ts", "**/*.d.ts"],
+    files: ["**/*.ts", "**/*.d.ts", "**/*.vue"],
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -124,6 +124,15 @@ export default defineConfig([
     },
     rules: {
       "vue/multi-word-component-names": "off",
+      "vue/block-lang": [
+        "error",
+        {
+          script: {
+            lang: "ts",
+            allowNoLang: false,
+          },
+        },
+      ],
     },
   },
   {

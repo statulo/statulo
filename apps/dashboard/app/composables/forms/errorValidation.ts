@@ -1,5 +1,6 @@
 import type { ZodIssue } from "zod";
 import { getInvisibleValidations } from "./errorTags";
+import { getErrorMessage, isStatuloError } from "~/utils/errors";
 
 export type ErrorDetails = {
   id: string;
@@ -63,8 +64,12 @@ export function useErrorValidation(
 
   function insertError(inputError: Error) {
     clear();
-    // TODO handle validation errors from API
-    globalErrorRef.value = inputError.message;
+
+    if (isStatuloError(inputError) && inputError.data?.errorType === "validation") {
+      // TODO: Handle validation errors
+    }
+
+    globalErrorRef.value = getErrorMessage(inputError);
     publishErrors();
   }
 

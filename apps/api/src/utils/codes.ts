@@ -10,6 +10,7 @@ export const apiErrorCodes = {
   invalid: "The request was invalid",
   removeLastAdmin: "You cannot remove last admin member of an organisation",
   cantChangeType: "Type of resource cannot be changed after creation",
+  internalServerError: "Internal server error",
 } as const;
 
 export type ApiErrorCodes = keyof typeof apiErrorCodes;

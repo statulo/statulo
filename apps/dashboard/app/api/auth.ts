@@ -46,6 +46,12 @@ export function register(body: RegisterRequest) {
   });
 }
 
+export function requestEmailVerificationCode(email: string) {
+  return httpRequest<void>("post", "/api/auth/verify/code", {
+    body: { email },
+  });
+}
+
 export function requestPasswordReset(body: PasswordResetRequest) {
   return httpRequest<void>("post", "/api/auth/password-reset", {
     body,

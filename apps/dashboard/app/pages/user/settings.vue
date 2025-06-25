@@ -51,14 +51,21 @@ async function changePasswordSubmit() {
   }
 }
 
+const emailToChange = ref<string | null>(null);
+
 function changeEmailSubmit() {
   const res = changeEmailForm.validate();
   if (!res.success) return;
 
-  console.log("Email changed successfully", res.data);
-  changeEmailForm.reset();
+  emailToChange.value = res.data.email;
 }
 
+async function onEmailChangeSuccess() {
+  // TODO: Notify user success
+  await authStore.fetchUser();
+  changeEmailForm.reset();
+  emailToChange.value = null;
+}
 </script>
 
 <template>
@@ -67,6 +74,14 @@ function changeEmailSubmit() {
       <BigTitle>User Settings</BigTitle>
       <p>Manage your account settings and preferences here.</p>
     </div>
+
+    <ChangeEmailVerificationDialog
+      v-if="emailToChange != null"
+      :email="emailToChange"
+      :open="emailToChange != null"
+      @cancel="emailToChange = null"
+      @success="onEmailChangeSuccess"
+    />
 
     <div class="flex flex-col gap-8 lg:flex-row">
       <div class="flex-1 space-y-4">
@@ -93,7 +108,10 @@ function changeEmailSubmit() {
                 class="flex-1"
                 :error="changeEmailForm.error('email')"
               />
-              <Button submit>
+              <Button
+                submit
+                :disabled="changeEmailForm.changed('email') === false"
+              >
                 Change
               </Button>
             </div>

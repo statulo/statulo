@@ -179,8 +179,10 @@ export const userRouter = makeRouter((app) => {
         const verificationCode = await prisma.pendingEmailVerification.findUnique({
           where: {
             userId: id,
-            email: body.email.newEmail,
-            code: body.email.code,
+            email_code: {
+              email: body.email.newEmail,
+              code: body.email.code,
+            },
           },
         });
         if (!verificationCode) throw ApiError.forCode("authInvalidInput", 400);

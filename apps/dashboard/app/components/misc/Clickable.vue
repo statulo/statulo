@@ -16,8 +16,17 @@ const classes = computed(() => {
 
 const props = defineProps<ClickableProps>();
 const emit = defineEmits<{
-  (_event: "click"): void;
+  (event: "click"): void;
 }>();
+
+function handleClick(event: MouseEvent) {
+  if (props.loading || props.disabled) {
+    event.preventDefault();
+    return;
+  }
+  emit("click");
+}
+
 </script>
 
 <template>
@@ -50,7 +59,7 @@ const emit = defineEmits<{
   <button
     v-else
     :class="classes"
-    @click="emit('click')"
+    @click="handleClick($event)"
   >
     <span
       v-if="props.loading"
