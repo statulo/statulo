@@ -27,7 +27,10 @@ const { isPending, data } = useQuery({
         <BigTitle>Monitors</BigTitle>
         <Text>Have a peek into your monitors.</Text>
       </div>
-      <Button type="secondary">
+      <Button
+        type="secondary"
+        to="/monitors/new"
+      >
         New monitor
       </Button>
     </div>
