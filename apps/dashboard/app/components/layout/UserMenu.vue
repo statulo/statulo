@@ -34,6 +34,12 @@ function logout() {
         User settings
       </MenuPart>
       <MenuPart
+        icon="basil:settings-alt-solid"
+        to="/user/invites"
+      >
+        Invitations
+      </MenuPart>
+      <MenuPart
         icon="basil:notification-solid"
         to="/user/settings"
       >

@@ -3,7 +3,6 @@ import type { OrganisationResponse } from "~/api/orgs";
 
 export interface UserSideOrgMemberResponse {
   id: string;
-  name: string;
   createdAt: string;
   userId: string;
   org: OrganisationResponse;
@@ -33,6 +32,16 @@ export type UserSecuritySettingsRequest = {
   };
 };
 
+export interface OrgInviteInfoResponse {
+  id: string;
+  createdAt: string;
+  org: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+}
+
 export function getMe() {
   return httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me");
 }
@@ -43,5 +52,21 @@ export function editUserSecuritySettings(
 ) {
   return httpRequest<ExpandedUserResponse>("patch", `/api/v1/users/${userId}/security`, {
     body,
+  });
+}
+
+export function listUserInvites(
+  userId: string,
+) {
+  return httpRequest<OrgInviteInfoResponse[]>("get", `/api/v1/users/${userId}/org-invites`);
+}
+
+export function verifyEmailByToken(
+  token: string,
+) {
+  return httpRequest<void>("post", `/api/auth/verify`, {
+    query: {
+      token,
+    },
   });
 }
