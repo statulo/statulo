@@ -64,7 +64,9 @@ const { isPending, data } = useQuery({
               class="mt-2 self-start text-lg"
             />
             <div class="flex-1">
-              <SubHeading>{{ item.computedName }}</SubHeading>
+              <NuxtLink :to="`/monitors/${item.id}`">
+                <SubHeading>{{ item.name ?? item.computedName }}</SubHeading>
+              </NuxtLink>
               <div class="flex items-center mt-1">
                 <MonitorType
                   :type="item.type"
