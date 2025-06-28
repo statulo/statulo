@@ -72,7 +72,7 @@ const { isPending, data } = useQuery({
                   :type="item.type"
                   class="mr-2"
                 />
-                <span>Checked every 30s</span>
+                <span v-if="item.primaryInterval">Checked every {{ item.primaryInterval.amount }}{{ item.primaryInterval.unit }}</span>
               </div>
             </div>
             <MonitorStatus
