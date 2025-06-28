@@ -3,6 +3,10 @@ import { useMutation } from "@tanstack/vue-query";
 import { z } from "zod";
 import { createMonitor, monitorTypes, type MonitorCreateRequest, type MonitorTypes } from "~/api/monitors";
 
+definePageMeta({
+  auth: "org-scoped",
+});
+
 const auth = useAuthStore();
 const { mutate, isPending } = useMutation({
   mutationFn: async (body: MonitorCreateRequest) => {

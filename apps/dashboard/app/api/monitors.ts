@@ -55,3 +55,7 @@ export function createMonitor(orgId: string, body: MonitorCreateRequest) {
     body,
   });
 }
+
+export function getMonitor(id: string) {
+  return httpRequest<MonitorResponse>("get", `/api/v1/monitors/${id}`);
+}
