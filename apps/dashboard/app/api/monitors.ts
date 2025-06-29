@@ -27,6 +27,19 @@ export interface MonitorCreateRequest {
   };
 }
 
+export interface MonitorEditRequest {
+  type: MonitorTypes;
+  name?: string | null;
+  contactPointIds?: string[];
+  data: {
+    // http
+    url?: string;
+    interval?: IntervalResponse;
+    allowedStatusCodes?: RangeResponse[];
+    expectedKeywords?: string[];
+  };
+}
+
 export interface MonitorResponse {
   id: string;
   type: MonitorTypes;
@@ -60,4 +73,14 @@ export function createMonitor(orgId: string, body: MonitorCreateRequest) {
 
 export function getMonitor(id: string) {
   return httpRequest<MonitorResponse>("get", `/api/v1/monitors/${id}`);
+}
+
+export function deleteMonitor(id: string) {
+  return httpRequest<void>("delete", `/api/v1/monitors/${id}`);
+}
+
+export function editMonitor(id: string, body: MonitorEditRequest) {
+  return httpRequest<void>("patch", `/api/v1/monitors/${id}`, {
+    body,
+  });
 }
