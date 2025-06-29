@@ -1,13 +1,13 @@
 import type { OrgRoles } from "~/api/enums";
 import type { OrganisationResponse } from "~/api/orgs";
 
-export interface UserSideOrgMemberResponse {
+export type UserSideOrgMemberResponse = {
   id: string;
   createdAt: string;
   userId: string;
   org: OrganisationResponse;
   roles: OrgRoles[];
-}
+};
 
 export type UserResponse = {
   id: string;
@@ -32,7 +32,7 @@ export type UserSecuritySettingsRequest = {
   };
 };
 
-export interface OrgInviteInfoResponse {
+export type OrgInviteInfoResponse = {
   id: string;
   createdAt: string;
   org: {
@@ -40,7 +40,7 @@ export interface OrgInviteInfoResponse {
     name: string;
     description: string | null;
   };
-}
+};
 
 export function getMe() {
   return httpRequest<ExpandedUserResponse>("get", "/api/v1/users/@me");

@@ -1,11 +1,11 @@
 import type { Organisation } from "@prisma/client";
 
-export interface OrganisationDto {
+export type OrganisationDto = {
   id: string;
   name: string;
   description: string | null;
   createdAt: string;
-}
+};
 
 export function mapOrganisation(org: Organisation): OrganisationDto {
   return {

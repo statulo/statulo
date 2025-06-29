@@ -1,13 +1,13 @@
 import type { OrgRoles } from "~/api/enums";
 import type { OrgInviteInfoResponse, UserResponse } from "~/api/users";
 
-export interface OrgMemberResponse {
+export type OrgMemberResponse = {
   id: string;
   createdAt: string;
   orgId: string;
   user: UserResponse;
   roles: OrgRoles[];
-}
+};
 
 export function getInviteInfoByToken(
   token: string,

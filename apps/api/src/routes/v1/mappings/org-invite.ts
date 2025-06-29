@@ -5,16 +5,16 @@ import type { UserDto } from "@/routes/v0/mappings/user";
 import { mapUser } from "@/routes/v0/mappings/user";
 import type { OrgRoles } from "@/utils/permissions/roles";
 
-export interface OrgInviteDto {
+export type OrgInviteDto = {
   id: string;
   createdAt: string;
   org: OrganisationDto;
   user: UserDto | null;
   email: string;
   roles: OrgRoles[];
-}
+};
 
-export interface OrgInviteInfoDto {
+export type OrgInviteInfoDto = {
   id: string;
   createdAt: string;
   org: {
@@ -22,7 +22,7 @@ export interface OrgInviteInfoDto {
     name: string;
     description: string | null;
   };
-}
+};
 
 export function mapOrgInvite(invite: OrgInvite & { user: User | null; org: Organisation }): OrgInviteDto {
   return {

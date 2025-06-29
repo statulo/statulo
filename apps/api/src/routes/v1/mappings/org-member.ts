@@ -4,21 +4,21 @@ import { mapUser } from "@/routes/v0/mappings/user";
 import type { OrgRoles } from "@/utils/permissions/roles";
 import { mapOrganisation, type OrganisationDto } from "@/routes/v1/mappings/organisation";
 
-export interface UserSideOrgMemberDto {
+export type UserSideOrgMemberDto = {
   id: string;
   createdAt: string;
   userId: string;
   org: OrganisationDto;
   roles: OrgRoles[];
-}
+};
 
-export interface OrgMemberDto {
+export type OrgMemberDto = {
   id: string;
   createdAt: string;
   orgId: string;
   user: UserDto;
   roles: OrgRoles[];
-}
+};
 
 export function mapOrgMember(member: OrgMember & { user: User }): OrgMemberDto {
   return {

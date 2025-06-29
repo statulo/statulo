@@ -3,11 +3,11 @@ import { queryKeys } from "~/api/queryKeys";
 import type { ExpandedUserResponse } from "~/api/users";
 import { login as loginRequest, register as registerRequest, type LoginRequest, type LoginResponse, type RegisterRequest } from "~/api/auth";
 
-interface AuthState {
+type AuthState = {
   user: ExpandedUserResponse | null;
   token: string | null;
   selectedOrgId: string | null;
-}
+};
 
 type CookiesStorageOptions = PublicRuntimeConfig["piniaPluginPersistedstate"]["cookieOptions"];
 

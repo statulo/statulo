@@ -3,23 +3,23 @@ import type { ContactPointTypes } from "@/routes/v1/contact-points";
 import { contactPointTypes } from "@/routes/v1/contact-points";
 import { mapOrgMember, type OrgMemberDto } from "@/routes/v1/mappings/org-member";
 
-export interface MemberContactPointDto {
+export type MemberContactPointDto = {
   id: string;
   member: OrgMemberDto;
-}
+};
 
-export interface DiscordContactPointDto {
+export type DiscordContactPointDto = {
   id: string;
   webhookUrl: string;
-}
+};
 
-export interface ContactPointDto {
+export type ContactPointDto = {
   id: string;
   type: ContactPointTypes;
   createdAt: string;
   member: MemberContactPointDto | null;
   discord: DiscordContactPointDto | null;
-}
+};
 
 function mapMemberContactPoint(memberContactPoint: PopulatedMemberContactPoint): MemberContactPointDto {
   return {

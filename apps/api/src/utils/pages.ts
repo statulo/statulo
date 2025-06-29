@@ -18,12 +18,12 @@ export function unlimitedPagerSchema() {
   });
 }
 
-export interface PageDto<T> {
+export type PageDto<T> = {
   data: T[];
   total: number;
   offset: number;
   count: number;
-}
+};
 
 export function mapPage<T>(
   controls: PageControls,

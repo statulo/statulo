@@ -2,27 +2,27 @@ import type { StatusPage, StatusPageMonitor } from "@prisma/client";
 import type { ExternalMonitorDto, FullMonitor, MonitorDto } from "@/routes/v1/mappings/monitor";
 import { mapExternalMonitor, mapMonitor } from "@/routes/v1/mappings/monitor";
 
-export interface StatusPageDto {
+export type StatusPageDto = {
   id: string;
   name: string;
   externalId: string;
   createdAt: string;
   orgId: string;
-}
+};
 
-export interface StatusPageMonitorDto {
+export type StatusPageMonitorDto = {
   id: string;
   createdAt: string;
   statusPageId: string;
   monitor: MonitorDto;
-}
+};
 
-export interface ExternalStatusPageDto {
+export type ExternalStatusPageDto = {
   id: string;
   name: string;
   externalId: string;
   monitors: ExternalMonitorDto[];
-}
+};
 
 export function mapStatusPage(statusPage: StatusPage): StatusPageDto {
   return {

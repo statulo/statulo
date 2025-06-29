@@ -4,13 +4,13 @@ import { monitorTypes, type MonitorTypes } from "@/routes/v1/monitors";
 import type { Interval } from "@/utils/monitors/intervals";
 import { stringRangeToObject, type Range } from "@/utils/monitors/ranges";
 
-export interface HttpMonitorDto {
+export type HttpMonitorDto = {
   id: string;
   allowedStatusCodes: Range[];
   expectedKeywords: string[];
-}
+};
 
-export interface MonitorDto {
+export type MonitorDto = {
   id: string;
   type: MonitorTypes;
   createdAt: string;
@@ -18,24 +18,24 @@ export interface MonitorDto {
   computedName: string;
   primaryInterval: Interval | null;
   http: HttpMonitorDto | null;
-}
+};
 
-export interface ShallowMonitorDto {
+export type ShallowMonitorDto = {
   id: string;
   type: MonitorTypes;
   createdAt: string;
   name: string | null;
   computedName: string;
   primaryInterval: Interval | null;
-}
+};
 
-export interface ExternalMonitorDto {
+export type ExternalMonitorDto = {
   id: string;
   type: MonitorTypes;
   name: string | null;
   computedName: string;
   primaryInterval: Interval | null;
-}
+};
 
 export type FullMonitor = Prisma.MonitorGetPayload<{
   include: {

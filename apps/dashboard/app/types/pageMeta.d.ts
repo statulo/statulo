@@ -1,7 +1,7 @@
 declare module "#app" {
-  interface PageMeta {
+  type PageMeta = {
     auth?: boolean | "guest" | "org-scoped";
-  }
+  };
 }
 
 // It is always important to ensure you import/export something when augmenting a type

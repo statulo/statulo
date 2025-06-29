@@ -3,10 +3,10 @@ import { isPrismaConnected } from "@/modules/db";
 import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
 
-interface Check {
+type Check = {
   name: string;
   success: boolean;
-}
+};
 
 async function healthcheck(): Promise<Check[]> {
   return [

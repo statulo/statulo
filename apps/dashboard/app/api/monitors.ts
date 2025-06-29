@@ -6,13 +6,13 @@ export const monitorTypes = {
 } as const;
 export type MonitorTypes = EnumType<typeof monitorTypes>;
 
-export interface HttpMonitorResponse {
+export type HttpMonitorResponse = {
   id: string;
   allowedStatusCodes: RangeResponse[];
   expectedKeywords: string[];
-}
+};
 
-export interface MonitorResponse {
+export type MonitorResponse = {
   id: string;
   type: MonitorTypes;
   createdAt: string;
@@ -20,16 +20,16 @@ export interface MonitorResponse {
   computedName: string;
   primaryInterval: IntervalResponse | null;
   http: HttpMonitorResponse | null;
-}
+};
 
-export interface ShallowMonitorResponse {
+export type ShallowMonitorResponse = {
   id: string;
   type: MonitorTypes;
   createdAt: string;
   name: string | null;
   computedName: string;
   primaryInterval: IntervalResponse | null;
-}
+};
 
 export function listMonitors(orgId: string, page: PageControls) {
   return httpRequest<PageResponse<ShallowMonitorResponse>>("get", `/api/v1/organisations/${orgId}/monitors`, {

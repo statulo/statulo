@@ -9,15 +9,15 @@ import { getPermissions } from "@/utils/permissions/resolve-roles";
 
 export type AuthType = "session";
 
-export interface AuthChecks {
+export type AuthChecks = {
   isAuthenticated: () => boolean;
   isAuthType: (type: AuthType) => boolean;
   isUser: (userId: string) => boolean;
   isEmailVerified: () => boolean;
   can: (perm: Permission) => boolean;
-}
+};
 
-export interface AuthContext {
+export type AuthContext = {
   check: (cb: (checks: AuthChecks) => boolean) => void;
   can: (perm: Permission) => void;
   /**
@@ -34,12 +34,12 @@ export interface AuthContext {
     getUserId: () => string;
     getUserIdOrDefault: () => string | null;
   };
-}
+};
 
-export interface AuthContextData {
+export type AuthContextData = {
   session?: PopulatedSession;
   type?: AuthType;
-}
+};
 
 export async function fetchAuthContextData(
   req: FastifyRequest,
