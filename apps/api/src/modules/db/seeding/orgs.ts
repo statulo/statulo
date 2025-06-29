@@ -2,7 +2,7 @@ import { prisma } from "..";
 import { testUser } from "./users";
 import { orgRoles } from "@/utils/permissions/roles";
 
-const legitCompany = {
+export const legitCompany = {
   id: "org_01jqvh74fvfahtq3q72ftertjj",
   memberId: "orgmbr_01jqvh74fvfahtq3q9mexxp8zv",
 };
