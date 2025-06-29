@@ -1,0 +1,15 @@
+---
+import { getStatusPageStatus } from "@/api/status-page";
+
+const { id } = Astro.params;
+
+if (!id) {
+  throw new Error("Status page ID is required");
+}
+
+const statusPage = await getStatusPageStatus(id);
+---
+
+<div>
+  {JSON.stringify(statusPage, null, 2)}
+</div>
