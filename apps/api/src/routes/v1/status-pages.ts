@@ -7,7 +7,7 @@ import { permissions } from "@/utils/permissions/permissions";
 import { makeRouter } from "@/utils/router";
 import { NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
-import { mapStatusPage } from "@/routes/v1/mappings/status-page";
+import { mapExternalStatusPage, mapStatusPage } from "@/routes/v1/mappings/status-page";
 
 export const statusPageRouter = makeRouter((app) => {
   app.post(
@@ -132,6 +132,46 @@ export const statusPageRouter = makeRouter((app) => {
       if (!statusPage) throw new NotFoundError();
       auth.can404(permissions.org.statusPage.read({ org: statusPage.orgId, stspg: statusPage.id }));
       return mapStatusPage(statusPage);
+    }),
+  );
+
+  app.get(
+    "/api/v1/status-pages/:ref/status",
+    {
+      schema: {
+        description: "Get status page status",
+        params: z.object({
+          ref: z.string(), // This can be the externalId or the custom domain
+        }),
+      },
+    },
+    handle(async ({ params }) => {
+      const statusPage = await prisma.statusPage.findUnique({
+        where: {
+          externalId: params.ref,
+          // TODO: Support custom domains in the future
+        },
+        include: {
+          statusPageMonitors: {
+            include: {
+              monitor: {
+                include: {
+                  http: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!statusPage) throw new NotFoundError();
+
+      // For now, we just return a static health status
+      return {
+        statusPage: mapExternalStatusPage({
+          ...statusPage,
+          statusPageMonitors: statusPage.statusPageMonitors.map(spm => spm.monitor),
+        }),
+      };
     }),
   );
 

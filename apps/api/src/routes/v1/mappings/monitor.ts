@@ -29,13 +29,21 @@ export interface ShallowMonitorDto {
   primaryInterval: Interval | null;
 }
 
+export interface ExternalMonitorDto {
+  id: string;
+  type: MonitorTypes;
+  name: string | null;
+  computedName: string;
+  primaryInterval: Interval | null;
+}
+
 export type FullMonitor = Prisma.MonitorGetPayload<{
   include: {
     http: true;
   };
 }>;
 
-type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
+export type ShallowMonitorInput = Monitor & { http: { url: string; id: string; interval: JsonValue } | null };
 
 function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
   return {
@@ -77,5 +85,15 @@ export function mapShallowMonitor(monitor: ShallowMonitorInput): ShallowMonitorD
     computedName: mapComputedName(monitor),
     primaryInterval: mapPrimaryInterval(monitor),
     createdAt: monitor.createdAt.toISOString(),
+  };
+}
+
+export function mapExternalMonitor(monitor: FullMonitor): ExternalMonitorDto {
+  return {
+    id: monitor.id,
+    type: monitor.type as MonitorTypes,
+    name: monitor.name,
+    computedName: mapComputedName(monitor),
+    primaryInterval: mapPrimaryInterval(monitor),
   };
 }
