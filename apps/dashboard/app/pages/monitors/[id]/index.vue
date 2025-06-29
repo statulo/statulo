@@ -33,6 +33,7 @@ const { isPending, data } = useQuery({
       <div v-if="data.http">
         <Text>Allowed status codes: {{ JSON.stringify(data.http.allowedStatusCodes) }}</Text>
         <Text>keywords: {{ JSON.stringify(data.http.expectedKeywords) }}</Text>
+        <Text>url: {{ data.http.url }}</Text>
       </div>
     </Panel>
   </div>

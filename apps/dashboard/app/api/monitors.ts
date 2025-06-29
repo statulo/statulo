@@ -10,6 +10,8 @@ export interface HttpMonitorResponse {
   id: string;
   allowedStatusCodes: RangeResponse[];
   expectedKeywords: string[];
+  url: string;
+  interval: IntervalResponse;
 }
 
 export interface MonitorCreateRequest {

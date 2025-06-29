@@ -8,6 +8,8 @@ export interface HttpMonitorDto {
   id: string;
   allowedStatusCodes: Range[];
   expectedKeywords: string[];
+  url: string;
+  interval: Interval;
 }
 
 export interface MonitorDto {
@@ -42,6 +44,8 @@ function mapHttpMonitor(monitor: HttpMonitor): HttpMonitorDto {
     id: monitor.id,
     allowedStatusCodes: monitor.allowedStatusCodes.map(v => stringRangeToObject(v)),
     expectedKeywords: monitor.expectedKeywords,
+    url: monitor.url,
+    interval: monitor.interval as Interval,
   };
 }
 
