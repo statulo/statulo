@@ -20,6 +20,7 @@ export class NetworkError extends Error {
   constructor(cause: Error) {
     super("Network error");
     this.name = "NetworkError";
+    this.message = cause.message || "Network error occurred";
     this.cause = cause;
   }
 }
