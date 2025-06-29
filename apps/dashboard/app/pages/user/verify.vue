@@ -14,7 +14,7 @@ const token = computed(() => query.token?.toString() ?? "");
 const { mutate, isPending, isError } = useMutation({
   async mutationFn() {
     await verifyEmailByToken(token.value);
-    await authStore.fetchUser().catch(() => {});
+    await authStore.fetchUser(); // TODO: Find a better way to handle any errors
   },
 });
 

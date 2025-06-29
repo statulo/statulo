@@ -39,7 +39,7 @@ export default defineConfig([
   {
     // https://typescript-eslint.io/rules/
     name: "statulo/typescript-eslint",
-    extends: [tseslint.configs.recommended],
+    extends: [tseslint.configs.recommended, tseslint.configs.stylistic],
     files: ["**/*.ts", "**/*.d.ts", "**/*.vue"],
     rules: {
       "@typescript-eslint/no-unused-vars": [
@@ -48,6 +48,7 @@ export default defineConfig([
       ],
       "@typescript-eslint/no-inferrable-types": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/prefer-function-type": "off",
       "@typescript-eslint/no-import-type-side-effects": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
