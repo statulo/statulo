@@ -26,5 +26,8 @@ export const queryKeys = {
   monitors: {
     all: key("monitors"),
     one: (id: string) => key("monitors", id),
+    contactPoints: {
+      all: (id: string) => key("monitors", id, "contactPoints"),
+    },
   },
 };

@@ -1,4 +1,5 @@
 import type { IntervalResponse, PageControls, PageResponse, RangeResponse } from "~/api/common";
+import type { ContactPointResponse } from "~/api/contactPoints";
 import type { EnumType } from "~/api/enums";
 
 export const monitorTypes = {
@@ -82,5 +83,11 @@ export function deleteMonitor(id: string) {
 export function editMonitor(id: string, body: MonitorEditRequest) {
   return httpRequest<void>("patch", `/api/v1/monitors/${id}`, {
     body,
+  });
+}
+
+export function getMonitorContactPoints(id: string, page: PageControls) {
+  return httpRequest<PageResponse<ContactPointResponse>>("get", `/api/v1/monitors/${id}/contact-points`, {
+    query: page,
   });
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { z } from "zod";
-import { deleteMonitor, editMonitor, getMonitor, monitorTypes, type MonitorEditRequest } from "~/api/monitors";
+import { deleteMonitor, editMonitor, getMonitor, getMonitorContactPoints, monitorTypes, type MonitorEditRequest } from "~/api/monitors";
 import { queryKeys } from "~/api/queryKeys";
 
 definePageMeta({
@@ -18,6 +18,17 @@ const { isPending, data, refetch, isFetched } = useQuery({
 });
 watch(isFetched, () => {
   form.reset();
+});
+
+const { isPending: isContactPointsPending, data: contactPoints, refetch: refetchContacts } = useQuery({
+  queryKey: queryKeys.monitors.contactPoints.all(id.value),
+  queryFn: async () => {
+    // TODO temp
+    return await getMonitorContactPoints(id.value, {
+      offset: 0,
+      limit: 25,
+    });
+  },
 });
 
 const { mutate: deleteMonitorReq, isPending: isDeletePending } = useMutation({
@@ -66,6 +77,7 @@ function submit() {
     },
     onSuccess() {
       refetch();
+      refetchContacts();
     },
   });
 }
@@ -75,7 +87,10 @@ function submit() {
   <div v-if="isPending">
     Loading...
   </div>
-  <div v-else-if="data">
+  <div
+    v-else-if="data"
+    class="space-y-4"
+  >
     <BigTitle class="mt-12 mb-4">
       {{ data.name ?? data.computedName }}
     </BigTitle>
@@ -91,6 +106,47 @@ function submit() {
         <Text>url: {{ data.http.url }}</Text>
       </div>
     </Panel>
+
+    <Panel titled>
+      <template #title>
+        <Bold>{{ contactPoints?.total ?? 0 }} Contacts</Bold>
+      </template>
+
+      <p
+        v-if="isContactPointsPending || !contactPoints"
+        class="text-center pt-5"
+      >
+        Loading...
+      </p>
+      <p
+        v-else-if="contactPoints.data.length === 0"
+        class="text-center pt-5"
+      >
+        No contacts yet :(
+      </p>
+      <div v-else>
+        <div
+          v-for="(item, ind) of contactPoints.data"
+          :key="item.id"
+        >
+          <Divider v-if="ind !== 0" />
+          <div class="my-4 flex items-center gap-3">
+            <MonitorStatus
+              status="up"
+              class="mt-2 self-start text-lg"
+            />
+            <div class="flex-1">
+              <SubHeading>{{ item.member?.member?.user?.name ?? item.discord?.webhookUrl }}</SubHeading>
+              <div class="flex items-center mt-1">
+                <Tag>{{ item.type }}</Tag>
+                <span v-if="item.member?.member">{{ item.member.member.user.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Panel>
+
     <Panel>
       <Form
         @submit="submit()"
