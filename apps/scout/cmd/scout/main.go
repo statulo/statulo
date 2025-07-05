@@ -12,12 +12,20 @@ func main() {
 	// - orchestrator URL (required)
 	// - enable metrics? (default to false)
 	// - web server port (maybe disable by default for security?)
-	initLogger(false)
+	conf := Config{
+		LogInJson:       false,
+		OrchestratorUrl: "http://localhost:8080",
+		Metrics:         false,
+		HttpPort:        1234,
+	}
+
+	initLogger(conf.LogInJson)
 	defer log.Sync()
 
 	log.Info("Setting up agent")
 
 	defer func() {
+		// TODO this should go somewhere else, initialisation shouldn't recover from panics
 		if r := recover(); r != nil {
 			log.Errorf("Recovered in main: %v\n", r)
 		}
@@ -28,7 +36,7 @@ func main() {
 
 	listenSignals(cancel)
 
-	agent := NewAgent()
+	agent := NewAgent(conf)
 	err := agent.Run(ctx)
 
 	if err != nil {

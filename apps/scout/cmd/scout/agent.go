@@ -4,14 +4,20 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"github.com/statulo/scout/internal/heartbeat"
+	"github.com/statulo/scout/internal/http"
 )
 
 type Agent struct {
-	wg sync.WaitGroup
+	wg   sync.WaitGroup
+	conf Config
 }
 
-func NewAgent() Agent {
-	return Agent{}
+func NewAgent(conf Config) Agent {
+	return Agent{
+		conf: conf,
+	}
 }
 
 func (a *Agent) startBg(ctx context.Context) {
@@ -33,14 +39,29 @@ func (a *Agent) startBg(ctx context.Context) {
 
 func (a *Agent) Run(ctx context.Context) error {
 	log.Info("Agent is running")
+	client := http.OrchestratorClient{
+		UserAgentName: "Scout",
+		Version:       Version,
+		BaseUrl:       a.conf.OrchestratorUrl,
+	}
 
-	// TODO request HELLO immediately from orchestrator, exponential backoff on failure
+	// TODO exponential backoff on failure
+	helloRes, err := client.DoHello(http.HelloRequest{
+		Timeout: 30 * time.Second,
+	})
+	if err != nil {
+		return err
+	}
+	log.Info("Got HELLO from orchestrator")
+	client.SetToken(helloRes.Token)
+
+	heartbeater := heartbeat.CreateHeartbeater(ctx, &client)
 	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO create a checker struct
-	// TODO bg: start heartbeat, heartbeat schedule defined in HELLO. If returned hash from heartbeat is different, refetch schedule
 	// TODO bg: start check scheduler, check schedule defined in HELLO. Check schedule should be hot reloadable. Checker is called by check scheduler
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 	// TODO bg: web server for healthcheck and prometheus metrics
+	go heartbeater.Start(time.Duration(helloRes.Heartbeat) * time.Second)
 	a.startBg(ctx)
 
 	<-ctx.Done()
