@@ -6,6 +6,12 @@ import (
 )
 
 func main() {
+	// TODO load config from environment and .env, load into struct:
+	// - log level (default to INFO)
+	// - log format (default to JSON)
+	// - orchestrator URL (required)
+	// - enable metrics? (default to false)
+	// - web server port (maybe disable by default for security?)
 	initLogger(false)
 	defer log.Sync()
 
