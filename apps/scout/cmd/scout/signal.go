@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os/signal"
 	"syscall"
 )
@@ -12,7 +11,7 @@ func listenSignals(cancel context.CancelFunc) {
 
 	go func() {
 		<-notifyCtx.Done()
-		fmt.Println("Shutdown signal received")
+		log.Info("Shutdown signal received")
 		cancel()
 	}()
 }
