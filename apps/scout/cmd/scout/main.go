@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 )
 
 func main() {
-	fmt.Println("Setting up agent")
+	initLogger(false)
+	defer log.Sync()
+
+	log.Info("Setting up agent")
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("Recovered in main: %v\n", r)
+			log.Errorf("Recovered in main: %v\n", r)
 		}
 	}()
 
@@ -20,14 +22,14 @@ func main() {
 
 	listenSignals(cancel)
 
-	agent := Agent{}
+	agent := NewAgent()
 	err := agent.Run(ctx)
 
 	if err != nil {
-		fmt.Printf("Agent failed to run: %v\n", err)
+		log.Errorf("Agent failed to run: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Exiting")
+	log.Info("Exiting")
 	os.Exit(0)
 }
