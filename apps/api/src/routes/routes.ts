@@ -10,6 +10,7 @@ import { monitorRouter } from "@/routes/v1/monitors";
 import { verifyRouter } from "@/routes/v0/verify";
 import type { StatuloFastifyInstance } from "@/modules/fastify";
 import { contactPointRouter } from "@/routes/v1/contact-points";
+import { orchestratorRouter } from "@/routes/v1/orchestrator";
 
 export async function setupRoutes(app: StatuloFastifyInstance) {
   await app.register(indexRouter.register);
@@ -23,4 +24,5 @@ export async function setupRoutes(app: StatuloFastifyInstance) {
   await app.register(orgInviteRouter.register);
   await app.register(monitorRouter.register);
   await app.register(contactPointRouter.register);
+  await app.register(orchestratorRouter.register);
 }
