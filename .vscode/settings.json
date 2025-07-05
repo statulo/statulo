@@ -18,6 +18,9 @@
   "[vue]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "tailwindCSS.classFunctions": [
