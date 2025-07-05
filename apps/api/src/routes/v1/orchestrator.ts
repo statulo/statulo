@@ -23,7 +23,7 @@ export const orchestratorRouter = makeRouter((app) => {
       return {
         agentId: "123",
         token: "xyz",
-        heartbeat: 42,
+        heartbeat: 10,
         checks: [],
         pubsub: null,
       };

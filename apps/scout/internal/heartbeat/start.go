@@ -12,6 +12,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 	for {
 		select {
 		case <-c.ctx.Done():
+			fmt.Println("Stopping heartbeat")
 			return
 		case <-c.updateChan:
 			c.updateChan = make(chan struct{})

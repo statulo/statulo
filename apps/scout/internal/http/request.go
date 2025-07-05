@@ -29,7 +29,8 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 	}
 
 	var payload io.Reader = nil
-	if len(req.Body) > 0 {
+	hasBody := len(req.Body) > 0
+	if hasBody {
 		payload = bytes.NewBuffer(req.Body)
 	}
 
@@ -42,6 +43,10 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 
 	if len(req.Token) > 0 {
 		httpReq.Header.Set("Authorization", "Bearer "+req.Token)
+	}
+
+	if hasBody {
+		httpReq.Header.Set("Content-Type", "application/json")
 	}
 
 	res, err := http.DefaultClient.Do(httpReq)
