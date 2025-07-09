@@ -42,7 +42,7 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 	httpReq.Header.Set("User-Agent", c.UserAgentName+"/"+c.Version)
 
 	if len(req.Token) > 0 {
-		httpReq.Header.Set("Authorization", "Bearer "+req.Token)
+		httpReq.Header.Set("Authorization", "Scout "+req.Token)
 	}
 
 	if hasBody {
