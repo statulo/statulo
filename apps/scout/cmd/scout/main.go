@@ -2,27 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 )
 
 func main() {
-	// TODO load config from environment and .env, load into struct:
-	// - log level (default to INFO)
-	// - log format (default to JSON)
-	// - orchestrator URL (required)
-	// - enable metrics? (default to false)
-	// - web server port (maybe disable by default for security?)
-	conf := Config{
-		LogInJson:       false,
-		OrchestratorUrl: "http://localhost:8080",
-		Metrics:         false,
-		HttpPort:        1234,
+	conf, logErr := loadConfig()
+	if logErr != nil {
+		fmt.Printf("Failed to load configuration, exiting: %v\n", logErr)
+		os.Exit(1)
 	}
 
 	initLogger(conf.LogInJson)
 	defer log.Sync()
 
 	log.Info("Setting up agent")
+	logConfig(*conf)
 
 	defer func() {
 		// TODO this should go somewhere else, initialisation shouldn't recover from panics
@@ -36,7 +31,7 @@ func main() {
 
 	listenSignals(cancel)
 
-	agent := NewAgent(conf)
+	agent := NewAgent(*conf)
 	err := agent.Run(ctx)
 
 	if err != nil {
