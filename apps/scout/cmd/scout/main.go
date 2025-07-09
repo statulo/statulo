@@ -13,7 +13,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	initLogger(conf.LogInJson)
+	loggerErr := initLogger(conf.LogInJson)
+	if loggerErr != nil {
+		fmt.Printf("Failed to initialize logger: %v\n", loggerErr)
+		os.Exit(1)
+	}
 	defer log.Sync()
 
 	log.Info("Setting up agent")

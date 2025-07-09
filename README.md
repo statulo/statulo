@@ -11,4 +11,4 @@ The most polished open source uptime tracker there is.
 
 
 > [!IMPORTANT]
-> This app is stil in active development. Do not use in production!
+> This app is still in active development. Do not use in production!

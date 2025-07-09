@@ -11,4 +11,4 @@ The reliable checking component of the Statulo infrastructure. Scout communicate
 
 
 > [!IMPORTANT]
-> This app is stil in active development. Do not use in production!
+> This app is still in active development. Do not use in production!

@@ -23,10 +23,10 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 	defer cancel()
 
 	url, err := url.Parse(c.BaseUrl)
-	url.Path = path.Join(url.Path, req.Path)
 	if err != nil {
 		return nil, err
 	}
+	url.Path = path.Join(url.Path, req.Path)
 
 	var payload io.Reader = nil
 	hasBody := len(req.Body) > 0
