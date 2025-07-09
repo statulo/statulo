@@ -56,10 +56,18 @@ func (a *Agent) Run(ctx context.Context) error {
 	// TODO bg: web server for healthcheck and prometheus metrics
 
 	<-ctx.Done()
-	log.Info("Shutdown requested, waiting for tasks to quit")
-	a.wg.Wait()
+	log.Info("Shutdown requested, sending GOODBYE to orchestrator")
 
-	// TODO graceful exit: send GOODBYE to orchestrator
+	goodbyeErr := client.DoGoodbye(http.GoodbyeRequest{
+		Timeout: 30 * time.Second,
+	})
+	if goodbyeErr != nil {
+		// TODO exponential retry
+		return goodbyeErr
+	}
+	log.Info("GOODBYE acknowledged by orchestrator, gracefully offboarding tasks")
+	// TODO run schedule until the end specified by goodbye
+	a.wg.Wait()
 
 	return nil
 }
