@@ -47,8 +47,9 @@ export function parseAuthorizationToken(request: FastifyRequest) {
   const { authorization } = request.headers;
   if (!authorization) return null;
   const headerParts: string[] = authorization.split(" ", 2);
-  if (headerParts.length === 0 || headerParts[0] !== "Bearer")
+  if (headerParts.length === 0 || !["Bearer", "Scout"].includes(headerParts[0]))
     throw ApiError.forMessage("Wrong auth header type", 401);
+  if (headerParts[0] === "Scout") return null; // TODO implement scout tokens
   return headerParts[1];
 }
 
