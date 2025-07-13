@@ -15,8 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 FROM alpine AS runner
 RUN adduser -u 10000 -S scout
 
-COPY --from=builder /build/scout /scout
-RUN chown scout /scout
+COPY --from=builder --chown scout /build/scout /scout
 
 USER scout
 ENTRYPOINT ["/scout"]
