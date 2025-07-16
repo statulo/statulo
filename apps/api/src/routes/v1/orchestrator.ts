@@ -74,4 +74,24 @@ export const orchestratorRouter = makeRouter((app) => {
       return {};
     }),
   );
+
+  app.get(
+    "/api/v1/orchestrator/agents/checks",
+    {
+      schema: {
+        description: "Get checks for an agent",
+      },
+    },
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      // TODO get real checks
+      // TODO create mappings
+      return {
+        checks: [],
+      };
+    }),
+  );
 });
