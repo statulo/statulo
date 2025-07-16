@@ -1,12 +1,8 @@
 import { z } from "zod";
 import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
-
-// TODO this entire file is temporary, endpoints are not implemented properly
-
-function hashChecks(_checks: any[]): string {
-  return "abcdef";
-}
+import { orchestrator } from "@/modules/orchestrator";
+import { permissions } from "@/utils/permissions/permissions";
 
 export const orchestratorRouter = makeRouter((app) => {
   app.post(
@@ -19,7 +15,14 @@ export const orchestratorRouter = makeRouter((app) => {
         }),
       },
     },
-    handle(async () => {
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("agent-registration"));
+      auth.can(permissions.activeAgent.internal.register({}));
+
+      await orchestrator.agents.register(auth.data.getAgentRegistrationId());
+
+      // TODO return new active agent
+      // TODO create mappings
       return {
         agentId: "123",
         token: "xyz",
@@ -37,9 +40,17 @@ export const orchestratorRouter = makeRouter((app) => {
         description: "Single heartbeat for an agent",
       },
     },
-    handle(async () => {
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      await orchestrator.agents.refresh(agentId);
+
+      // TODO hash the real checks
+      // TODO create mappings
       return {
-        checkHash: hashChecks([]),
+        checkHash: orchestrator.checks.hash([]),
       };
     }),
   );
@@ -51,7 +62,15 @@ export const orchestratorRouter = makeRouter((app) => {
         description: "Offboard a running agent",
       },
     },
-    handle(async () => {
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      await orchestrator.agents.remove(agentId);
+
+      // TODO add offboarding schedule
+      // TODO create mappings
       return {};
     }),
   );

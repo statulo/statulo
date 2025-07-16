@@ -20,6 +20,12 @@ export type AuthToken = {
   t: "emailverify";
   uid: string;
   stamp: string;
+} | {
+  t: "agentreg";
+  id: string;
+} | {
+  t: "activeagent";
+  id: string;
 };
 
 export function parseAuthToken(input: string): null | AuthToken {
@@ -49,7 +55,6 @@ export function parseAuthorizationToken(request: FastifyRequest) {
   const headerParts: string[] = authorization.split(" ", 2);
   if (headerParts.length === 0 || !["Bearer", "Scout"].includes(headerParts[0]))
     throw ApiError.forMessage("Wrong auth header type", 401);
-  if (headerParts[0] === "Scout") return null; // TODO implement scout tokens
   return headerParts[1];
 }
 
