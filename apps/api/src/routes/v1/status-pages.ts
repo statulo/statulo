@@ -166,12 +166,10 @@ export const statusPageRouter = makeRouter((app) => {
       if (!statusPage) throw new NotFoundError();
 
       // For now, we just return a static health status
-      return {
-        statusPage: mapExternalStatusPage({
-          ...statusPage,
-          statusPageMonitors: statusPage.statusPageMonitors.map(spm => spm.monitor),
-        }),
-      };
+      return mapExternalStatusPage({
+        ...statusPage,
+        statusPageMonitors: statusPage.statusPageMonitors.map(spm => spm.monitor),
+      });
     }),
   );
 
