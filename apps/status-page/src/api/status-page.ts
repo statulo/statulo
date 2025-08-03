@@ -19,6 +19,7 @@ export type StatusPageDto = {
   id: string;
   name: string;
   externalId: string;
+  orgId: string;
   monitors: MonitorDto[];
 };
 

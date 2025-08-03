@@ -1,4 +1,5 @@
 ---
+import { getOrganisationMeta } from "@/api/organisation";
 import { getStatusPageStatus } from "@/api/status-page";
 
 const { id } = Astro.params;
@@ -8,8 +9,17 @@ if (!id) {
 }
 
 const statusPage = await getStatusPageStatus(id);
+const organisation = await getOrganisationMeta(statusPage.orgId);
 ---
 
 <div>
-  {JSON.stringify(statusPage, null, 2)}
+  <pre>
+    {JSON.stringify(statusPage, null, 2)}
+  </pre>
+  <div class="container">
+    <div id="hero">
+      <h1>{ statusPage.name }</h1>
+      <h2>{ organisation.name }</h2>
+    </div>
+  </div>
 </div>

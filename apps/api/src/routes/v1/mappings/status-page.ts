@@ -21,6 +21,7 @@ export type ExternalStatusPageDto = {
   id: string;
   name: string;
   externalId: string;
+  orgId: string;
   monitors: ExternalMonitorDto[];
 };
 
@@ -28,9 +29,9 @@ export function mapStatusPage(statusPage: StatusPage): StatusPageDto {
   return {
     id: statusPage.id,
     name: statusPage.name,
+    orgId: statusPage.orgId,
     externalId: statusPage.externalId,
     createdAt: statusPage.createdAt.toISOString(),
-    orgId: statusPage.orgId,
   };
 }
 
@@ -39,6 +40,7 @@ export function mapExternalStatusPage(statusPage: StatusPage & { statusPageMonit
     id: statusPage.id,
     name: statusPage.name,
     externalId: statusPage.externalId,
+    orgId: statusPage.orgId,
     monitors: statusPage.statusPageMonitors.map(mapExternalMonitor),
   };
 }
