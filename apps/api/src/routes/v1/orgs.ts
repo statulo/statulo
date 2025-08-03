@@ -125,6 +125,27 @@ export const orgRouter = makeRouter((app) => {
   );
 
   app.get(
+    "/api/v1/organisations/:id/meta",
+    {
+      schema: {
+        description: "Get organisation public metadata",
+        params: z.object({
+          id: z.string(),
+        }),
+      },
+    },
+    handle(async ({ params }) => {
+      const org = await prisma.organisation.findUnique({
+        where: {
+          id: params.id,
+        },
+      });
+      if (!org) throw new NotFoundError();
+      return mapOrganisation(org);
+    }),
+  );
+
+  app.get(
     "/api/v1/organisations",
     {
       schema: {
