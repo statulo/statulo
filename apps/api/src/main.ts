@@ -1,4 +1,5 @@
 import { createProgram } from "@/cli";
+import { isPrismaConnected } from "@/modules/db";
 import { setupMailer } from "@/modules/emails";
 import {
   setupFastify,
@@ -13,6 +14,13 @@ async function run() {
 
   logIntro();
   log.info(`App booting...`);
+
+  const dbConnected = await isPrismaConnected();
+  if (!dbConnected) {
+    log.error(`Database connection failed. Please check your configuration.`);
+    process.exit(1);
+  }
+  log.info(`Database connection established successfully.`);
 
   const app = await setupFastify();
   await setupFastifyRoutes(app);
