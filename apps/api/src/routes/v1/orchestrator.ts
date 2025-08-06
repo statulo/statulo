@@ -3,6 +3,7 @@ import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
 import { orchestrator } from "@/modules/orchestrator";
 import { permissions } from "@/utils/permissions/permissions";
+import { mapOrchestratorChecks, mapOrchestratorGoodbye, mapOrchestratorHeartbeat, mapOrchestratorHello } from "@/routes/v1/mappings/orchestrator";
 
 export const orchestratorRouter = makeRouter((app) => {
   app.post(
@@ -22,14 +23,13 @@ export const orchestratorRouter = makeRouter((app) => {
       await orchestrator.agents.register(auth.data.getAgentRegistrationId());
 
       // TODO return new active agent
-      // TODO create mappings
-      return {
+      return mapOrchestratorHello({
         agentId: "123",
         token: "xyz",
         heartbeat: 10,
         checks: [],
         pubsub: null,
-      };
+      });
     }),
   );
 
@@ -48,10 +48,7 @@ export const orchestratorRouter = makeRouter((app) => {
       await orchestrator.agents.refresh(agentId);
 
       // TODO hash the real checks
-      // TODO create mappings
-      return {
-        checkHash: orchestrator.checks.hash([]),
-      };
+      return mapOrchestratorHeartbeat(orchestrator.checks.hash([]));
     }),
   );
 
@@ -70,8 +67,7 @@ export const orchestratorRouter = makeRouter((app) => {
       await orchestrator.agents.remove(agentId);
 
       // TODO add offboarding schedule
-      // TODO create mappings
-      return {};
+      return mapOrchestratorGoodbye();
     }),
   );
 
@@ -88,10 +84,7 @@ export const orchestratorRouter = makeRouter((app) => {
       auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
 
       // TODO get real checks
-      // TODO create mappings
-      return {
-        checks: [],
-      };
+      return mapOrchestratorChecks([]);
     }),
   );
 });
