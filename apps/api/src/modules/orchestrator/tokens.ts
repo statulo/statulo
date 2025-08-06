@@ -13,5 +13,3 @@ export function createRegistrationToken(id: string): string {
     id,
   });
 }
-
-console.log(createRegistrationToken("test"));
