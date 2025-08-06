@@ -1,19 +1,17 @@
-export function createActiveAgentToken(_id: string): string {
-  // return a token string
-  return "";
+import { makeAuthToken } from "@/utils/auth/tokens";
+
+export function createActiveAgentToken(id: string): string {
+  return makeAuthToken({
+    t: "activeagent",
+    id,
+  });
 }
 
-export function parseActiveAgentToken(_token: string): string | null {
-  // return id of the active agent, null on error
-  return "";
+export function createRegistrationToken(id: string): string {
+  return makeAuthToken({
+    t: "agentreg",
+    id,
+  });
 }
 
-export function createRegistrationToken(_id: string): string {
-  // return a token string
-  return "";
-}
-
-export function parseRegistrationToken(_token: string): string | null {
-  // return id of the agent registration, null on error
-  return "";
-}
+console.log(createRegistrationToken("test"));

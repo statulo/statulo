@@ -12,6 +12,7 @@ export const idTypes = [
   "stspg", // status page
   "stspg_mtr", // status page monitor
   "con", // contact point
+  "agt", // connected agent
 ] as const;
 
 export function getId(prefix: ArrayValues<typeof idTypes>): string {

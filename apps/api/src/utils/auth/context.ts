@@ -77,7 +77,7 @@ export async function fetchAuthContextData(
       activeAgent: {
         id: payload.id,
       },
-      type: "agent-registration",
+      type: "active-agent",
     };
   }
 
@@ -88,6 +88,8 @@ function makeAuthCheckers(data: AuthContextData): AuthChecks {
   const user = data.session?.user;
   const perms = getPermissions({
     user: data.session?.user,
+    activeAgentId: data.activeAgent?.id,
+    agentRegistrationId: data.agentRegistration?.id,
   });
 
   return {

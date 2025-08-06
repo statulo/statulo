@@ -1,6 +1,6 @@
 import { refreshActiveAgent, registerActiveAgent, removeActiveAgent, removeStaleActiveAgents } from "@/modules/orchestrator/active-agents";
-import { calculateCheckCost, hashChecks } from "@/modules/orchestrator/utils";
-import { createActiveAgentToken, parseActiveAgentToken } from "@/modules/orchestrator/tokens";
+import { calculateCheckCost, getHeartbeat, hashChecks } from "@/modules/orchestrator/utils";
+import { createActiveAgentToken } from "@/modules/orchestrator/tokens";
 
 export const orchestrator = {
   agents: {
@@ -9,9 +9,11 @@ export const orchestrator = {
     remove: removeActiveAgent,
     processStale: removeStaleActiveAgents,
   },
+  heartbeat: {
+    get: getHeartbeat,
+  },
   tokens: {
     create: createActiveAgentToken,
-    parse: parseActiveAgentToken,
   },
   checks: {
     calculateCost: calculateCheckCost,

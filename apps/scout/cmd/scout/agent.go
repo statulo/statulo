@@ -39,7 +39,8 @@ func (a *Agent) Run(ctx context.Context) error {
 
 	// TODO exponential backoff on failure
 	helloRes, err := client.DoHello(http.HelloRequest{
-		Timeout: 30 * time.Second,
+		Timeout:  30 * time.Second,
+		RegToken: a.conf.Token,
 	})
 	if err != nil {
 		return err

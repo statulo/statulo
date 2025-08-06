@@ -20,15 +20,14 @@ export const orchestratorRouter = makeRouter((app) => {
       auth.check(c => c.isAuthType("agent-registration"));
       auth.can(permissions.activeAgent.internal.register({}));
 
-      await orchestrator.agents.register(auth.data.getAgentRegistrationId());
+      const agent = await orchestrator.agents.register(auth.data.getAgentRegistrationId());
 
-      // TODO return new active agent
       return mapOrchestratorHello({
-        agentId: "123",
-        token: "xyz",
-        heartbeat: 10,
-        checks: [],
-        pubsub: null,
+        agentId: agent.id,
+        token: orchestrator.tokens.create(agent.id),
+        heartbeat: orchestrator.heartbeat.get(),
+        checks: [], // TODO add checks
+        pubsub: null, // TODO add pubsub for verifications
       });
     }),
   );

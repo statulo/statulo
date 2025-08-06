@@ -1,16 +1,53 @@
-export async function registerActiveAgent(_agentRegistrationId: string): Promise<void> {
-  // create new active agent in db
+import type { ConnectedAgent } from "@prisma/client";
+import { prisma } from "@/modules/db";
+import { getId } from "@/utils/id";
+import { getStaleHeartbeatDate } from "@/modules/orchestrator/utils";
+import { logger } from "@/modules/log";
+
+export async function registerActiveAgent(agentRegistrationId: string): Promise<ConnectedAgent> {
+  return await prisma.connectedAgent.create({
+    data: {
+      id: getId("agt"),
+      registrationId: agentRegistrationId,
+    },
+  });
 }
 
-export async function refreshActiveAgent(_id: string): Promise<void> {
-  // update lastSeenAt field of agent
+export async function refreshActiveAgent(id: string): Promise<void> {
+  await prisma.connectedAgent.update({
+    where: {
+      id,
+    },
+    data: {
+      lastSeenAt: new Date(),
+    },
+  });
 }
 
-export async function removeActiveAgent(_id: string): Promise<void> {
-  // delete active agent from db
+export async function removeActiveAgent(id: string): Promise<void> {
+  await prisma.connectedAgent.delete({
+    where: {
+      id,
+    },
+  });
 }
 
 export async function removeStaleActiveAgents(): Promise<void> {
-  // 2 heartbeat failures makes the active agents as stale
-  // this should log
+  const staleAgents = await prisma.connectedAgent.findMany({
+    where: {
+      lastSeenAt: {
+        lte: getStaleHeartbeatDate(),
+      },
+    },
+  });
+  await prisma.connectedAgent.deleteMany({
+    where: {
+      id: {
+        in: staleAgents.map(v => v.id),
+      },
+    },
+  });
+  staleAgents.forEach((agent) => {
+    logger.warn(`Removed stale agent: ${agent.id} for ${agent.registrationId}`);
+  });
 }
