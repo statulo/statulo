@@ -1,6 +1,7 @@
 import type { StatusPage, StatusPageMonitor } from "@prisma/client";
-import type { FullMonitor, MonitorDto } from "@/routes/v1/mappings/monitor";
+import type { MonitorDto } from "@/routes/v1/mappings/monitor";
 import { mapMonitor } from "@/routes/v1/mappings/monitor";
+import type { FullMonitor } from "@/modules/orchestrator/monitors/types";
 
 export interface StatusPageDto {
   id: string;
