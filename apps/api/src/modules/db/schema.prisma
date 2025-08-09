@@ -96,7 +96,6 @@ model Monitor {
 
   http               HttpMonitor?
   statusPageMonitors StatusPageMonitor[]
-  checks             Check[]
 
   @@map("monitor")
 }
@@ -213,14 +212,17 @@ model StatusPageMonitor {
 }
 
 model Check {
-  id        String   @id
-  createdAt DateTime @default(now()) @map("created_at")
+  id            String @id
+  correlationId String
+  type          String
+  version       Int
+  cost          Int
 
-  monitor   Monitor? @relation(fields: [monitorId], references: [id], onDelete: SetNull)
-  monitorId String?  @map("monitor_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  startAt   DateTime  @map("start_at")
+  endAt     DateTime? @map("end_at")
 
-  cost Int
-  body Json
+  monitorId String @map("monitor_id")
 
   checkAssignments CheckAssignment[]
 
@@ -242,19 +244,21 @@ model ConnectedAgent {
   id         String   @id
   createdAt  DateTime @default(now()) @map("created_at")
   lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  totalCost  Int      @default(0) @map("total_cost")
 
   registration   AgentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   registrationId String            @map("registration_id")
 
-  checkAssignments CheckAssignment[]
+  checks CheckAssignment[]
 
   @@map("connected_agent")
 }
 
 model CheckAssignment {
-  id        String   @id
-  createdAt DateTime @default(now()) @map("created_at")
-  startAt   DateTime @default(now()) @map("start_at")
+  id        String    @id
+  createdAt DateTime  @default(now()) @map("created_at")
+  startAt   DateTime  @map("start_at")
+  endAt     DateTime? @map("end_at")
 
   agent   ConnectedAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId String         @map("agent_id")
