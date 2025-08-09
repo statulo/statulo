@@ -13,6 +13,6 @@ export function buildHttpCheck(monitor: HttpMonitor): CheckDefinition {
     monitorId: monitor.monitorId,
     correlationId: buildCorrelationId(monitor, "http"),
     version: 1,
-    cost: 50,
+    cost: 50, // TODO calculate cost based on interval + constant for HTTP requests
   };
 }
