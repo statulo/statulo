@@ -1,7 +1,10 @@
+import type { FullCheckAssignment } from "@/modules/orchestrator/active-agents";
+
 export type OrchestratorHelloDto = {
   agentId: string;
   token: string;
   heartbeat: number; // in seconds
+  checkHash: string;
   checks: OrchestratorCheckDto[];
   pubsub: {
     type: "nats";
@@ -11,9 +14,8 @@ export type OrchestratorHelloDto = {
 
 export type OrchestratorCheckDto = {
   id: string;
-  type: "http";
-  url: string;
-  intervalMs: number;
+  type: string;
+  // TODO fill with real data
 };
 
 export type OrchestratorHeartbeatDto = {
@@ -21,6 +23,7 @@ export type OrchestratorHeartbeatDto = {
 };
 
 export type OrchestratorChecksDto = {
+  checkHash: string;
   checks: OrchestratorCheckDto[];
 };
 
@@ -39,9 +42,17 @@ export function mapOrchestratorHeartbeat(hash: string): OrchestratorHeartbeatDto
   };
 }
 
-export function mapOrchestratorChecks(checks: OrchestratorCheckDto[]): OrchestratorChecksDto {
+export function mapCheck(checkAssignment: FullCheckAssignment): OrchestratorCheckDto {
   return {
-    checks,
+    id: checkAssignment.checkId,
+    type: checkAssignment.check.type,
+  };
+}
+
+export function mapOrchestratorChecks(hash: string, checks: FullCheckAssignment[]): OrchestratorChecksDto {
+  return {
+    checkHash: hash,
+    checks: checks.map(v => mapCheck(v)),
   };
 }
 
