@@ -1,11 +1,26 @@
-export function calculateCheckCost(_check: any): number {
-  // calculate cost of the check
-  return 0;
+import { createHash } from "crypto";
+import type { CheckAssignment } from "@prisma/client";
+import { intervalToMs, type Interval } from "@/utils/monitors/intervals";
+
+const hashVersion = 1;
+
+export type CheckCostOptions = {
+  baseCost: number;
+  interval: Interval;
+};
+
+export function calculateCheckCost(ops: CheckCostOptions): number {
+  const range = 24 * 60 * 60 * 1000; // 1 day
+  const checksInRange = range / intervalToMs(ops.interval); // checks per day
+  const costInRange = checksInRange * ops.baseCost; // cost per day
+  const scaledCostInRange = Math.floor(costInRange * 100); // Remove need for floats by scaling
+  return scaledCostInRange;
 }
 
-export function hashChecks(_checks: any[]): string {
-  // Hash all checks
-  return "";
+export function hashChecks(checks: CheckAssignment[]): string {
+  const baseString = checks.map(v => `${v.checkId}-${v.endAt?.getTime() ?? "null"}`).join(":");
+  const hash = createHash("sha256").update(baseString).digest("hex");
+  return `v${hashVersion}:${hash}`;
 }
 
 export function getHeartbeat(): number {

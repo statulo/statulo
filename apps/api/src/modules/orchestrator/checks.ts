@@ -3,6 +3,7 @@ import { httpMonitorConverter } from "@/modules/orchestrator/monitors/http";
 import type { FullMonitor, MonitorConverter } from "@/modules/orchestrator/monitors/types";
 import { getSafeStartDate } from "@/modules/orchestrator/utils";
 import { getUntypedId } from "@/utils/id";
+import { distributeCheck } from "@/modules/orchestrator/distribution";
 
 const converters: MonitorConverter[] = [
   httpMonitorConverter,
@@ -53,9 +54,14 @@ export async function updateChecksForMonitor(prisma: Prisma.TransactionClient, o
     type: v.type,
     startAt: startDate,
   }));
-  await prisma.check.createMany({
+  const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,
   });
+
+  // Distribute new checks to agents
+  for (const check of createdChecks) {
+    await distributeCheck(prisma, check);
+  }
 }
 
 export async function addCheckForMonitor(prisma: Prisma.TransactionClient, monitor: FullMonitor): Promise<void> {
@@ -72,7 +78,12 @@ export async function addCheckForMonitor(prisma: Prisma.TransactionClient, monit
     type: v.type,
     startAt: startDate,
   }));
-  await prisma.check.createMany({
+  const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,
   });
+
+  // Distribute new checks to agents
+  for (const check of createdChecks) {
+    await distributeCheck(prisma, check);
+  }
 }
