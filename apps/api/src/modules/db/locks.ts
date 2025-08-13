@@ -5,6 +5,7 @@ import { logger } from "@/modules/log";
 
 export const lockIds = {
   cleanupPendingEmailVerifications: 10,
+  orchestratorHeartbeat: 20,
 } as const;
 
 type LockId = keyof typeof lockIds;

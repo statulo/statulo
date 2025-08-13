@@ -7,16 +7,12 @@ import { permissions } from "@/utils/permissions/permissions";
 import { makeRouter } from "@/utils/router";
 import { ApiError, NotFoundError } from "@/utils/error";
 import { mapPage, pagerSchema } from "@/utils/pages";
-import type { EnumType } from "@/utils/types";
 import { rangeSchema, rangeToString } from "@/utils/monitors/ranges";
 import { mapMonitor, mapShallowMonitor } from "@/routes/v1/mappings/monitor";
 import { intervalSchema } from "@/utils/monitors/intervals";
 import { listModifySchema } from "@/utils/zod";
-
-export const monitorTypes = {
-  http: "http",
-} as const;
-export type MonitorTypes = EnumType<typeof monitorTypes>;
+import { monitorTypes } from "@/modules/orchestrator/monitors/types";
+import { orchestrator } from "@/modules/orchestrator";
 
 export const monitorRouter = makeRouter((app) => {
   app.post(
@@ -72,11 +68,16 @@ export const monitorRouter = makeRouter((app) => {
         };
       }
 
-      const newMonitor = await prisma.monitor.create({
-        data: createPayload,
-        include: {
-          http: true,
-        },
+      const newMonitor = await prisma.$transaction(async (tx) => {
+        const newMonitor = await prisma.monitor.create({
+          data: createPayload,
+          include: {
+            http: true,
+          },
+        });
+        await orchestrator.checks.addCheck(tx, newMonitor);
+
+        return newMonitor;
       });
       return mapMonitor(newMonitor);
     }),
@@ -151,14 +152,19 @@ export const monitorRouter = makeRouter((app) => {
         };
       }
 
-      const newMonitor = await prisma.monitor.update({
-        where: {
-          id: monitor.id,
-        },
-        data: updatePayload,
-        include: {
-          http: true,
-        },
+      const newMonitor = await prisma.$transaction(async (tx) => {
+        const newMonitor = await tx.monitor.update({
+          where: {
+            id: monitor.id,
+          },
+          data: updatePayload,
+          include: {
+            http: true,
+          },
+        });
+        await orchestrator.checks.updateChecks(tx, monitor, newMonitor);
+
+        return newMonitor;
       });
       return mapMonitor(newMonitor);
     }),

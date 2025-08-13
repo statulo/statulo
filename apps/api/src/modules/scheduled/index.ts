@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { logger } from "@/modules/log";
 import { executeCleanupPendingEmailVerifications } from "@/modules/scheduled/cleanup";
 import { executeHttpMonitors } from "@/modules/scheduled/monitors";
+import { executeOrchestratorHeartbeat } from "@/modules/scheduled/heartbeat";
 
 const log = logger.child({ svc: "scheduler" });
 
@@ -21,5 +22,6 @@ export async function setupScheduler(): Promise<void> {
   log.info(`setting up scheduler...`);
   registerSchedule("* * * * *", "execute-http-monitors", executeHttpMonitors);
   registerSchedule("0 2 * * *", "cleanup-pending-email-verifications", executeCleanupPendingEmailVerifications);
+  registerSchedule("* * * * *", "orchestrator-heartbeat", executeOrchestratorHeartbeat);
   log.info(`setting up scheduler...`);
 }

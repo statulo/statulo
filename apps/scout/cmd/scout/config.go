@@ -12,6 +12,7 @@ const Version string = "1.0.0"
 type Config struct {
 	LogInJson       bool   `env:"LOG_JSON" envDefault:"true"`
 	OrchestratorUrl string `env:"ORCHESTRATOR_URL,required"`
+	Token           string `env:"TOKEN,required"`
 	Metrics         bool   `env:"ENABLE_METRICS" envDefault:"false"`
 	HttpPort        int    `env:"HTTP_PORT" envDefault:"0"`
 }

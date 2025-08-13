@@ -1,12 +1,9 @@
 import { z } from "zod";
 import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
-
-// TODO this entire file is temporary, endpoints are not implemented properly
-
-function hashChecks(_checks: any[]): string {
-  return "abcdef";
-}
+import { orchestrator } from "@/modules/orchestrator";
+import { permissions } from "@/utils/permissions/permissions";
+import { mapOrchestratorChecks, mapOrchestratorGoodbye, mapOrchestratorHeartbeat, mapOrchestratorHello } from "@/routes/v1/mappings/orchestrator";
 
 export const orchestratorRouter = makeRouter((app) => {
   app.post(
@@ -19,14 +16,19 @@ export const orchestratorRouter = makeRouter((app) => {
         }),
       },
     },
-    handle(async () => {
-      return {
-        agentId: "123",
-        token: "xyz",
-        heartbeat: 10,
-        checks: [],
-        pubsub: null,
-      };
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("agent-registration"));
+      auth.can(permissions.activeAgent.internal.register({}));
+
+      const agent = await orchestrator.agents.register(auth.data.getAgentRegistrationId());
+
+      return mapOrchestratorHello({
+        agentId: agent.id,
+        token: orchestrator.tokens.create(agent.id),
+        heartbeat: orchestrator.heartbeat.get(),
+        checks: [], // TODO add checks
+        pubsub: null, // TODO add pubsub for verifications
+      });
     }),
   );
 
@@ -37,10 +39,15 @@ export const orchestratorRouter = makeRouter((app) => {
         description: "Single heartbeat for an agent",
       },
     },
-    handle(async () => {
-      return {
-        checkHash: hashChecks([]),
-      };
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      await orchestrator.agents.refresh(agentId);
+
+      // TODO hash the real checks
+      return mapOrchestratorHeartbeat(orchestrator.checks.hash([]));
     }),
   );
 
@@ -51,8 +58,32 @@ export const orchestratorRouter = makeRouter((app) => {
         description: "Offboard a running agent",
       },
     },
-    handle(async () => {
-      return {};
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      await orchestrator.agents.remove(agentId);
+
+      // TODO add offboarding schedule
+      return mapOrchestratorGoodbye();
+    }),
+  );
+
+  app.get(
+    "/api/v1/orchestrator/agents/checks",
+    {
+      schema: {
+        description: "Get checks for an agent",
+      },
+    },
+    handle(async ({ auth }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      // TODO get real checks
+      return mapOrchestratorChecks([]);
     }),
   );
 });

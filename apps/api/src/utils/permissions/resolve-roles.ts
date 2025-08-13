@@ -2,6 +2,7 @@ import type { Organisation, OrgMember, User } from "@prisma/client";
 import type { Permission } from "@/utils/permissions/permission-builder";
 import { basePerms, baseUserPerms, orgRolePerms, rolePerms } from "@/utils/permissions/role-permissions";
 import type { AppRoles, OrgRoles } from "@/utils/permissions/roles";
+import { permissions } from "@/utils/permissions/permissions";
 
 type PopulatedOrgMember = OrgMember & { org: Organisation };
 export type PopulatedUser = User & {
@@ -26,17 +27,25 @@ function resolvePermissionsforUser(user: PopulatedUser): Permission[] {
 
 export type PermissionContext = {
   user?: PopulatedUser;
+  activeAgentId?: string;
+  agentRegistrationId?: string;
 };
 
 export function getPermissions(
   context: PermissionContext,
 ): Permission[] {
-  let out: Permission[] = [
+  const out: Permission[] = [
     ...basePerms,
   ];
-  if (context.user) out = [
-    ...out,
-    ...resolvePermissionsforUser(context.user),
-  ];
+
+  if (context.user)
+    out.push(...resolvePermissionsforUser(context.user));
+
+  if (context.agentRegistrationId)
+    out.push(permissions.activeAgent.internal.register({}));
+
+  if (context.activeAgentId)
+    out.push(permissions.activeAgent.internal.manage({ id: context.activeAgentId }));
+
   return out;
 }

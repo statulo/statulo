@@ -7,7 +7,7 @@ import { checkPermission } from "@/utils/permissions/check";
 import type { Permission } from "@/utils/permissions/permission-builder";
 import { getPermissions } from "@/utils/permissions/resolve-roles";
 
-export type AuthType = "session";
+export type AuthType = "session" | "agent-registration" | "active-agent";
 
 export interface AuthChecks {
   isAuthenticated: () => boolean;
@@ -33,11 +33,15 @@ export interface AuthContext {
     getUser: () => PopulatedSession["user"];
     getUserId: () => string;
     getUserIdOrDefault: () => string | null;
+    getAgentRegistrationId: () => string;
+    getActiveAgentId: () => string;
   };
 }
 
 export interface AuthContextData {
   session?: PopulatedSession;
+  agentRegistration?: { id: string };
+  activeAgent?: { id: string };
   type?: AuthType;
 }
 
@@ -48,7 +52,8 @@ export async function fetchAuthContextData(
   if (!jwt) return {};
   const payload = parseAuthToken(jwt);
   if (!payload) throw ApiError.forCode("authInvalidToken", 401);
-  if (payload?.t === "session") {
+
+  if (payload.t === "session") {
     const session = await fetchSessionAndUpdateExpiry(payload.id);
     if (session) {
       return {
@@ -57,6 +62,25 @@ export async function fetchAuthContextData(
       };
     }
   }
+
+  if (payload.t === "agentreg") {
+    return {
+      agentRegistration: {
+        id: payload.id,
+      },
+      type: "agent-registration",
+    };
+  }
+
+  if (payload.t === "activeagent") {
+    return {
+      activeAgent: {
+        id: payload.id,
+      },
+      type: "active-agent",
+    };
+  }
+
   return {};
 }
 
@@ -64,6 +88,8 @@ function makeAuthCheckers(data: AuthContextData): AuthChecks {
   const user = data.session?.user;
   const perms = getPermissions({
     user: data.session?.user,
+    activeAgentId: data.activeAgent?.id,
+    agentRegistrationId: data.agentRegistration?.id,
   });
 
   return {
@@ -131,6 +157,14 @@ export async function makeAuthContext(
       getUserIdOrDefault() {
         if (!data.session) return null;
         return data.session.userId;
+      },
+      getAgentRegistrationId() {
+        if (!data.agentRegistration) throw new Error("agentRegistration not set but is requested");
+        return data.agentRegistration.id;
+      },
+      getActiveAgentId() {
+        if (!data.activeAgent) throw new Error("activeAgent not set but is requested");
+        return data.activeAgent.id;
       },
     },
   };

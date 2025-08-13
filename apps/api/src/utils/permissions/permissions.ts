@@ -53,4 +53,10 @@ export const permissions = {
       edit: p.create("edit", "/organisation/:org/contact-point/:con"),
     },
   },
+  activeAgent: {
+    internal: { // only internal permissions, not given to users
+      register: p.create("create", "/active-agent"), // Register new active agent
+      manage: p.create("edit", "/active-agent/:id"), // Manage an agent, only given to the agent itself
+    },
+  },
 };
