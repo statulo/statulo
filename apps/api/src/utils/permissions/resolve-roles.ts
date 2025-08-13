@@ -34,22 +34,18 @@ export type PermissionContext = {
 export function getPermissions(
   context: PermissionContext,
 ): Permission[] {
-  let out: Permission[] = [
+  const out: Permission[] = [
     ...basePerms,
   ];
-  if (context.user) out = [
-    ...out,
-    ...resolvePermissionsforUser(context.user),
-  ];
 
-  if (context.agentRegistrationId) out = [
-    ...out,
-    permissions.activeAgent.internal.register({}),
-  ];
-  if (context.activeAgentId) out = [
-    ...out,
-    permissions.activeAgent.internal.manage({ id: context.activeAgentId }),
-  ];
+  if (context.user)
+    out.concat(resolvePermissionsforUser(context.user));
+
+  if (context.agentRegistrationId)
+    out.concat(permissions.activeAgent.internal.register({}));
+
+  if (context.activeAgentId)
+    out.concat(permissions.activeAgent.internal.manage({ id: context.activeAgentId }));
 
   return out;
 }
