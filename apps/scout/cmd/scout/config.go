@@ -5,6 +5,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
+	l "github.com/statulo/scout/internal/logger"
 )
 
 const Version string = "1.0.0"
@@ -34,5 +35,5 @@ func loadConfig() (*Config, error) {
 }
 
 func logConfig(conf Config) {
-	log.Infof("Configuration loaded, connecting to %s", conf.OrchestratorUrl)
+	l.Log.Infof("Configuration loaded, connecting to %s", conf.OrchestratorUrl)
 }

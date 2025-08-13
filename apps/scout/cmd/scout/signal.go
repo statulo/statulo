@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 	"os/signal"
+
+	l "github.com/statulo/scout/internal/logger"
 )
 
 func listenSignals(cancel context.CancelFunc) {
@@ -11,13 +13,13 @@ func listenSignals(cancel context.CancelFunc) {
 
 	go func() {
 		<-notifyCtx.Done()
-		log.Info("Shutdown signal received, gracefully shutting down. Send INTERRUPT again to forcibly shut down and risk missing checks")
+		l.Log.Info("Shutdown signal received, gracefully shutting down. Send INTERRUPT again to forcibly shut down and risk missing checks")
 		cancel()
 
 		// Second interrupt causes full shut down
 		secondNotifyCtx, _ := signal.NotifyContext(context.Background(), os.Interrupt)
 		<-secondNotifyCtx.Done()
-		log.Info("Second shutdown signal received, forcibly shutting down")
+		l.Log.Info("Second shutdown signal received, forcibly shutting down")
 		os.Exit(1)
 	}()
 }

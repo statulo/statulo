@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+
+	l "github.com/statulo/scout/internal/logger"
 )
 
 func main() {
@@ -13,20 +15,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	loggerErr := initLogger(conf.LogInJson)
-	if loggerErr != nil {
-		fmt.Printf("Failed to initialize logger: %v\n", loggerErr)
-		os.Exit(1)
-	}
-	defer log.Sync()
-
-	log.Info("Setting up agent")
+	l.InitLogger(conf.LogInJson)
+	l.Log.Info("Setting up agent")
 	logConfig(*conf)
 
 	defer func() {
 		// TODO this should go somewhere else, initialisation shouldn't recover from panics
 		if r := recover(); r != nil {
-			log.Errorf("Recovered in main: %v\n", r)
+			l.Log.Errorf("Recovered in main: %v\n", r)
 		}
 	}()
 
@@ -39,10 +35,10 @@ func main() {
 	err := agent.Run(ctx)
 
 	if err != nil {
-		log.Errorf("Agent failed to run: %v\n", err)
+		l.Log.Errorf("Agent failed to run: %v\n", err)
 		os.Exit(1)
 	}
 
-	log.Info("Exiting")
+	l.Log.Info("Exiting")
 	os.Exit(0)
 }

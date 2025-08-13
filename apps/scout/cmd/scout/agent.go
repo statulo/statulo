@@ -7,6 +7,7 @@ import (
 
 	"github.com/statulo/scout/internal/heartbeat"
 	"github.com/statulo/scout/internal/http"
+	l "github.com/statulo/scout/internal/logger"
 )
 
 type Agent struct {
@@ -21,7 +22,7 @@ func NewAgent(conf Config) Agent {
 }
 
 func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration time.Duration) {
-	log.Info("Starting heartbeat")
+	l.Log.Info("Starting heartbeat")
 	a.wg.Add(1)
 	go func() {
 		defer a.wg.Done()
@@ -30,7 +31,7 @@ func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration ti
 }
 
 func (a *Agent) Run(ctx context.Context) error {
-	log.Info("Agent is running")
+	l.Log.Info("Agent is running")
 	client := http.OrchestratorClient{
 		UserAgentName: "Scout",
 		Version:       Version,
@@ -45,7 +46,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info("Got HELLO from orchestrator")
+	l.Log.Info("Got HELLO from orchestrator")
 	client.SetToken(helloRes.Token)
 
 	heartbeater := heartbeat.CreateHeartbeater(ctx, &client)
@@ -57,7 +58,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	// TODO bg: web server for healthcheck and prometheus metrics
 
 	<-ctx.Done()
-	log.Info("Shutdown requested, sending GOODBYE to orchestrator")
+	l.Log.Info("Shutdown requested, sending GOODBYE to orchestrator")
 
 	goodbyeErr := client.DoGoodbye(http.GoodbyeRequest{
 		Timeout: 30 * time.Second,
@@ -66,7 +67,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		// TODO exponential retry
 		return goodbyeErr
 	}
-	log.Info("GOODBYE acknowledged by orchestrator, gracefully offboarding tasks")
+	l.Log.Info("GOODBYE acknowledged by orchestrator, gracefully offboarding tasks")
 	// TODO run schedule until the end specified by goodbye
 	a.wg.Wait()
 
