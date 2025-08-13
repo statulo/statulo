@@ -19,7 +19,7 @@ export const httpMonitorConverter: MonitorConverter = {
     if (!oldMonitor.http || !newMonitor.http) throw new Error("Monitors are not HTTP monitors");
     const oldObj = _.pick(oldMonitor.http, fieldsToCheck);
     const newObj = _.pick(newMonitor.http, fieldsToCheck);
-    const isEqual = !_.isEqual(oldObj, newObj);
+    const isEqual = _.isEqual(oldObj, newObj);
     return {
       removed: [],
       updatedOrNew: isEqual ? [] : [buildHttpCheck(newMonitor.http)],
