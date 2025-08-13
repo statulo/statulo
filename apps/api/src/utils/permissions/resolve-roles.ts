@@ -39,13 +39,13 @@ export function getPermissions(
   ];
 
   if (context.user)
-    out.concat(resolvePermissionsforUser(context.user));
+    out.push(...resolvePermissionsforUser(context.user));
 
   if (context.agentRegistrationId)
-    out.concat(permissions.activeAgent.internal.register({}));
+    out.push(permissions.activeAgent.internal.register({}));
 
   if (context.activeAgentId)
-    out.concat(permissions.activeAgent.internal.manage({ id: context.activeAgentId }));
+    out.push(permissions.activeAgent.internal.manage({ id: context.activeAgentId }));
 
   return out;
 }
