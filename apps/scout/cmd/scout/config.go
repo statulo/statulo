@@ -2,6 +2,7 @@ package scout
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/url"
 	"strconv"
@@ -33,22 +34,21 @@ func configureConfigFlags() {
 }
 
 func loadConfig() {
-	// TODO handle errors in this method
-	_ = godotenv.Load()
+	_ = godotenv.Load() // Not being able to load .env is fine, just ignore error
 
-	_ = viper.BindEnv("url", "SCOUT_URL")
-	_ = viper.BindEnv("metricsUrl", "SCOUT_METRICS_URL")
-	_ = viper.BindEnv("logFormat", "SCOUT_LOG_FORMAT")
-	_ = viper.BindEnv("debug", "SCOUT_DEBUG")
-	_ = viper.BindEnv("token", "SCOUT_TOKEN")
+	confErr(viper.BindEnv("url", "SCOUT_URL"))
+	confErr(viper.BindEnv("metricsUrl", "SCOUT_METRICS_URL"))
+	confErr(viper.BindEnv("logFormat", "SCOUT_LOG_FORMAT"))
+	confErr(viper.BindEnv("debug", "SCOUT_DEBUG"))
+	confErr(viper.BindEnv("token", "SCOUT_TOKEN"))
 
-	_ = viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
-	_ = viper.BindPFlag("metricsUrl", rootCmd.PersistentFlags().Lookup("metrics"))
-	_ = viper.BindPFlag("logFormat", rootCmd.PersistentFlags().Lookup("log"))
-	_ = viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
-	_ = viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
+	confErr(viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url")))
+	confErr(viper.BindPFlag("metricsUrl", rootCmd.PersistentFlags().Lookup("metrics")))
+	confErr(viper.BindPFlag("logFormat", rootCmd.PersistentFlags().Lookup("log")))
+	confErr(viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug")))
+	confErr(viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token")))
 
-	_ = viper.Unmarshal(&conf)
+	confErr(viper.Unmarshal(&conf))
 }
 
 func validateConfig() error {
@@ -103,4 +103,10 @@ func truncateString(str string, s int) string {
 		return str
 	}
 	return str[:s] + "***"
+}
+
+func confErr(err error) {
+	if err != nil {
+		log.Fatalf("config error: %v", err)
+	}
 }
