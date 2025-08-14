@@ -8,10 +8,11 @@ import (
 )
 
 type Heartbeater struct {
-	ctx        context.Context
-	updateChan chan struct{}
-	client     *http.OrchestratorClient
-	interval   time.Duration
+	ctx             context.Context
+	updateChan      chan struct{}
+	checkUpdateChan chan string
+	client          *http.OrchestratorClient
+	interval        time.Duration
 }
 
 func (c *Heartbeater) UpdateInterval(interval time.Duration) {
@@ -19,10 +20,11 @@ func (c *Heartbeater) UpdateInterval(interval time.Duration) {
 	close(c.updateChan)
 }
 
-func CreateHeartbeater(ctx context.Context, client *http.OrchestratorClient) Heartbeater {
+func CreateHeartbeater(ctx context.Context, checkUpdateChan chan string, client *http.OrchestratorClient) Heartbeater {
 	return Heartbeater{
-		client:     client,
-		ctx:        ctx,
-		updateChan: make(chan struct{}),
+		client:          client,
+		ctx:             ctx,
+		checkUpdateChan: checkUpdateChan,
+		updateChan:      make(chan struct{}),
 	}
 }

@@ -11,6 +11,7 @@ type HelloResponse struct {
 	AgentId   string `json:"agentId"`
 	Token     string `json:"token"`
 	Heartbeat int    `json:"heartbeat"`
+	CheckHash string `json:"checkHash"`
 	// TODO add rest of the fields
 }
 

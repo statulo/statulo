@@ -26,7 +26,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 			defer ticker.Stop()
 		case <-ticker.C:
 			l.Log.Debug("Sending heartbeat")
-			_, err := c.client.DoHeartbeat(http.HeartbeatRequest{
+			res, err := c.client.DoHeartbeat(http.HeartbeatRequest{
 				Timeout: time.Second * 15,
 			})
 			if err != nil {
@@ -34,7 +34,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 				continue
 			}
 			l.Log.Debugf("Heartbeat returned OK")
-			// TODO If returned hash from heartbeat is different, refetch schedule and notify caller
+			c.checkUpdateChan <- res.CheckHash
 		}
 	}
 }

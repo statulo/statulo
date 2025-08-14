@@ -8,6 +8,7 @@ import (
 	"github.com/statulo/scout/internal/heartbeat"
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
+	"github.com/statulo/scout/internal/scheduler"
 )
 
 type Agent struct {
@@ -26,6 +27,14 @@ func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration ti
 	go func() {
 		defer a.wg.Done()
 		heartbeater.Start(duration)
+	}()
+}
+
+func (a *Agent) startScheduler(scheduler *scheduler.Scheduler, initialCheckHash string) {
+	a.wg.Add(1)
+	go func() {
+		defer a.wg.Done()
+		scheduler.Start(initialCheckHash)
 	}()
 }
 
@@ -49,11 +58,13 @@ func (a *Agent) Run(ctx context.Context) error {
 	l.Log.Info("Connected to API server")
 	client.SetToken(helloRes.Token)
 
-	heartbeater := heartbeat.CreateHeartbeater(ctx, &client)
+	scheduler := scheduler.CreateScheduler(ctx, &client)
+	heartbeater := heartbeat.CreateHeartbeater(ctx, scheduler.GetCheckUpdateChannel(), &client)
+
 	a.startHeartbeater(&heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
+	a.startScheduler(&scheduler, helloRes.CheckHash)
 	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO create a checker struct
-	// TODO bg: start check scheduler, check schedule defined in HELLO. Check schedule should be hot reloadable. Checker is called by check scheduler
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 	// TODO bg: web server for healthcheck and prometheus metrics
 
