@@ -45,7 +45,6 @@ func (a *Agent) Run(ctx context.Context) error {
 		BaseUrl:       a.conf.OrchestratorUrl,
 	}
 
-	// TODO exponential backoff on failure
 	l.Log.Debug("Sending HELLO to API server")
 	helloRes, err := client.DoHello(http.HelloRequest{
 		Timeout:  30 * time.Second,
@@ -75,7 +74,6 @@ func (a *Agent) Run(ctx context.Context) error {
 		Timeout: 30 * time.Second,
 	})
 	if goodbyeErr != nil {
-		// TODO exponential retry
 		return goodbyeErr
 	}
 	l.Log.Debugf("Received GOODBYE response")

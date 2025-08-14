@@ -7,15 +7,17 @@ import (
 )
 
 type GoodbyeRequest struct {
-	Timeout time.Duration
+	Timeout     time.Duration
+	MaxAttempts int
 }
 
 func (c *OrchestratorClient) DoGoodbye(ops GoodbyeRequest) error {
 	req := OrchestratorRequest{
-		Path:    "api/v1/orchestrator/agents/goodbye",
-		Method:  http.MethodPost,
-		Timeout: ops.Timeout,
-		Token:   c.Token,
+		Path:        "api/v1/orchestrator/agents/goodbye",
+		Method:      http.MethodPost,
+		Timeout:     ops.Timeout,
+		MaxAttempts: ops.MaxAttempts,
+		Token:       c.Token,
 	}
 	res, err := c.DoOrchestratorRequest(req)
 	if err != nil {

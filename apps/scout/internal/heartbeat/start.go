@@ -27,10 +27,11 @@ func (c *Heartbeater) Start(interval time.Duration) {
 		case <-ticker.C:
 			l.Log.Debug("Sending heartbeat")
 			res, err := c.client.DoHeartbeat(http.HeartbeatRequest{
-				Timeout: time.Second * 15,
+				Timeout:     time.Second * 15,
+				MaxAttempts: 2,
 			})
 			if err != nil {
-				l.Log.Errorf("Failed to heartbeat %s", err)
+				l.Log.Errorf("Failed to heartbeat: %s", err)
 				continue
 			}
 			l.Log.Debugf("Heartbeat returned OK")

@@ -20,8 +20,9 @@ type HelloBody struct {
 }
 
 type HelloRequest struct {
-	Timeout  time.Duration
-	RegToken string
+	Timeout     time.Duration
+	MaxAttempts int
+	RegToken    string
 }
 
 func (c *OrchestratorClient) DoHello(ops HelloRequest) (*HelloResponse, error) {
@@ -34,11 +35,12 @@ func (c *OrchestratorClient) DoHello(ops HelloRequest) (*HelloResponse, error) {
 	}
 
 	req := OrchestratorRequest{
-		Path:    "api/v1/orchestrator/agents/hello",
-		Method:  http.MethodPost,
-		Timeout: ops.Timeout,
-		Body:    payload,
-		Token:   ops.RegToken,
+		Path:        "api/v1/orchestrator/agents/hello",
+		Method:      http.MethodPost,
+		Timeout:     ops.Timeout,
+		MaxAttempts: ops.MaxAttempts,
+		Body:        payload,
+		Token:       ops.RegToken,
 	}
 	res, err := c.DoOrchestratorRequest(req)
 	if err != nil {
