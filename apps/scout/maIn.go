@@ -7,3 +7,6 @@ import (
 func main() {
 	scout.Execute()
 }
+
+// TODO Exponential backof polishing
+// TODO Graceful shutdown during retrying requests currently hangs completely
