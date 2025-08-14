@@ -2,6 +2,9 @@ package scout
 
 import (
 	"fmt"
+	"net"
+	"net/url"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
@@ -58,15 +61,46 @@ func validateConfig() error {
 		return fmt.Errorf("missing token, cannot start without an agent token")
 	}
 
-	// TODO validate metrics URL
-	// TODO validate orchestrator URL
+	u, err := url.ParseRequestURI(conf.OrchestratorUrl)
+	if err != nil {
+		return fmt.Errorf("invalid URL, URL cannot be parsed")
+	}
+	if (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return fmt.Errorf("invalid URL, URL has invalid Host or Scheme")
+	}
+
+	if conf.MetricsUrl != "" {
+		host, port, err := net.SplitHostPort(conf.MetricsUrl)
+		if err != nil {
+			return fmt.Errorf("invalid metrics URL, must be in syntax 'IP:PORT'")
+		}
+		ip := net.ParseIP(host)
+		if ip == nil {
+			return fmt.Errorf("invalid metrics URL, not a valid IP")
+		}
+		p, err := strconv.Atoi(port)
+		if err != nil || p < 1 || p > 65535 {
+			return fmt.Errorf("invalid metrics URL, invalid port")
+		}
+	}
 
 	return nil
 }
 
 func logConfigDebug() {
 	l.Log.Debug("Loaded configuration:")
-	l.Log.Debugf("Url: %s", conf.OrchestratorUrl)
-	l.Log.Debugf("Metrics: %s", conf.MetricsUrl)
-	l.Log.Debugf("Token: %s", conf.Token[0:4]+"*****")
+	l.Log.Debugf("- Url: %s", conf.OrchestratorUrl)
+	if conf.MetricsUrl == "" {
+		l.Log.Debugf("- Metrics: Off")
+	} else {
+		l.Log.Debugf("- Metrics: %s", conf.MetricsUrl)
+	}
+	l.Log.Debugf("- Token: %s", truncateString(conf.Token, 4))
+}
+
+func truncateString(str string, s int) string {
+	if len(str) <= s {
+		return str
+	}
+	return str[:s] + "***"
 }

@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := validateConfig()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err) // TODO pretty errors
 			os.Exit(1)
 		}
 
