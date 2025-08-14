@@ -22,7 +22,6 @@ func NewAgent(conf Config) Agent {
 }
 
 func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration time.Duration) {
-	l.Log.Info("Starting heartbeat")
 	a.wg.Add(1)
 	go func() {
 		defer a.wg.Done()
@@ -31,7 +30,6 @@ func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration ti
 }
 
 func (a *Agent) Run(ctx context.Context) error {
-	l.Log.Info("Agent is running")
 	client := http.OrchestratorClient{
 		UserAgentName: "Scout",
 		Version:       Version,
@@ -39,6 +37,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 
 	// TODO exponential backoff on failure
+	l.Log.Debug("Sending HELLO to API server")
 	helloRes, err := client.DoHello(http.HelloRequest{
 		Timeout:  30 * time.Second,
 		RegToken: a.conf.Token,
@@ -46,7 +45,8 @@ func (a *Agent) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	l.Log.Info("Got HELLO from orchestrator")
+	l.Log.Debugf("Received HELLO response - joined pool as '%s'", helloRes.AgentId)
+	l.Log.Info("Connected to API server")
 	client.SetToken(helloRes.Token)
 
 	heartbeater := heartbeat.CreateHeartbeater(ctx, &client)
@@ -58,8 +58,8 @@ func (a *Agent) Run(ctx context.Context) error {
 	// TODO bg: web server for healthcheck and prometheus metrics
 
 	<-ctx.Done()
-	l.Log.Info("Shutdown requested, sending GOODBYE to orchestrator")
 
+	l.Log.Debugf("Sending GOODBYE to API server")
 	goodbyeErr := client.DoGoodbye(http.GoodbyeRequest{
 		Timeout: 30 * time.Second,
 	})
@@ -67,7 +67,8 @@ func (a *Agent) Run(ctx context.Context) error {
 		// TODO exponential retry
 		return goodbyeErr
 	}
-	l.Log.Info("GOODBYE acknowledged by orchestrator, gracefully offboarding tasks")
+	l.Log.Debugf("Received GOODBYE response")
+	l.Log.Info("Offboarding schedule received, waiting to finish tasks")
 	// TODO run schedule until the end specified by goodbye
 	a.wg.Wait()
 

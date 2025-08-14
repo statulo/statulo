@@ -64,6 +64,9 @@ func validateConfig() error {
 	return nil
 }
 
-func logConfig(conf Config) {
-	l.Log.Infof("Configuration loaded, connecting to %s", conf.OrchestratorUrl)
+func logConfigDebug() {
+	l.Log.Debug("Loaded configuration:")
+	l.Log.Debugf("Url: %s", conf.OrchestratorUrl)
+	l.Log.Debugf("Metrics: %s", conf.MetricsUrl)
+	l.Log.Debugf("Token: %s", conf.Token[0:4]+"*****")
 }
