@@ -17,7 +17,7 @@ type Heartbeater struct {
 
 func (c *Heartbeater) UpdateInterval(interval time.Duration) {
 	c.interval = interval
-	close(c.updateChan)
+	c.updateChan <- struct{}{}
 }
 
 func CreateHeartbeater(ctx context.Context, checkUpdateChan chan string, client *http.OrchestratorClient) Heartbeater {

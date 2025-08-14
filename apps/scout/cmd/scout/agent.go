@@ -30,11 +30,11 @@ func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration ti
 	}()
 }
 
-func (a *Agent) startScheduler(scheduler *scheduler.Scheduler, initialCheckHash string) {
+func (a *Agent) startScheduler(scheduler *scheduler.Scheduler, initialCheckHash string, initialChecks []http.CheckResponse) {
 	a.wg.Add(1)
 	go func() {
 		defer a.wg.Done()
-		scheduler.Start(initialCheckHash)
+		scheduler.Start(initialCheckHash, initialChecks)
 	}()
 }
 
@@ -61,7 +61,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	heartbeater := heartbeat.CreateHeartbeater(ctx, scheduler.GetCheckUpdateChannel(), &client)
 
 	a.startHeartbeater(&heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
-	a.startScheduler(&scheduler, helloRes.CheckHash)
+	a.startScheduler(&scheduler, helloRes.CheckHash, helloRes.Checks)
 	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO create a checker struct
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker

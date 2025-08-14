@@ -20,7 +20,6 @@ func (c *Heartbeater) Start(interval time.Duration) {
 			return
 		case <-c.updateChan:
 			l.Log.Debug("New heartbeat interval received, restarting heartbeat job")
-			c.updateChan = make(chan struct{})
 			ticker.Stop()
 			ticker = time.NewTicker(c.interval)
 			defer ticker.Stop()
