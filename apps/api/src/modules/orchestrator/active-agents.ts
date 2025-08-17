@@ -15,6 +15,7 @@ export async function registerActiveAgent(agentRegistrationId: string): Promise<
 }
 
 export async function refreshActiveAgent(id: string): Promise<void> {
+  // TODO account for removed agents, send 401
   await prisma.connectedAgent.update({
     where: {
       id,
@@ -42,16 +43,18 @@ export async function removeStaleActiveAgents(): Promise<void> {
       },
     },
   });
-  await prisma.connectedAgent.deleteMany({
-    where: {
-      id: {
-        in: staleAgents.map(v => v.id),
+  if (staleAgents.length > 0) {
+    await prisma.connectedAgent.deleteMany({
+      where: {
+        id: {
+          in: staleAgents.map(v => v.id),
+        },
       },
-    },
-  });
-  staleAgents.forEach((agent) => {
-    logger.warn(`Removed stale agent: ${agent.id} for ${agent.registrationId}`);
-  });
+    });
+    staleAgents.forEach((agent) => {
+      logger.warn(`Removed stale agent: ${agent.id} for ${agent.registrationId}`);
+    });
+  }
 
   const orphanedChecks = await prisma.checkAssignment.findMany({
     where: {
