@@ -5,6 +5,7 @@ import (
 
 	scoutHttp "github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
+	"github.com/statulo/scout/internal/metrics"
 )
 
 type Checker struct {
@@ -33,6 +34,7 @@ func (c *Checker) startCheck(check scoutHttp.CheckResponse) error {
 func (c *Checker) RunCheckInBg(check scoutHttp.CheckResponse) {
 	go func() {
 		l.Log.Infof("Starting check %s (%s)", check.Id, check.Type)
+		metrics.ChecksExecuted.Inc()
 		err := c.startCheck(check)
 		if err != nil {
 			l.Log.Debugf("Errored check %s: %s", check.Id, err)

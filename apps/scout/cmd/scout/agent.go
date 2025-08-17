@@ -9,6 +9,7 @@ import (
 	"github.com/statulo/scout/internal/heartbeat"
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
+	"github.com/statulo/scout/internal/metrics"
 	"github.com/statulo/scout/internal/scheduler"
 )
 
@@ -21,6 +22,18 @@ func NewAgent(conf Config) Agent {
 	return Agent{
 		conf: conf,
 	}
+}
+
+func (a *Agent) startMetrics(metricsSrv *metrics.MetricsServer, bindAdrr string) {
+	if bindAdrr == "" {
+		return
+	}
+
+	a.wg.Add(1)
+	go func() {
+		defer a.wg.Done()
+		metricsSrv.Start(bindAdrr)
+	}()
 }
 
 func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration time.Duration) {
@@ -58,15 +71,16 @@ func (a *Agent) Run(ctx context.Context) error {
 	l.Log.Info("Connected to API server")
 	client.SetToken(helloRes.Token)
 
+	metricsSrv := metrics.CreateMetricsServer()
 	checker := checker.CreateChecker(ctx, &client)
 	scheduler := scheduler.CreateScheduler(ctx, &checker, &client)
 	heartbeater := heartbeat.CreateHeartbeater(ctx, scheduler.GetCheckUpdateChannel(), &client)
 
+	a.startMetrics(&metricsSrv, conf.MetricsUrl)
 	a.startHeartbeater(&heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
 	a.startScheduler(&scheduler, helloRes.CheckHash, helloRes.Checks)
 	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
-	// TODO bg: web server for healthcheck and prometheus metrics
 
 	<-ctx.Done()
 
@@ -79,7 +93,9 @@ func (a *Agent) Run(ctx context.Context) error {
 	}
 	l.Log.Debugf("Received GOODBYE response")
 	l.Log.Info("Offboarding schedule received, waiting to finish tasks")
+
 	// TODO run schedule until the end specified by goodbye
+	metricsSrv.Stop()
 	a.wg.Wait()
 
 	return nil
