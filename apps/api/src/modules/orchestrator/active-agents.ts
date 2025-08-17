@@ -69,6 +69,8 @@ export async function removeStaleActiveAgents(): Promise<void> {
   });
   for (const checkAssignment of orphanedChecks) {
     await prisma.$transaction(async (tx) => {
+      // TODO put it all on a single agent, so it's quicker and cheaper
+      // It will rely on the daily cost rebalance to sort it out later
       await distributeCheck(tx, checkAssignment.check);
       await tx.checkAssignment.delete({
         where: {

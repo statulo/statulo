@@ -2,7 +2,14 @@ import type { Check, Prisma } from "@prisma/client";
 import { logger } from "@/modules/log";
 import { getUntypedId } from "@/utils/id";
 
-export async function redistributeChecks(): Promise<void> {
+// Rebalance costs of all checks across the running agents
+export async function rebalanceCosts(): Promise<void> {
+  // TODO Distribute checks among all active agents
+}
+
+// Make sure empty agents have things to do + recover unassigned checks
+// Both of those only matter when the system has been in a faulted state beforehand
+export async function reconcileChecks(): Promise<void> {
   // TODO Distribute checks among all active agents
 }
 
