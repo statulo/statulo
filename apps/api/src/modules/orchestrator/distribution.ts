@@ -25,18 +25,18 @@ export async function rebalanceCosts(): Promise<void> {
   // TODO Distribute checks among all active agents
 }
 
-// Recover unassigned checks (stale and checks created while the system was in a faulted state)
+// Recover unassigned checks (checks created while the system was in a faulted state)
 export async function reconcileChecks(): Promise<void> {
   // - Perform a staleness check on all check assignments
   // - Get all unassigned checks
   // - Assign them to the agents with the lowest cost
 
-  // - Get all agents and their cost -
+  // - Get all agents and their cost
   // - Calculate the average cost per agent of assigned checks
   // - Calculate total cost of all checks
   // - Calculate the target cost per agent (total cost / number of agents)
-  // - Make a list of all the heavy agents (cost > target cost) and empty agents
-  // - Go through the empty agents and find checks that can be assigned to them
+  // - Make a list of all the heavy agents (cost > target cost) and light agents (cost < target cost)
+  // - Spread the unassigned checks across the light agents (cost < target cost)
 
   // TODO Distribute checks among all active agents
 }
