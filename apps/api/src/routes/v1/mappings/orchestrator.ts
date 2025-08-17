@@ -1,5 +1,6 @@
 import type { FullCheckAssignment } from "@/modules/orchestrator/active-agents";
-import type { HttpCheckBody } from "@/modules/orchestrator/checks/http";
+import type { HttpCheckBodyV1 } from "@/modules/orchestrator/checks/http";
+import { maxDate, minDate } from "@/utils/date";
 
 export type OrchestratorHelloDto = {
   agentId: string;
@@ -13,16 +14,18 @@ export type OrchestratorHelloDto = {
   } | null;
 };
 
-export type OrchestratorCheckDto = OrchestratorCheckTypesDto & {
+export type OrchestratorCheckDto = {
   id: string;
   monitorId: string;
   interval: number;
-};
+  startAt: string;
+  endAt: string | null;
+} & OrchestratorCheckTypesDto;
 
 export type OrchestratorCheckTypesDto = {
   type: "http";
   version: 1;
-  body: HttpCheckBody;
+  body: HttpCheckBodyV1;
 };
 
 export type OrchestratorHeartbeatDto = {
@@ -50,10 +53,15 @@ export function mapOrchestratorHeartbeat(hash: string): OrchestratorHeartbeatDto
 }
 
 export function mapCheck(checkAssignment: FullCheckAssignment): OrchestratorCheckDto {
+  const startAt = maxDate(checkAssignment.startAt, checkAssignment.check.startAt);
+  const endAt = minDate(checkAssignment.check.endAt, checkAssignment.endAt);
+
   return {
     id: checkAssignment.checkId,
     interval: checkAssignment.check.interval,
     monitorId: checkAssignment.check.monitorId,
+    startAt: startAt.toISOString(),
+    endAt: endAt?.toISOString() ?? null,
     version: checkAssignment.check.version as OrchestratorCheckTypesDto["version"],
     type: checkAssignment.check.type as OrchestratorCheckTypesDto["type"],
     body: checkAssignment.check.body as OrchestratorCheckTypesDto["body"],

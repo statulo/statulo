@@ -11,13 +11,17 @@ function buildCorrelationId(monitor: HttpMonitor, segment: string): string {
   return `${monitor.monitorId}/${segment}`;
 }
 
-export type HttpCheckBody = {
+export type HttpCheckBodyV1 = {
   expectedKeywords: string[];
+  allowedStatusCodes: string[];
+  url: string;
 };
 
 export function buildHttpCheck(monitor: HttpMonitor): CheckDefinition {
-  const body: HttpCheckBody = {
+  const body: HttpCheckBodyV1 = {
     expectedKeywords: monitor.expectedKeywords,
+    allowedStatusCodes: monitor.allowedStatusCodes,
+    url: monitor.url,
   };
   return {
     type,

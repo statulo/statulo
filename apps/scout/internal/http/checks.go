@@ -13,8 +13,14 @@ type ChecksResponse struct {
 }
 
 type CheckResponse struct {
-	Id   string `json:"id"`
-	Type string `json:"type"`
+	Id        string          `json:"id"`
+	MonitorId string          `json:"monitorId"`
+	Interval  int64           `json:"interval"`
+	Version   int32           `json:"version"`
+	Type      string          `json:"type"`
+	StartAt   string          `json:"startAt"`
+	EndAt     *string         `json:"endAt"` // Nullable
+	Body      json.RawMessage `json:"body"`
 }
 
 type ChecksRequest struct {

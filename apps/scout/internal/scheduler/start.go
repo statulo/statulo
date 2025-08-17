@@ -3,6 +3,7 @@ package scheduler
 import (
 	"time"
 
+	"github.com/statulo/scout/internal/checker"
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 )
@@ -48,16 +49,22 @@ func (c *Scheduler) startUpdateChecker() {
 func (c *Scheduler) startScheduleLoop() {
 	l.Log.Debug("Initialized scheduler job")
 
-	// TODO add real scheduler workload
-	l.Log.Debugf("Check schedule: %+v", c.currentChecks)
-
 	for {
+		timer, nextCheck := c.getNextCheckTimer()
+
 		select {
 		case <-c.ctx.Done():
 			l.Log.Debug("Stopping scheduler job")
 			return
 		case <-c.scheduleUpdateChan:
-			l.Log.Debugf("Check schedule: %+v", c.currentChecks)
+			continue
+		case <-timer.C:
+			if nextCheck == nil {
+				l.Log.Error("Check is not passed in on a fired timer!")
+				continue
+			}
+			checker.RunCheckInBg(*nextCheck)
+			continue
 		}
 	}
 }
