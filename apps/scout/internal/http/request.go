@@ -23,6 +23,16 @@ type OrchestratorRequest struct {
 	Token       string
 }
 
+type ScoutHeaders struct {
+	UserAgent string
+}
+
+func (c *OrchestratorClient) GetScoutHeaders() ScoutHeaders {
+	return ScoutHeaders{
+		UserAgent: c.UserAgentName + "/" + c.Version,
+	}
+}
+
 func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*http.Response, error) {
 	baseDelay := time.Millisecond * 500
 	attempts := req.MaxAttempts
@@ -75,7 +85,8 @@ func (c *OrchestratorClient) rawOrchestratorRequest(req OrchestratorRequest) (*h
 		return nil, err
 	}
 
-	httpReq.Header.Set("User-Agent", c.UserAgentName+"/"+c.Version)
+	scoutHeaders := c.GetScoutHeaders()
+	httpReq.Header.Set("User-Agent", scoutHeaders.UserAgent)
 
 	if len(req.Token) > 0 {
 		httpReq.Header.Set("Authorization", "Scout "+req.Token)

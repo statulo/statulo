@@ -10,7 +10,7 @@ import (
 	goHttp "net/http"
 )
 
-func CheckHTTP(check http.CheckResponse) error {
+func (c *Checker) checkHTTP(check http.CheckResponse) error {
 	if check.Type != "http" {
 		return errors.New("invalid check type")
 	}
@@ -23,7 +23,7 @@ func CheckHTTP(check http.CheckResponse) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // TODO: Make timeout configurable
 	defer cancel()
 
-	httpRequest, err := checkBody.BuildHttpRequest(ctx)
+	httpRequest, err := checkBody.BuildHttpRequest(ctx, c.client.GetScoutHeaders())
 	if err != nil {
 		return err
 	}

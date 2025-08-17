@@ -1,9 +1,9 @@
 package scheduler
 
 import (
+	"sync"
 	"time"
 
-	"github.com/statulo/scout/internal/checker"
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 )
@@ -11,8 +11,18 @@ import (
 func (c *Scheduler) Start(initialCheckHash string, initialChecks []http.CheckResponse) {
 	c.currentCheckHash = initialCheckHash
 	c.currentChecks = initialChecks
-	go c.startUpdateChecker() // Run in background
+
+	var wg sync.WaitGroup
+
+	// Run in background
+	wg.Add(1)
+	go func() {
+		c.startUpdateChecker()
+		defer wg.Done()
+	}()
+
 	c.startScheduleLoop()
+	wg.Wait()
 }
 
 func (c *Scheduler) startUpdateChecker() {
@@ -63,7 +73,7 @@ func (c *Scheduler) startScheduleLoop() {
 				l.Log.Error("Check is not passed in on a fired timer!")
 				continue
 			}
-			checker.RunCheckInBg(*nextCheck)
+			c.checker.RunCheckInBg(*nextCheck)
 			continue
 		}
 	}

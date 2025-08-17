@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
+	goHttp "net/http"
 	"regexp"
 	"strconv"
 
+	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 )
 
 type HttpCheckBodyVersioned interface {
 	Version() int32
-	BuildHttpRequest(ctx context.Context) (*http.Request, error)
-	ValidateResponse(resp *http.Response) error
+	BuildHttpRequest(ctx context.Context, scoutHeaders http.ScoutHeaders) (*goHttp.Request, error)
+	ValidateResponse(resp *goHttp.Response) error
 }
 
 type HttpCheckBodyV1 struct {
@@ -66,20 +67,20 @@ func (h HttpCheckBodyV1) Version() int32 {
 	return 1
 }
 
-func (h HttpCheckBodyV1) BuildHttpRequest(ctx context.Context) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", h.Url, nil) // TODO: Have a way to set the method
+func (h HttpCheckBodyV1) BuildHttpRequest(ctx context.Context, scoutHeaders http.ScoutHeaders) (*goHttp.Request, error) {
+	req, err := goHttp.NewRequestWithContext(ctx, "GET", h.Url, nil) // TODO: Have a way to set the method
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "Scout/1.0") // TODO: Get this from somewhere
+	req.Header.Set("User-Agent", scoutHeaders.UserAgent)
 	req.Header.Set("Accept", "*/*")
 	req.Header.Set("Cache-Control", "no-cache")
 
 	return req, nil
 }
 
-func (h HttpCheckBodyV1) ValidateResponse(resp *http.Response) error {
+func (h HttpCheckBodyV1) ValidateResponse(resp *goHttp.Response) error {
 	l.Log.Debugf("Response: %v", resp)
 
 	validStatusCode := false
