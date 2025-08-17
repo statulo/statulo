@@ -53,6 +53,8 @@ export async function updateChecksForMonitor(prisma: Prisma.TransactionClient, o
     monitorId: v.monitorId,
     type: v.type,
     startAt: startDate,
+    body: v.body,
+    interval: v.interval,
   }));
   const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,
@@ -77,6 +79,8 @@ export async function addCheckForMonitor(prisma: Prisma.TransactionClient, monit
     monitorId: v.monitorId,
     type: v.type,
     startAt: startDate,
+    body: v.body,
+    interval: v.interval,
   }));
   const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,

@@ -1,4 +1,5 @@
 import type { FullCheckAssignment } from "@/modules/orchestrator/active-agents";
+import type { HttpCheckBody } from "@/modules/orchestrator/checks/http";
 
 export type OrchestratorHelloDto = {
   agentId: string;
@@ -12,10 +13,16 @@ export type OrchestratorHelloDto = {
   } | null;
 };
 
-export type OrchestratorCheckDto = {
+export type OrchestratorCheckDto = OrchestratorCheckTypesDto & {
   id: string;
-  type: string;
-  // TODO fill with real data
+  monitorId: string;
+  interval: number;
+};
+
+export type OrchestratorCheckTypesDto = {
+  type: "http";
+  version: 1;
+  body: HttpCheckBody;
 };
 
 export type OrchestratorHeartbeatDto = {
@@ -45,7 +52,11 @@ export function mapOrchestratorHeartbeat(hash: string): OrchestratorHeartbeatDto
 export function mapCheck(checkAssignment: FullCheckAssignment): OrchestratorCheckDto {
   return {
     id: checkAssignment.checkId,
-    type: checkAssignment.check.type,
+    interval: checkAssignment.check.interval,
+    monitorId: checkAssignment.check.monitorId,
+    version: checkAssignment.check.version as OrchestratorCheckTypesDto["version"],
+    type: checkAssignment.check.type as OrchestratorCheckTypesDto["type"],
+    body: checkAssignment.check.body as OrchestratorCheckTypesDto["body"],
   };
 }
 

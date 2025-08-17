@@ -218,9 +218,12 @@ model Check {
   version       Int
   cost          Int
 
+  interval  Int
   createdAt DateTime  @default(now()) @map("created_at")
   startAt   DateTime  @map("start_at")
   endAt     DateTime? @map("end_at")
+
+  body Json
 
   monitorId String @map("monitor_id")
 
