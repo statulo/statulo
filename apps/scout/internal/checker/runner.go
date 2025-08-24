@@ -1,15 +1,14 @@
 package checker
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
-	scoutErrors "github.com/statulo/scout/internal/errors"
 	scoutHttp "github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 	"github.com/statulo/scout/internal/metrics"
+	scoutReporter "github.com/statulo/scout/internal/reporter"
 )
 
 type Checker struct {
@@ -19,17 +18,17 @@ type Checker struct {
 type CheckResult struct {
 	Success    bool                     `json:"success"`
 	DurationMs int64                    `json:"duration_ms,omitempty"`
-	Error      scoutErrors.StatuloError `json:"error,omitempty"`
+	Error      scoutReporter.CheckError `json:"error,omitempty"`
 	Result     any                      `json:"result,omitempty"`
 }
 
-func CreateChecker(ctx context.Context, client *scoutHttp.OrchestratorClient) Checker {
+func CreateChecker(client *scoutHttp.OrchestratorClient) Checker {
 	return Checker{
 		client: client,
 	}
 }
 
-func (c *Checker) startCheck(check scoutHttp.CheckResponse) (any, time.Duration, scoutErrors.StatuloError) {
+func (c *Checker) startCheck(check scoutHttp.CheckResponse) (any, time.Duration, scoutReporter.CheckError) {
 	switch check.Type {
 	case "http":
 		res, duration, err := c.checkHTTP(check)
@@ -37,7 +36,7 @@ func (c *Checker) startCheck(check scoutHttp.CheckResponse) (any, time.Duration,
 		return res, duration, err
 	default:
 		l.Log.Errorf("unsupported check type: %s", check.Type)
-		return nil, 0, scoutErrors.New("", fmt.Sprintf("unsupported check type: %s", check.Type), scoutErrors.ReasonConfig)
+		return nil, 0, scoutReporter.New("", fmt.Sprintf("unsupported check type: %s", check.Type), scoutReporter.ReasonConfig)
 	}
 }
 
