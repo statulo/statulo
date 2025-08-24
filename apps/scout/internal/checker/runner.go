@@ -37,5 +37,7 @@ func (c *Checker) RunCheckInBg(check scoutHttp.CheckResponse) {
 		}
 		// TODO handle errors (report to server)
 		// TODO log start and end of checks
+		// TODO handle panics
+		// TODO handle graceful exit
 	}()
 }
