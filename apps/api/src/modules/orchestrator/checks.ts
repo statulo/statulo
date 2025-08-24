@@ -28,18 +28,20 @@ export async function updateChecksForMonitor(prisma: Prisma.TransactionClient, o
       correlationId: {
         in: checkResult.removed.map(v => v.correlationId),
       },
+      endAt: null,
     },
     data: {
       endAt: new Date(),
     },
   });
 
-  // End current checks
+  // End current checks at the start date for updated or new checks
   await prisma.check.updateMany({
     where: {
       correlationId: {
         in: checkResult.updatedOrNew.map(v => v.correlationId),
       },
+      endAt: null,
     },
     data: {
       endAt: startDate,
