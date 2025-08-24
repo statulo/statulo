@@ -32,25 +32,19 @@ func (a *Agent) startMetrics(ctx context.Context, metricsSrv *metrics.MetricsSer
 		return
 	}
 
-	a.wg.Add(1)
-	RunWithRecovery("metrics", ctx, func() {
+	RunWithRecovery("metrics", ctx, &a.wg, func() {
 		metricsSrv.Start(bindAdrr)
-		defer a.wg.Done()
 	})
 }
 
 func (a *Agent) startHeartbeater(ctx context.Context, heartbeater *heartbeat.Heartbeater, duration time.Duration) {
-	a.wg.Add(1)
-	RunWithRecovery("heartbeater", ctx, func() {
-		defer a.wg.Done()
+	RunWithRecovery("heartbeater", ctx, &a.wg, func() {
 		heartbeater.Start(ctx, duration)
 	})
 }
 
 func (a *Agent) startScheduler(ctx context.Context, scheduler *scheduler.Scheduler, initialCheckHash string, initialChecks []http.CheckResponse) {
-	a.wg.Add(1)
-	RunWithRecovery("scheduler", ctx, func() {
-		defer a.wg.Done()
+	RunWithRecovery("scheduler", ctx, &a.wg, func() {
 		scheduler.Start(ctx, initialCheckHash, initialChecks)
 	})
 }
