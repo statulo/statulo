@@ -13,13 +13,6 @@ func startScout() {
 	l.Log.Infof("Scout v" + Version)
 	logConfigDebug()
 
-	defer func() {
-		// TODO this should go somewhere else, initialisation shouldn't recover from panics
-		if r := recover(); r != nil {
-			l.Log.Errorf("Recovered in main: %v", r)
-		}
-	}()
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
