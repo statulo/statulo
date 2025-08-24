@@ -80,7 +80,6 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	a.startMetrics(&metricsSrv, conf.MetricsUrl)
 	a.startHeartbeater(&heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
 	a.startScheduler(&scheduler, helloRes.CheckHash, helloRes.Checks)
-	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 
 	select {
