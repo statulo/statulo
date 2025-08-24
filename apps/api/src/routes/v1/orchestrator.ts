@@ -4,6 +4,7 @@ import { makeRouter } from "@/utils/router";
 import { orchestrator } from "@/modules/orchestrator";
 import { permissions } from "@/utils/permissions/permissions";
 import { mapCheck, mapOrchestratorChecks, mapOrchestratorGoodbye, mapOrchestratorHeartbeat, mapOrchestratorHello } from "@/routes/v1/mappings/orchestrator";
+import { ApiError } from "@/utils/error";
 
 export const orchestratorRouter = makeRouter((app) => {
   app.post(
@@ -46,7 +47,8 @@ export const orchestratorRouter = makeRouter((app) => {
       const agentId = auth.data.getActiveAgentId();
       auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
 
-      await orchestrator.agents.refresh(agentId);
+      const success = await orchestrator.agents.refresh(agentId);
+      if (!success) throw ApiError.forCode("authInvalidToken", 401); // token expired
 
       const checks = await orchestrator.checks.get(agentId);
       return mapOrchestratorHeartbeat(orchestrator.checks.hash(checks));
@@ -64,6 +66,9 @@ export const orchestratorRouter = makeRouter((app) => {
       auth.check(c => c.isAuthType("active-agent"));
       const agentId = auth.data.getActiveAgentId();
       auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      const agent = await orchestrator.agents.get(agentId);
+      if (!agent) throw ApiError.forCode("authInvalidToken", 401); // token expired
 
       await orchestrator.agents.remove(agentId);
 
@@ -83,6 +88,9 @@ export const orchestratorRouter = makeRouter((app) => {
       auth.check(c => c.isAuthType("active-agent"));
       const agentId = auth.data.getActiveAgentId();
       auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      const agent = await orchestrator.agents.get(agentId);
+      if (!agent) throw ApiError.forCode("authInvalidToken", 401); // token expired
 
       const checks = await orchestrator.checks.get(agentId);
       return mapOrchestratorChecks(orchestrator.checks.hash(checks), checks);

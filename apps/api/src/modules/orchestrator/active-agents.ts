@@ -5,6 +5,14 @@ import { getStaleHeartbeatDate } from "@/modules/orchestrator/utils";
 import { logger } from "@/modules/log";
 import { distributeCheck } from "@/modules/orchestrator/distribution";
 
+export async function getActiveAgent(id: string): Promise<ConnectedAgent | null> {
+  return await prisma.connectedAgent.findFirst({
+    where: {
+      id,
+    },
+  });
+}
+
 export async function registerActiveAgent(agentRegistrationId: string): Promise<ConnectedAgent> {
   return await prisma.connectedAgent.create({
     data: {
@@ -14,9 +22,8 @@ export async function registerActiveAgent(agentRegistrationId: string): Promise<
   });
 }
 
-export async function refreshActiveAgent(id: string): Promise<void> {
-  // TODO account for removed agents, send 401
-  await prisma.connectedAgent.update({
+export async function refreshActiveAgent(id: string): Promise<boolean> {
+  const result = await prisma.connectedAgent.updateMany({
     where: {
       id,
     },
@@ -24,6 +31,7 @@ export async function refreshActiveAgent(id: string): Promise<void> {
       lastSeenAt: new Date(),
     },
   });
+  return result.count > 0;
 }
 
 export async function removeActiveAgent(id: string): Promise<void> {
