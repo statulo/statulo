@@ -36,7 +36,10 @@ func (c *Heartbeater) Start(ctx context.Context, interval time.Duration) {
 				continue
 			}
 			l.Log.Debugf("Heartbeat returned OK")
-			c.checkUpdateChan <- res.CheckHash
+			select {
+			case c.checkUpdateChan <- res.CheckHash:
+			default:
+			}
 		}
 	}
 }

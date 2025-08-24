@@ -2,7 +2,6 @@ package scheduler
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/statulo/scout/internal/http"
@@ -13,20 +12,10 @@ func (c *Scheduler) Start(ctx context.Context, initialCheckHash string, initialC
 	c.currentCheckHash = initialCheckHash
 	c.currentChecks = initialChecks
 
-	var wg sync.WaitGroup
-
-	// Run in background
-	wg.Add(1)
-	go func() {
-		c.startUpdateChecker(ctx)
-		defer wg.Done()
-	}()
-
 	c.startScheduleLoop(ctx)
-	wg.Wait()
 }
 
-func (c *Scheduler) startUpdateChecker(ctx context.Context) {
+func (c *Scheduler) StartUpdateChecker(ctx context.Context) {
 	l.Log.Debug("Initialized scheduler update job")
 
 	for {
@@ -51,7 +40,10 @@ func (c *Scheduler) startUpdateChecker(ctx context.Context) {
 			}
 			c.currentChecks = res.Checks
 			c.currentCheckHash = res.CheckHash
-			c.scheduleUpdateChan <- struct{}{}
+			select {
+			case c.scheduleUpdateChan <- struct{}{}:
+			default:
+			}
 			l.Log.Debugf("Received new schedule")
 			l.Log.Info("Workload updated") // TODO improve log message
 		}

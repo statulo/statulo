@@ -113,6 +113,9 @@ func (c *OrchestratorClient) rawOrchestratorRequest(parentCtx context.Context, r
 // Notify the client of the current state of the token
 func (c *OrchestratorClient) NotifyTokenStatus(statusCode int) {
 	if statusCode == http.StatusUnauthorized {
-		c.invalidTokenChannel <- struct{}{}
+		select {
+		case c.invalidTokenChannel <- struct{}{}:
+		default:
+		}
 	}
 }

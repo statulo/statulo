@@ -15,7 +15,10 @@ type Heartbeater struct {
 
 func (c *Heartbeater) UpdateInterval(interval time.Duration) {
 	c.interval = interval
-	c.updateChan <- struct{}{}
+	select {
+	case c.updateChan <- struct{}{}:
+	default:
+	}
 }
 
 func CreateHeartbeater(checkUpdateChan chan string, client *http.OrchestratorClient) Heartbeater {

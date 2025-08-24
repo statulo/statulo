@@ -47,6 +47,9 @@ func (a *Agent) startScheduler(ctx context.Context, scheduler *scheduler.Schedul
 	RunWithRecovery("scheduler", ctx, &a.wg, func() {
 		scheduler.Start(ctx, initialCheckHash, initialChecks)
 	})
+	RunWithRecovery("scheduler-update-checker", ctx, &a.wg, func() {
+		scheduler.StartUpdateChecker(ctx)
+	})
 }
 
 func (a *Agent) Run(parentCtx context.Context) error {
@@ -79,7 +82,6 @@ func (a *Agent) Run(parentCtx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		metricsSrv.Stop()
 		break
 	case <-client.WaitTokenInvalidated():
 		cancel()
