@@ -30,14 +30,14 @@ func startScout() {
 		err := agent.Run(ctx)
 
 		if err != nil {
-			// Reooverable failure, restart
+			// Recoverable failure, restart
 			if errors.Is(err, ErrAgentRestart) {
 				l.Log.Errorf("Recoverable error caught, restarting application")
 				continue
 			}
 
 			// Unrecoverable failure
-			l.Log.Errorf("Failed to start: %v", err)
+			l.Log.Errorf("Scout encountered an error: %v", err)
 			os.Exit(1)
 		}
 

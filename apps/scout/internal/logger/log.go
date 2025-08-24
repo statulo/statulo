@@ -47,3 +47,13 @@ func GetLogFormat(format string) LogFormat {
 	}
 	return Invalid
 }
+
+func GetTempLogger() *charmlog.Logger {
+	logger := charmlog.New(os.Stdout)
+	logger.SetTimeFormat(time.TimeOnly)
+	logger.SetReportCaller(true)
+	logger.SetReportTimestamp(true)
+	logger.SetLevel(charmlog.InfoLevel)
+
+	return logger
+}

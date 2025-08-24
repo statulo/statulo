@@ -28,6 +28,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 			res, err := c.client.DoHeartbeat(http.HeartbeatRequest{
 				Timeout:     time.Second * 15,
 				MaxAttempts: 2,
+				Context:     c.ctx,
 			})
 			if err != nil {
 				l.Log.Errorf("Failed to heartbeat: %s", err)

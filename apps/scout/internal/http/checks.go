@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -24,6 +25,7 @@ type CheckResponse struct {
 }
 
 type ChecksRequest struct {
+	Context     context.Context
 	Timeout     time.Duration
 	MaxAttempts int
 }
@@ -36,7 +38,7 @@ func (c *OrchestratorClient) DoChecks(ops ChecksRequest) (*ChecksResponse, error
 		MaxAttempts: ops.MaxAttempts,
 		Token:       c.token,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return nil, err
 	}

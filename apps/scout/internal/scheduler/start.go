@@ -42,6 +42,7 @@ func (c *Scheduler) startUpdateChecker() {
 			res, err := c.client.DoChecks(http.ChecksRequest{
 				Timeout:     30 * time.Second,
 				MaxAttempts: 15,
+				Context:     c.ctx,
 			})
 			if err != nil {
 				l.Log.Errorf("Failed to load new checks: %s", err)

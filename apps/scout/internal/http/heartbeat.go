@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,6 +13,7 @@ type HeartbeatResponse struct {
 }
 
 type HeartbeatRequest struct {
+	Context     context.Context
 	Timeout     time.Duration
 	MaxAttempts int
 }
@@ -24,7 +26,8 @@ func (c *OrchestratorClient) DoHeartbeat(ops HeartbeatRequest) (*HeartbeatRespon
 		MaxAttempts: ops.MaxAttempts,
 		Token:       c.token,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return nil, err
 	}

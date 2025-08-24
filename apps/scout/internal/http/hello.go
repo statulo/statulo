@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -20,6 +21,7 @@ type HelloBody struct {
 }
 
 type HelloRequest struct {
+	Context     context.Context
 	Timeout     time.Duration
 	MaxAttempts int
 	RegToken    string
@@ -42,7 +44,7 @@ func (c *OrchestratorClient) DoHello(ops HelloRequest) (*HelloResponse, error) {
 		Body:        payload,
 		Token:       ops.RegToken,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,6 @@ package scout
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/url"
 	"strconv"
@@ -107,6 +106,6 @@ func truncateString(str string, s int) string {
 
 func confErr(err error) {
 	if err != nil {
-		log.Fatalf("config error: %v", err)
+		l.GetTempLogger().Fatalf("Failed to load configuration: %s", err)
 	}
 }

@@ -1,12 +1,14 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 )
 
 type GoodbyeRequest struct {
+	Context     context.Context
 	Timeout     time.Duration
 	MaxAttempts int
 }
@@ -19,7 +21,7 @@ func (c *OrchestratorClient) DoGoodbye(ops GoodbyeRequest) error {
 		MaxAttempts: ops.MaxAttempts,
 		Token:       c.token,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return err
 	}

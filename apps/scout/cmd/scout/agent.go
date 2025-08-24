@@ -63,6 +63,7 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	helloRes, err := client.DoHello(http.HelloRequest{
 		Timeout:  30 * time.Second,
 		RegToken: a.conf.Token,
+		Context:  ctx,
 	})
 	if err != nil {
 		cancel()
@@ -95,6 +96,7 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	l.Log.Debugf("Sending GOODBYE to API server")
 	goodbyeErr := client.DoGoodbye(http.GoodbyeRequest{
 		Timeout: 30 * time.Second,
+		Context: context.Background(),
 	})
 	if goodbyeErr != nil {
 		cancel()

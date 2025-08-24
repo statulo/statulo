@@ -33,28 +33,35 @@ func (c *OrchestratorClient) GetScoutHeaders() ScoutHeaders {
 	}
 }
 
-func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*http.Response, error) {
+func (c *OrchestratorClient) DoOrchestratorRequest(ctx context.Context, req OrchestratorRequest) (*http.Response, error) {
 	baseDelay := time.Millisecond * 500
 	attempts := req.MaxAttempts
 	var lastError error = nil
 	if attempts < 1 {
-		attempts = math.MaxInt
+		attempts = 3
 	}
 	for i := 0; i < attempts; i++ {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
 		if i > 0 {
 			delay := baseDelay * time.Duration(math.Pow(1.5, float64(i)))
 			if delay > time.Minute*3 {
 				delay = time.Minute * 3
 			}
 			time.Sleep(delay)
-			l.Log.Debugf("Retrying Request (%d / %d): %s", i, attempts, req.Path)
 		}
-		res, err := c.rawOrchestratorRequest(req)
+		l.Log.Debugf("Trying Request (%d / %d): %s", i+1, attempts, req.Path)
+		res, err := c.rawOrchestratorRequest(ctx, req)
 		if err != nil {
+			l.Log.Debugf("Failed Request (%d / %d): %s", i+1, attempts, req.Path)
 			lastError = err
 			continue
 		}
 		if res.StatusCode >= 500 {
+			l.Log.Debugf("Failed Request (%d / %d): %s", i+1, attempts, req.Path)
 			lastError = fmt.Errorf("bad status: %s", res.Status)
 			continue
 		}
@@ -64,8 +71,8 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 	return nil, lastError
 }
 
-func (c *OrchestratorClient) rawOrchestratorRequest(req OrchestratorRequest) (*http.Response, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), req.Timeout)
+func (c *OrchestratorClient) rawOrchestratorRequest(parentCtx context.Context, req OrchestratorRequest) (*http.Response, error) {
+	ctx, cancel := context.WithTimeout(parentCtx, req.Timeout)
 	defer cancel()
 
 	url, err := url.Parse(c.BaseUrl)

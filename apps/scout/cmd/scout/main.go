@@ -1,10 +1,10 @@
 package scout
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	l "github.com/statulo/scout/internal/logger"
 )
 
 var versionCmd = &cobra.Command{
@@ -24,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := validateConfig()
 		if err != nil {
-			fmt.Println(err) // TODO pretty errors
+			l.GetTempLogger().Errorf("Failed to validate configuration: %s", err)
 			os.Exit(1)
 		}
 
@@ -39,7 +39,7 @@ func Execute() {
 
 	err := rootCmd.Execute()
 	if err != nil {
-		fmt.Println(err)
+		l.GetTempLogger().Errorf("Failed to execute command: %s", err)
 		os.Exit(1)
 	}
 }
