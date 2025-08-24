@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -8,7 +9,7 @@ import (
 	l "github.com/statulo/scout/internal/logger"
 )
 
-func (c *Scheduler) Start(initialCheckHash string, initialChecks []http.CheckResponse) {
+func (c *Scheduler) Start(ctx context.Context, initialCheckHash string, initialChecks []http.CheckResponse) {
 	c.currentCheckHash = initialCheckHash
 	c.currentChecks = initialChecks
 
@@ -17,20 +18,20 @@ func (c *Scheduler) Start(initialCheckHash string, initialChecks []http.CheckRes
 	// Run in background
 	wg.Add(1)
 	go func() {
-		c.startUpdateChecker()
+		c.startUpdateChecker(ctx)
 		defer wg.Done()
 	}()
 
-	c.startScheduleLoop()
+	c.startScheduleLoop(ctx)
 	wg.Wait()
 }
 
-func (c *Scheduler) startUpdateChecker() {
+func (c *Scheduler) startUpdateChecker(ctx context.Context) {
 	l.Log.Debug("Initialized scheduler update job")
 
 	for {
 		select {
-		case <-c.ctx.Done():
+		case <-ctx.Done():
 			l.Log.Debug("Stopping scheduler update job")
 			return
 		case newCheckHash := <-c.checkUpdateChan:
@@ -42,7 +43,7 @@ func (c *Scheduler) startUpdateChecker() {
 			res, err := c.client.DoChecks(http.ChecksRequest{
 				Timeout:     30 * time.Second,
 				MaxAttempts: 15,
-				Context:     c.ctx,
+				Context:     ctx,
 			})
 			if err != nil {
 				l.Log.Errorf("Failed to load new checks: %s", err)
@@ -57,14 +58,14 @@ func (c *Scheduler) startUpdateChecker() {
 	}
 }
 
-func (c *Scheduler) startScheduleLoop() {
+func (c *Scheduler) startScheduleLoop(ctx context.Context) {
 	l.Log.Debug("Initialized scheduler job")
 
 	for {
 		timer, nextCheck := c.getNextCheckTimer()
 
 		select {
-		case <-c.ctx.Done():
+		case <-ctx.Done():
 			l.Log.Debug("Stopping scheduler job")
 			return
 		case <-c.scheduleUpdateChan:

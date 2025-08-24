@@ -1,14 +1,12 @@
 package heartbeat
 
 import (
-	"context"
 	"time"
 
 	"github.com/statulo/scout/internal/http"
 )
 
 type Heartbeater struct {
-	ctx             context.Context
 	updateChan      chan struct{}
 	checkUpdateChan chan string
 	client          *http.OrchestratorClient
@@ -20,10 +18,9 @@ func (c *Heartbeater) UpdateInterval(interval time.Duration) {
 	c.updateChan <- struct{}{}
 }
 
-func CreateHeartbeater(ctx context.Context, checkUpdateChan chan string, client *http.OrchestratorClient) Heartbeater {
+func CreateHeartbeater(checkUpdateChan chan string, client *http.OrchestratorClient) Heartbeater {
 	return Heartbeater{
 		client:          client,
-		ctx:             ctx,
 		checkUpdateChan: checkUpdateChan,
 		updateChan:      make(chan struct{}),
 	}

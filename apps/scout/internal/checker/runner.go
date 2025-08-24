@@ -1,21 +1,17 @@
 package checker
 
 import (
-	"context"
-
 	scoutHttp "github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 	"github.com/statulo/scout/internal/metrics"
 )
 
 type Checker struct {
-	ctx    context.Context
 	client *scoutHttp.OrchestratorClient
 }
 
-func CreateChecker(ctx context.Context, client *scoutHttp.OrchestratorClient) Checker {
+func CreateChecker(client *scoutHttp.OrchestratorClient) Checker {
 	return Checker{
-		ctx:    ctx,
 		client: client,
 	}
 }
@@ -33,7 +29,7 @@ func (c *Checker) startCheck(check scoutHttp.CheckResponse) error {
 
 func (c *Checker) RunCheckInBg(check scoutHttp.CheckResponse) {
 	go func() {
-		l.Log.Infof("Starting check %s (%s)", check.Id, check.Type)
+		defer l.Log.Infof("Starting check %s (%s)", check.Id, check.Type)
 		metrics.ChecksExecuted.Inc()
 		err := c.startCheck(check)
 		if err != nil {

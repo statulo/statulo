@@ -1,13 +1,14 @@
 package heartbeat
 
 import (
+	"context"
 	"time"
 
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 )
 
-func (c *Heartbeater) Start(interval time.Duration) {
+func (c *Heartbeater) Start(ctx context.Context, interval time.Duration) {
 	l.Log.Debug("Initialized heartbeat job")
 
 	ticker := time.NewTicker(interval)
@@ -15,7 +16,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 
 	for {
 		select {
-		case <-c.ctx.Done():
+		case <-ctx.Done():
 			l.Log.Debug("Stopping heartbeat job")
 			return
 		case <-c.updateChan:
@@ -28,7 +29,7 @@ func (c *Heartbeater) Start(interval time.Duration) {
 			res, err := c.client.DoHeartbeat(http.HeartbeatRequest{
 				Timeout:     time.Second * 15,
 				MaxAttempts: 2,
-				Context:     c.ctx,
+				Context:     ctx,
 			})
 			if err != nil {
 				l.Log.Errorf("Failed to heartbeat: %s", err)

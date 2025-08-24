@@ -27,32 +27,32 @@ func NewAgent(conf Config) Agent {
 	}
 }
 
-func (a *Agent) startMetrics(metricsSrv *metrics.MetricsServer, bindAdrr string) {
+func (a *Agent) startMetrics(ctx context.Context, metricsSrv *metrics.MetricsServer, bindAdrr string) {
 	if bindAdrr == "" {
 		return
 	}
 
 	a.wg.Add(1)
-	go func() {
-		defer a.wg.Done()
+	RunWithRecovery("metrics", ctx, func() {
 		metricsSrv.Start(bindAdrr)
-	}()
+		defer a.wg.Done()
+	})
 }
 
-func (a *Agent) startHeartbeater(heartbeater *heartbeat.Heartbeater, duration time.Duration) {
+func (a *Agent) startHeartbeater(ctx context.Context, heartbeater *heartbeat.Heartbeater, duration time.Duration) {
 	a.wg.Add(1)
-	go func() {
+	RunWithRecovery("heartbeater", ctx, func() {
 		defer a.wg.Done()
-		heartbeater.Start(duration)
-	}()
+		heartbeater.Start(ctx, duration)
+	})
 }
 
-func (a *Agent) startScheduler(scheduler *scheduler.Scheduler, initialCheckHash string, initialChecks []http.CheckResponse) {
+func (a *Agent) startScheduler(ctx context.Context, scheduler *scheduler.Scheduler, initialCheckHash string, initialChecks []http.CheckResponse) {
 	a.wg.Add(1)
-	go func() {
+	RunWithRecovery("scheduler", ctx, func() {
 		defer a.wg.Done()
-		scheduler.Start(initialCheckHash, initialChecks)
-	}()
+		scheduler.Start(ctx, initialCheckHash, initialChecks)
+	})
 }
 
 func (a *Agent) Run(parentCtx context.Context) error {
@@ -74,17 +74,18 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	client.SetToken(helloRes.Token)
 
 	metricsSrv := metrics.CreateMetricsServer()
-	checker := checker.CreateChecker(ctx, &client)
-	scheduler := scheduler.CreateScheduler(ctx, &checker, &client)
-	heartbeater := heartbeat.CreateHeartbeater(ctx, scheduler.GetCheckUpdateChannel(), &client)
+	checker := checker.CreateChecker(&client)
+	scheduler := scheduler.CreateScheduler(&checker, &client)
+	heartbeater := heartbeat.CreateHeartbeater(scheduler.GetCheckUpdateChannel(), &client)
 
-	a.startMetrics(&metricsSrv, conf.MetricsUrl)
-	a.startHeartbeater(&heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
-	a.startScheduler(&scheduler, helloRes.CheckHash, helloRes.Checks)
+	a.startMetrics(ctx, &metricsSrv, conf.MetricsUrl)
+	a.startHeartbeater(ctx, &heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
+	a.startScheduler(ctx, &scheduler, helloRes.CheckHash, helloRes.Checks)
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 
 	select {
 	case <-ctx.Done():
+		metricsSrv.Stop()
 		break
 	case <-client.WaitTokenInvalidated():
 		cancel()
