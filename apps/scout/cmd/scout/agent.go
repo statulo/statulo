@@ -2,6 +2,7 @@ package scout
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 
@@ -17,6 +18,8 @@ type Agent struct {
 	wg   sync.WaitGroup
 	conf Config
 }
+
+var ErrAgentRestart = errors.New("agent restart error")
 
 func NewAgent(conf Config) Agent {
 	return Agent{
@@ -52,12 +55,9 @@ func (a *Agent) startScheduler(scheduler *scheduler.Scheduler, initialCheckHash 
 	}()
 }
 
-func (a *Agent) Run(ctx context.Context) error {
-	client := http.OrchestratorClient{
-		UserAgentName: "Scout",
-		Version:       Version,
-		BaseUrl:       a.conf.OrchestratorUrl,
-	}
+func (a *Agent) Run(parentCtx context.Context) error {
+	ctx, cancel := context.WithCancel(parentCtx)
+	client := http.CreateClient("Scout", Version, a.conf.OrchestratorUrl)
 
 	l.Log.Debug("Sending HELLO to API server")
 	helloRes, err := client.DoHello(http.HelloRequest{
@@ -65,6 +65,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		RegToken: a.conf.Token,
 	})
 	if err != nil {
+		cancel()
 		return err
 	}
 	l.Log.Debugf("Received HELLO response - joined pool as '%s'", helloRes.AgentId)
@@ -82,19 +83,31 @@ func (a *Agent) Run(ctx context.Context) error {
 	// TODO restart agent (not process) when token from HELLO gets invalidated
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 
-	<-ctx.Done()
+	select {
+	case <-ctx.Done():
+		break
+	case <-client.WaitTokenInvalidated():
+		cancel()
+		metricsSrv.Stop()
+		a.wg.Wait()
+		return ErrAgentRestart
+	}
 
 	l.Log.Debugf("Sending GOODBYE to API server")
 	goodbyeErr := client.DoGoodbye(http.GoodbyeRequest{
 		Timeout: 30 * time.Second,
 	})
 	if goodbyeErr != nil {
+		cancel()
+		metricsSrv.Stop()
+		a.wg.Wait()
 		return goodbyeErr
 	}
 	l.Log.Debugf("Received GOODBYE response")
 	l.Log.Info("Offboarding schedule received, waiting to finish tasks")
 
 	// TODO run schedule until the end specified by goodbye
+	cancel()
 	metricsSrv.Stop()
 	a.wg.Wait()
 

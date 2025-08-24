@@ -22,7 +22,7 @@ func (c *OrchestratorClient) DoHeartbeat(ops HeartbeatRequest) (*HeartbeatRespon
 		Method:      http.MethodGet,
 		Timeout:     ops.Timeout,
 		MaxAttempts: ops.MaxAttempts,
-		Token:       c.Token,
+		Token:       c.token,
 	}
 	res, err := c.DoOrchestratorRequest(req)
 	if err != nil {
@@ -30,6 +30,7 @@ func (c *OrchestratorClient) DoHeartbeat(ops HeartbeatRequest) (*HeartbeatRespon
 	}
 	defer res.Body.Close()
 
+	c.NotifyTokenStatus(res.StatusCode)
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("bad status: %s", res.Status)
 	}

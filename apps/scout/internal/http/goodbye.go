@@ -17,7 +17,7 @@ func (c *OrchestratorClient) DoGoodbye(ops GoodbyeRequest) error {
 		Method:      http.MethodPost,
 		Timeout:     ops.Timeout,
 		MaxAttempts: ops.MaxAttempts,
-		Token:       c.Token,
+		Token:       c.token,
 	}
 	res, err := c.DoOrchestratorRequest(req)
 	if err != nil {
@@ -25,6 +25,7 @@ func (c *OrchestratorClient) DoGoodbye(ops GoodbyeRequest) error {
 	}
 	defer res.Body.Close()
 
+	c.NotifyTokenStatus(res.StatusCode)
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status: %s", res.Status)
 	}

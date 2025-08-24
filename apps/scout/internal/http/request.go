@@ -54,7 +54,7 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 			lastError = err
 			continue
 		}
-		if res.StatusCode != http.StatusOK {
+		if res.StatusCode >= 500 {
 			lastError = fmt.Errorf("bad status: %s", res.Status)
 			continue
 		}
@@ -101,4 +101,11 @@ func (c *OrchestratorClient) rawOrchestratorRequest(req OrchestratorRequest) (*h
 		return nil, err
 	}
 	return res, nil
+}
+
+// Notify the client of the current state of the token
+func (c *OrchestratorClient) NotifyTokenStatus(statusCode int) {
+	if statusCode == http.StatusUnauthorized {
+		c.invalidTokenChannel <- struct{}{}
+	}
 }

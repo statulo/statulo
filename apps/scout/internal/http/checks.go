@@ -34,7 +34,7 @@ func (c *OrchestratorClient) DoChecks(ops ChecksRequest) (*ChecksResponse, error
 		Method:      http.MethodGet,
 		Timeout:     ops.Timeout,
 		MaxAttempts: ops.MaxAttempts,
-		Token:       c.Token,
+		Token:       c.token,
 	}
 	res, err := c.DoOrchestratorRequest(req)
 	if err != nil {
@@ -42,6 +42,7 @@ func (c *OrchestratorClient) DoChecks(ops ChecksRequest) (*ChecksResponse, error
 	}
 	defer res.Body.Close()
 
+	c.NotifyTokenStatus(res.StatusCode)
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("bad status: %s", res.Status)
 	}

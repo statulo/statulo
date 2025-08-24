@@ -2,6 +2,7 @@ package scout
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	l "github.com/statulo/scout/internal/logger"
@@ -15,7 +16,7 @@ func startScout() {
 	defer func() {
 		// TODO this should go somewhere else, initialisation shouldn't recover from panics
 		if r := recover(); r != nil {
-			l.Log.Errorf("Recovered in main: %v\n", r)
+			l.Log.Errorf("Recovered in main: %v", r)
 		}
 	}()
 
@@ -25,11 +26,22 @@ func startScout() {
 	listenSignals(cancel)
 
 	agent := NewAgent(conf)
-	err := agent.Run(ctx)
+	for {
+		err := agent.Run(ctx)
 
-	if err != nil {
-		l.Log.Errorf("Failed to start: %v\n", err)
-		os.Exit(1)
+		if err != nil {
+			// Reooverable failure, restart
+			if errors.Is(err, ErrAgentRestart) {
+				l.Log.Errorf("Recoverable error caught, restarting application")
+				continue
+			}
+
+			// Unrecoverable failure
+			l.Log.Errorf("Failed to start: %v", err)
+			os.Exit(1)
+		}
+
+		break
 	}
 
 	l.Log.Info("Exiting...")
