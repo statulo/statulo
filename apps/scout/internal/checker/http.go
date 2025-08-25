@@ -2,22 +2,27 @@ package checker
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/statulo/scout/internal/http"
+	scoutReporter "github.com/statulo/scout/internal/reporter"
 
 	goHttp "net/http"
 )
 
-func (c *Checker) checkHTTP(check http.CheckResponse) error {
+type HttpCheckResponse struct {
+	Status int `json:"status"`
+	// TODO: What else to return?
+}
+
+func (c *Checker) checkHTTP(check http.CheckResponse) (*HttpCheckResponse, time.Duration, scoutReporter.CheckError) {
 	if check.Type != "http" {
-		return errors.New("invalid check type")
+		return nil, 0, scoutReporter.New("", "invalid check type", scoutReporter.ReasonConfig)
 	}
 
 	checkBody, err := UnmarshalHttpCheckBody(check.Version, check.Body)
 	if err != nil {
-		return err
+		return nil, 0, scoutReporter.New("http", "couldn't unmarshal HTTP check body", scoutReporter.ReasonConfig)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // TODO: Make timeout configurable
@@ -25,19 +30,23 @@ func (c *Checker) checkHTTP(check http.CheckResponse) error {
 
 	httpRequest, err := checkBody.BuildHttpRequest(ctx, c.client.GetScoutHeaders())
 	if err != nil {
-		return err
+		return nil, 0, scoutReporter.Wrap("http", err)
 	}
 
+	start := time.Now() // TODO: Use HTTP tracing rather than this primitive timing
 	res, err := goHttp.DefaultClient.Do(httpRequest)
+	elapsed := time.Since(start)
 	if err != nil {
-		return err
+		return nil, elapsed, scoutReporter.WrapHTTP(httpRequest.Method, httpRequest.URL.String(), err)
 	}
 	defer res.Body.Close()
 
 	err = checkBody.ValidateResponse(res)
 	if err != nil {
-		return err
+		return nil, elapsed, scoutReporter.NewHTTP(httpRequest.Method, httpRequest.URL.String(), err.Error(), scoutReporter.ReasonResponse)
 	}
 
-	return nil
+	return &HttpCheckResponse{
+		Status: res.StatusCode,
+	}, elapsed, nil
 }
