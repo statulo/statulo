@@ -3,6 +3,7 @@ import { httpMonitorConverter } from "@/modules/orchestrator/monitors/http";
 import type { FullMonitor, MonitorConverter } from "@/modules/orchestrator/monitors/types";
 import { getSafeStartDate } from "@/modules/orchestrator/utils";
 import { getUntypedId } from "@/utils/id";
+import { distributeCheck } from "@/modules/orchestrator/distribution";
 
 const converters: MonitorConverter[] = [
   httpMonitorConverter,
@@ -27,18 +28,20 @@ export async function updateChecksForMonitor(prisma: Prisma.TransactionClient, o
       correlationId: {
         in: checkResult.removed.map(v => v.correlationId),
       },
+      endAt: null,
     },
     data: {
       endAt: new Date(),
     },
   });
 
-  // End current checks
+  // End current checks at the start date for updated or new checks
   await prisma.check.updateMany({
     where: {
       correlationId: {
         in: checkResult.updatedOrNew.map(v => v.correlationId),
       },
+      endAt: null,
     },
     data: {
       endAt: startDate,
@@ -52,10 +55,17 @@ export async function updateChecksForMonitor(prisma: Prisma.TransactionClient, o
     monitorId: v.monitorId,
     type: v.type,
     startAt: startDate,
+    body: v.body,
+    interval: v.interval,
   }));
-  await prisma.check.createMany({
+  const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,
   });
+
+  // Distribute new checks to agents
+  for (const check of createdChecks) {
+    await distributeCheck(prisma, check);
+  }
 }
 
 export async function addCheckForMonitor(prisma: Prisma.TransactionClient, monitor: FullMonitor): Promise<void> {
@@ -71,8 +81,15 @@ export async function addCheckForMonitor(prisma: Prisma.TransactionClient, monit
     monitorId: v.monitorId,
     type: v.type,
     startAt: startDate,
+    body: v.body,
+    interval: v.interval,
   }));
-  await prisma.check.createMany({
+  const createdChecks = await prisma.check.createManyAndReturn({
     data: newChecks,
   });
+
+  // Distribute new checks to agents
+  for (const check of createdChecks) {
+    await distributeCheck(prisma, check);
+  }
 }

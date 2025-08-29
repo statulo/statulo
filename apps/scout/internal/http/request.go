@@ -3,23 +3,76 @@ package http
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"path"
 	"time"
+
+	l "github.com/statulo/scout/internal/logger"
 )
 
 type OrchestratorRequest struct {
-	Path    string
-	Method  string
-	Timeout time.Duration
-	Body    []byte
-	Token   string
+	Path        string
+	Method      string
+	Timeout     time.Duration
+	MaxAttempts int
+	Body        []byte
+	Token       string
 }
 
-func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*http.Response, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), req.Timeout)
+type ScoutHeaders struct {
+	UserAgent string
+}
+
+func (c *OrchestratorClient) GetScoutHeaders() ScoutHeaders {
+	return ScoutHeaders{
+		UserAgent: c.UserAgentName + "/" + c.Version,
+	}
+}
+
+func (c *OrchestratorClient) DoOrchestratorRequest(ctx context.Context, req OrchestratorRequest) (*http.Response, error) {
+	baseDelay := time.Millisecond * 500
+	attempts := req.MaxAttempts
+	var lastError error = nil
+	if attempts < 1 {
+		attempts = 3
+	}
+	for i := 0; i < attempts; i++ {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+		if i > 0 {
+			delay := baseDelay * time.Duration(math.Pow(1.5, float64(i)))
+			if delay > time.Minute*3 {
+				delay = time.Minute * 3
+			}
+			time.Sleep(delay)
+		}
+		l.Log.Debugf("Trying Request (%d / %d): %s", i+1, attempts, req.Path)
+		res, err := c.rawOrchestratorRequest(ctx, req)
+		if err != nil {
+			l.Log.Debugf("Failed Request (%d / %d): %s", i+1, attempts, req.Path)
+			lastError = err
+			continue
+		}
+		if res.StatusCode >= 500 {
+			l.Log.Debugf("Failed Request (%d / %d): %s", i+1, attempts, req.Path)
+			lastError = fmt.Errorf("bad status: %s", res.Status)
+			continue
+		}
+		return res, nil
+	}
+
+	return nil, lastError
+}
+
+func (c *OrchestratorClient) rawOrchestratorRequest(parentCtx context.Context, req OrchestratorRequest) (*http.Response, error) {
+	ctx, cancel := context.WithTimeout(parentCtx, req.Timeout)
 	defer cancel()
 
 	url, err := url.Parse(c.BaseUrl)
@@ -39,7 +92,8 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 		return nil, err
 	}
 
-	httpReq.Header.Set("User-Agent", c.UserAgentName+"/"+c.Version)
+	scoutHeaders := c.GetScoutHeaders()
+	httpReq.Header.Set("User-Agent", scoutHeaders.UserAgent)
 
 	if len(req.Token) > 0 {
 		httpReq.Header.Set("Authorization", "Scout "+req.Token)
@@ -54,4 +108,14 @@ func (c *OrchestratorClient) DoOrchestratorRequest(req OrchestratorRequest) (*ht
 		return nil, err
 	}
 	return res, nil
+}
+
+// Notify the client of the current state of the token
+func (c *OrchestratorClient) NotifyTokenStatus(statusCode int) {
+	if statusCode == http.StatusUnauthorized {
+		select {
+		case c.invalidTokenChannel <- struct{}{}:
+		default:
+		}
+	}
 }

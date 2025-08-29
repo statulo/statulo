@@ -1,48 +1,45 @@
-package main
+package scout
 
 import (
-	"context"
-	"fmt"
 	"os"
+
+	"github.com/spf13/cobra"
+	l "github.com/statulo/scout/internal/logger"
 )
 
-func main() {
-	conf, logErr := loadConfig()
-	if logErr != nil {
-		fmt.Printf("Failed to load configuration, exiting: %v\n", logErr)
-		os.Exit(1)
-	}
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Displays the version of Scout",
+	Run: func(cmd *cobra.Command, args []string) {
+		root := cmd.Root()
+		root.SetArgs([]string{"--version"})
+		root.Execute()
+	},
+}
 
-	loggerErr := initLogger(conf.LogInJson)
-	if loggerErr != nil {
-		fmt.Printf("Failed to initialize logger: %v\n", loggerErr)
-		os.Exit(1)
-	}
-	defer log.Sync()
-
-	log.Info("Setting up agent")
-	logConfig(*conf)
-
-	defer func() {
-		// TODO this should go somewhere else, initialisation shouldn't recover from panics
-		if r := recover(); r != nil {
-			log.Errorf("Recovered in main: %v\n", r)
+var rootCmd = &cobra.Command{
+	Use:     "scout",
+	Short:   "The agent that runs checks for Statulo",
+	Version: Version,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := validateConfig()
+		if err != nil {
+			l.GetTempLogger().Errorf("Failed to validate configuration: %s", err)
+			os.Exit(1)
 		}
-	}()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+		startScout()
+	},
+}
 
-	listenSignals(cancel)
+func Execute() {
+	cobra.OnInitialize(loadConfig)
+	configureConfigFlags()
+	rootCmd.AddCommand(versionCmd)
 
-	agent := NewAgent(*conf)
-	err := agent.Run(ctx)
-
+	err := rootCmd.Execute()
 	if err != nil {
-		log.Errorf("Agent failed to run: %v\n", err)
+		l.GetTempLogger().Errorf("Failed to execute command: %s", err)
 		os.Exit(1)
 	}
-
-	log.Info("Exiting")
-	os.Exit(0)
 }

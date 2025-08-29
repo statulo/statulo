@@ -1,28 +1,33 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 )
 
 type GoodbyeRequest struct {
-	Timeout time.Duration
+	Context     context.Context
+	Timeout     time.Duration
+	MaxAttempts int
 }
 
 func (c *OrchestratorClient) DoGoodbye(ops GoodbyeRequest) error {
 	req := OrchestratorRequest{
-		Path:    "api/v1/orchestrator/agents/goodbye",
-		Method:  http.MethodPost,
-		Timeout: ops.Timeout,
-		Token:   c.Token,
+		Path:        "api/v1/orchestrator/agents/goodbye",
+		Method:      http.MethodPost,
+		Timeout:     ops.Timeout,
+		MaxAttempts: ops.MaxAttempts,
+		Token:       c.token,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
 
+	c.NotifyTokenStatus(res.StatusCode)
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status: %s", res.Status)
 	}

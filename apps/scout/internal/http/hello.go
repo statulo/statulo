@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -8,10 +9,11 @@ import (
 )
 
 type HelloResponse struct {
-	AgentId   string `json:"agentId"`
-	Token     string `json:"token"`
-	Heartbeat int    `json:"heartbeat"`
-	// TODO add rest of the fields
+	AgentId   string          `json:"agentId"`
+	Token     string          `json:"token"`
+	Heartbeat int             `json:"heartbeat"`
+	CheckHash string          `json:"checkHash"`
+	Checks    []CheckResponse `json:"checks"`
 }
 
 type HelloBody struct {
@@ -19,8 +21,10 @@ type HelloBody struct {
 }
 
 type HelloRequest struct {
-	Timeout  time.Duration
-	RegToken string
+	Context     context.Context
+	Timeout     time.Duration
+	MaxAttempts int
+	RegToken    string
 }
 
 func (c *OrchestratorClient) DoHello(ops HelloRequest) (*HelloResponse, error) {
@@ -33,13 +37,14 @@ func (c *OrchestratorClient) DoHello(ops HelloRequest) (*HelloResponse, error) {
 	}
 
 	req := OrchestratorRequest{
-		Path:    "api/v1/orchestrator/agents/hello",
-		Method:  http.MethodPost,
-		Timeout: ops.Timeout,
-		Body:    payload,
-		Token:   ops.RegToken,
+		Path:        "api/v1/orchestrator/agents/hello",
+		Method:      http.MethodPost,
+		Timeout:     ops.Timeout,
+		MaxAttempts: ops.MaxAttempts,
+		Body:        payload,
+		Token:       ops.RegToken,
 	}
-	res, err := c.DoOrchestratorRequest(req)
+	res, err := c.DoOrchestratorRequest(ops.Context, req)
 	if err != nil {
 		return nil, err
 	}

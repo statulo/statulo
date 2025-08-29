@@ -1,37 +1,45 @@
 package heartbeat
 
 import (
-	"fmt"
+	"context"
 	"time"
 
 	"github.com/statulo/scout/internal/http"
+	l "github.com/statulo/scout/internal/logger"
 )
 
-func (c *Heartbeater) Start(interval time.Duration) {
+func (c *Heartbeater) Start(ctx context.Context, interval time.Duration) {
+	l.Log.Debug("Initialized heartbeat job")
+
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	for {
 		select {
-		case <-c.ctx.Done():
-			fmt.Println("Stopping heartbeat")
+		case <-ctx.Done():
+			l.Log.Debug("Stopping heartbeat job")
 			return
 		case <-c.updateChan:
-			c.updateChan = make(chan struct{})
+			l.Log.Debug("New heartbeat interval received, restarting heartbeat job")
 			ticker.Stop()
 			ticker = time.NewTicker(c.interval)
 			defer ticker.Stop()
-		case t := <-ticker.C:
-			fmt.Printf("Heartbeat at %s\n", t.Format(time.RFC3339))
+		case <-ticker.C:
+			l.Log.Debug("Sending heartbeat")
 			res, err := c.client.DoHeartbeat(http.HeartbeatRequest{
-				Timeout: time.Second * 15,
+				Timeout:     time.Second * 15,
+				MaxAttempts: 2,
+				Context:     ctx,
 			})
 			if err != nil {
-				fmt.Println("Failed to heartbeat")
+				l.Log.Errorf("Failed to heartbeat: %s", err)
 				continue
 			}
-			fmt.Printf("Heartbeat hash: %s\n", res.CheckHash)
-			// TODO If returned hash from heartbeat is different, refetch schedule and notify caller
+			l.Log.Debugf("Heartbeat returned OK")
+			select {
+			case c.checkUpdateChan <- res.CheckHash:
+			default:
+			}
 		}
 	}
 }

@@ -4,8 +4,8 @@ export type CheckDefinition = {
   monitorId: string;
   correlationId: string; // id that's unique per monitor and type of check, useful to find old versions of checks
   cost: number;
-  // TODO Add body
-  // TODO add interval
+  interval: number;
+  body: Record<string, any>;
 };
 
 export type Check = CheckDefinition & {

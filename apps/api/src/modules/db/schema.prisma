@@ -218,9 +218,12 @@ model Check {
   version       Int
   cost          Int
 
+  interval  Int
   createdAt DateTime  @default(now()) @map("created_at")
   startAt   DateTime  @map("start_at")
   endAt     DateTime? @map("end_at")
+
+  body Json
 
   monitorId String @map("monitor_id")
 
@@ -260,10 +263,10 @@ model CheckAssignment {
   startAt   DateTime  @map("start_at")
   endAt     DateTime? @map("end_at")
 
-  agent   ConnectedAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId String         @map("agent_id")
-  check   Check          @relation(fields: [checkId], references: [id], onDelete: Cascade)
-  checkId String         @map("check_id")
+  agent   ConnectedAgent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  agentId String?         @map("agent_id")
+  check   Check           @relation(fields: [checkId], references: [id], onDelete: Cascade)
+  checkId String          @map("check_id")
 
   @@map("check_assignment")
 }
