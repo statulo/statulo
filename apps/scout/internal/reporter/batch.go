@@ -38,6 +38,11 @@ func (r *Reporter) Start(ctx context.Context) {
 		case <-timer.C:
 			batch := r.GetBatch()
 
+			if len(batch) == 0 {
+				l.Log.Debugf("No reports to send")
+				continue
+			}
+
 			currentBacklog := r.wg.GetCount()
 			if currentBacklog > r.backlogLimit {
 				l.Log.Errorf("Backlog too high (%d / %d), dropping reports", currentBacklog, r.backlogLimit)
