@@ -3,8 +3,11 @@ import { handle } from "@/utils/handle";
 import { makeRouter } from "@/utils/router";
 import { orchestrator } from "@/modules/orchestrator";
 import { permissions } from "@/utils/permissions/permissions";
-import { mapCheck, mapOrchestratorChecks, mapOrchestratorGoodbye, mapOrchestratorHeartbeat, mapOrchestratorHello } from "@/routes/v1/mappings/orchestrator";
+import { mapCheck, mapOrchestratorCheckReport, mapOrchestratorChecks, mapOrchestratorGoodbye, mapOrchestratorHeartbeat, mapOrchestratorHello } from "@/routes/v1/mappings/orchestrator";
 import { ApiError } from "@/utils/error";
+import { checkReportDataSchema } from "@/modules/orchestrator/report";
+
+const maxReportAgeMs = 5 * 60 * 1000; // 5min
 
 export const orchestratorRouter = makeRouter((app) => {
   app.post(
@@ -94,6 +97,49 @@ export const orchestratorRouter = makeRouter((app) => {
 
       const checks = await orchestrator.checks.get(agentId);
       return mapOrchestratorChecks(orchestrator.checks.hash(checks), checks);
+    }),
+  );
+
+  app.post(
+    "/api/v1/orchestrator/agents/report",
+    {
+      schema: {
+        description: "Process check results",
+        body: z.object({
+          reports: z.array(z.object({
+            checkId: z.string(),
+            reportedAt: z.string().datetime().pipe(z.coerce.date()),
+            type: z.enum(["success", "failure"]),
+            data: checkReportDataSchema(),
+          })).default([]),
+          verifications: z.array(z.object({
+            verificationId: z.string(),
+            reportedAt: z.string().datetime().pipe(z.coerce.date()),
+            type: z.enum(["success", "failure"]),
+            data: checkReportDataSchema(),
+          })).default([]),
+        }),
+      },
+    },
+    handle(async ({ auth, body }) => {
+      auth.check(c => c.isAuthType("active-agent"));
+      const agentId = auth.data.getActiveAgentId();
+      auth.can(permissions.activeAgent.internal.manage({ id: agentId }));
+
+      const agent = await orchestrator.agents.get(agentId);
+      if (!agent) throw ApiError.forCode("authInvalidToken", 401); // token expired
+
+      // silently reject reports that are too old
+      const maxReportAgeDate = new Date(Date.now() - maxReportAgeMs);
+      const reports = body.reports.filter(v => v.reportedAt >= maxReportAgeDate);
+      const verifications = body.verifications.filter(v => v.reportedAt >= maxReportAgeDate);
+
+      await orchestrator.checks.report({
+        reports,
+        verifications,
+      });
+
+      return mapOrchestratorCheckReport();
     }),
   );
 });

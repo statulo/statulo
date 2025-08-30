@@ -52,6 +52,12 @@ export function mapOrchestratorHeartbeat(hash: string): OrchestratorHeartbeatDto
   };
 }
 
+export function mapOrchestratorCheckReport(): { success: boolean } {
+  return {
+    success: true,
+  };
+}
+
 export function mapCheck(checkAssignment: FullCheckAssignment): OrchestratorCheckDto {
   const startAt = maxDate(checkAssignment.startAt, checkAssignment.check.startAt);
   const endAt = minDate(checkAssignment.check.endAt, checkAssignment.endAt);

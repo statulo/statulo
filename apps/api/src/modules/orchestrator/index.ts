@@ -2,6 +2,7 @@ import { findChecksForAgent, getActiveAgent, refreshActiveAgent, registerActiveA
 import { calculateCheckCost, getHeartbeat, hashChecks } from "@/modules/orchestrator/utils";
 import { createActiveAgentToken } from "@/modules/orchestrator/tokens";
 import { addCheckForMonitor, updateChecksForMonitor } from "@/modules/orchestrator/checks";
+import { reportCheckResults } from "@/modules/orchestrator/report";
 
 export const orchestrator = {
   agents: {
@@ -23,5 +24,6 @@ export const orchestrator = {
     addCheck: addCheckForMonitor,
     calculateCost: calculateCheckCost,
     hash: hashChecks,
+    report: reportCheckResults,
   },
 };
