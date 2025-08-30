@@ -53,7 +53,7 @@ func (e *HTTPCheckError) Error() string {
 	return fmt.Sprintf("HTTP %s %s (%v): %s", e.Method, e.URL, e.Reason, e.BaseCheckError.Error())
 }
 
-func New(checkType string, message string, reason Reason) *BaseCheckError {
+func NewError(checkType string, message string, reason Reason) *BaseCheckError {
 	return &BaseCheckError{
 		CheckType: checkType,
 		Reason:    reason,
@@ -61,7 +61,7 @@ func New(checkType string, message string, reason Reason) *BaseCheckError {
 	}
 }
 
-func Wrap(checkType string, err error) *BaseCheckError {
+func WrapError(checkType string, err error) *BaseCheckError {
 	reason, message := Classify(err)
 	return &BaseCheckError{
 		CheckType: checkType,
@@ -71,7 +71,7 @@ func Wrap(checkType string, err error) *BaseCheckError {
 	}
 }
 
-func WrapHTTP(method, url string, cause error) *HTTPCheckError {
+func WrapHTTPError(method, url string, cause error) *HTTPCheckError {
 	reason, message := Classify(cause)
 	base := &BaseCheckError{
 		CheckType: "http",
@@ -82,7 +82,7 @@ func WrapHTTP(method, url string, cause error) *HTTPCheckError {
 	return &HTTPCheckError{BaseCheckError: base, Method: method, URL: url}
 }
 
-func NewHTTP(method, url string, message string, reason Reason) *HTTPCheckError {
+func NewHTTPError(method, url string, message string, reason Reason) *HTTPCheckError {
 	base := &BaseCheckError{
 		CheckType: "http",
 		Reason:    reason,

@@ -11,6 +11,7 @@ import (
 	"github.com/statulo/scout/internal/http"
 	l "github.com/statulo/scout/internal/logger"
 	"github.com/statulo/scout/internal/metrics"
+	"github.com/statulo/scout/internal/reporter"
 	"github.com/statulo/scout/internal/scheduler"
 )
 
@@ -52,6 +53,12 @@ func (a *Agent) startScheduler(ctx context.Context, scheduler *scheduler.Schedul
 	})
 }
 
+func (a *Agent) startReporter(ctx context.Context, reporter *reporter.Reporter) {
+	RunWithRecovery("reporter", ctx, &a.wg, func() {
+		reporter.Start(ctx)
+	})
+}
+
 func (a *Agent) Run(parentCtx context.Context) error {
 	ctx, cancel := context.WithCancel(parentCtx)
 	client := http.CreateClient("Scout", Version, a.conf.OrchestratorUrl)
@@ -71,13 +78,15 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	client.SetToken(helloRes.Token)
 
 	metricsSrv := metrics.CreateMetricsServer()
-	checker := checker.CreateChecker(&client)
+	reporter := reporter.NewReporter(&client, 40)
+	checker := checker.CreateChecker(&client, &reporter)
 	scheduler := scheduler.CreateScheduler(&checker, &client)
 	heartbeater := heartbeat.CreateHeartbeater(scheduler.GetCheckUpdateChannel(), &client)
 
 	a.startMetrics(ctx, &metricsSrv, conf.MetricsUrl)
 	a.startHeartbeater(ctx, &heartbeater, time.Duration(helloRes.Heartbeat)*time.Second)
 	a.startScheduler(ctx, &scheduler, helloRes.CheckHash, helloRes.Checks)
+	a.startReporter(ctx, &reporter)
 	// TODO bg: start pubsub (if sent with HELLO), pubsub can call checker
 
 	select {
@@ -86,6 +95,7 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	case <-client.WaitTokenInvalidated():
 		cancel()
 		metricsSrv.Stop()
+		checker.Wait()
 		a.wg.Wait()
 		return ErrAgentRestart
 	}
@@ -98,15 +108,17 @@ func (a *Agent) Run(parentCtx context.Context) error {
 	if goodbyeErr != nil {
 		cancel()
 		metricsSrv.Stop()
+		checker.Wait()
 		a.wg.Wait()
 		return goodbyeErr
 	}
 	l.Log.Debugf("Received GOODBYE response")
 	l.Log.Info("Offboarding schedule received, waiting to finish tasks")
 
-	// TODO run schedule until the end specified by goodbye
+	// TODO run schedule until the end specified by goodbye (reporter)
 	cancel()
 	metricsSrv.Stop()
+	checker.Wait()
 	a.wg.Wait()
 
 	return nil

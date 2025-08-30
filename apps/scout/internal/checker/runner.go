@@ -1,8 +1,8 @@
 package checker
 
 import (
-	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	scoutHttp "github.com/statulo/scout/internal/http"
@@ -12,20 +12,20 @@ import (
 )
 
 type Checker struct {
-	client *scoutHttp.OrchestratorClient
+	client   *scoutHttp.OrchestratorClient
+	reporter *scoutReporter.Reporter
+	wg       sync.WaitGroup
 }
 
-type CheckResult struct {
-	Success    bool                     `json:"success"`
-	DurationMs int64                    `json:"duration_ms,omitempty"`
-	Error      scoutReporter.CheckError `json:"error,omitempty"`
-	Result     any                      `json:"result,omitempty"`
-}
-
-func CreateChecker(client *scoutHttp.OrchestratorClient) Checker {
+func CreateChecker(client *scoutHttp.OrchestratorClient, reporter *scoutReporter.Reporter) Checker {
 	return Checker{
-		client: client,
+		client:   client,
+		reporter: reporter,
 	}
+}
+
+func (c *Checker) Wait() {
+	c.wg.Wait()
 }
 
 func (c *Checker) startCheck(check scoutHttp.CheckResponse) (any, time.Duration, scoutReporter.CheckError) {
@@ -36,31 +36,28 @@ func (c *Checker) startCheck(check scoutHttp.CheckResponse) (any, time.Duration,
 		return res, duration, err
 	default:
 		l.Log.Errorf("unsupported check type: %s", check.Type)
-		return nil, 0, scoutReporter.New("", fmt.Sprintf("unsupported check type: %s", check.Type), scoutReporter.ReasonConfig)
+		return nil, 0, scoutReporter.NewError("", fmt.Sprintf("unsupported check type: %s", check.Type), scoutReporter.ReasonConfig)
 	}
 }
 
 func (c *Checker) RunCheckInBg(check scoutHttp.CheckResponse) {
+	c.wg.Add(1)
 	go func() {
-		defer l.Log.Infof("Starting check %s (%s)", check.Id, check.Type)
+		defer c.wg.Done()
+		l.Log.Debugf("Starting check %s (%s)", check.Id, check.Type)
 		metrics.ChecksExecuted.Inc()
 		res, duration, err := c.startCheck(check)
-		l.Log.Infof("Finished check %s (%s) in %s - success: %t, error: %v", check.Id, check.Type, duration, err == nil, err)
+		l.Log.Debugf("Finished check %s (%s) in %s - success: %t, error: %v", check.Id, check.Type, duration, err == nil, err)
 
-		checkResult := CheckResult{
+		checkResult := scoutReporter.ReportRequest{
 			Success:    err == nil,
 			DurationMs: duration.Milliseconds(),
 			Error:      err,
 			Result:     res,
 		}
 
-		jsonOut, _ := json.MarshalIndent(checkResult, "", "  ")
-
-		fmt.Print(string(jsonOut))
-
-		// TODO handle errors (report to server)
-		// TODO log start and end of checks
+		c.reporter.Queue(checkResult)
 		// TODO handle panics
-		// TODO handle graceful exit
+		// TODO handle graceful exit (Waitgroups)
 	}()
 }
