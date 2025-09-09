@@ -27,7 +27,10 @@ const { isPending, data } = useQuery({
         <BigTitle>Monitors</BigTitle>
         <Text>Have a peek into your monitors.</Text>
       </div>
-      <Button type="secondary">
+      <Button
+        type="secondary"
+        to="/monitors/new"
+      >
         New monitor
       </Button>
     </div>
@@ -61,13 +64,15 @@ const { isPending, data } = useQuery({
               class="mt-2 self-start text-lg"
             />
             <div class="flex-1">
-              <SubHeading>{{ item.computedName }}</SubHeading>
+              <NuxtLink :to="`/monitors/${item.id}`">
+                <SubHeading>{{ item.name ?? item.computedName }}</SubHeading>
+              </NuxtLink>
               <div class="flex items-center mt-1">
                 <MonitorType
                   :type="item.type"
                   class="mr-2"
                 />
-                <span>Checked every 30s</span>
+                <span v-if="item.primaryInterval">Checked every {{ item.primaryInterval.amount }}{{ item.primaryInterval.unit }}</span>
               </div>
             </div>
             <MonitorStatus
